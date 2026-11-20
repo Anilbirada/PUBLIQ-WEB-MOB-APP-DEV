@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE } from "@/lib/api";
 
 import React, { useState, useEffect } from "react";
 import { 
@@ -6,8 +7,6 @@ import {
   Send, RefreshCw, Film, Instagram, Share2, AlertTriangle, X
 } from "lucide-react";
 
-
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')) || 'http://localhost:8001/api/v1';
 interface AiPromo {
   id: string;
   title: string;

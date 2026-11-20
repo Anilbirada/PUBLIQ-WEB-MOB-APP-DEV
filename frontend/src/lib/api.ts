@@ -1,5 +1,28 @@
-const rawBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001/api/v1";
-export const API_BASE_URL = rawBase.endsWith("/api/v1") ? rawBase : `${rawBase.replace(/\/$/, "")}/api/v1`;
+function resolveApiBase(): string {
+  let raw = (process.env.NEXT_PUBLIC_API_URL || "").trim();
+  if (!raw) {
+    if (typeof window !== "undefined" && window.location.hostname.includes("onrender.com")) {
+      return "https://publiq-backend-5oyh.onrender.com/api/v1";
+    }
+    return "http://localhost:8001/api/v1";
+  }
+
+  // If provided as a host slug like "publiq-backend-5oyh" or "publiq-backend-5oyh.onrender.com"
+  if (!raw.startsWith("http://") && !raw.startsWith("https://")) {
+    if (raw.includes("onrender.com")) {
+      raw = `https://${raw}`;
+    } else if (raw.startsWith("publiq-backend")) {
+      raw = `https://${raw}.onrender.com`;
+    } else if (!raw.startsWith("/")) {
+      raw = `https://${raw}`;
+    }
+  }
+
+  return raw.endsWith("/api/v1") ? raw : `${raw.replace(/\/$/, "")}/api/v1`;
+}
+
+export const API_BASE_URL = resolveApiBase();
+export const API_BASE = API_BASE_URL;
 
 export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;

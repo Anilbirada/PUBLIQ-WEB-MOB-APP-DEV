@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE } from "@/lib/api";
 
 import React, { useState, useEffect } from "react";
 import { 
@@ -25,7 +26,7 @@ export default function AdminCmsPage() {
   const [newGalleryUrl, setNewGalleryUrl] = useState("/images/publiq/interior/publiq-interior-hero.webp");
   const [newGalleryCaption, setNewGalleryCaption] = useState("");
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001/api/v1";
+  
 
   useEffect(() => {
     fetchCmsData();

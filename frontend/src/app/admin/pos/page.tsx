@@ -1,4 +1,5 @@
 "use client";
+import { API_BASE } from "@/lib/api";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -7,8 +8,6 @@ import {
   Search, ShieldCheck, Utensils, Wine
 } from "lucide-react";
 
-
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')) || 'http://localhost:8001/api/v1';
 interface PosTable {
   id: string;
   table_number: string;

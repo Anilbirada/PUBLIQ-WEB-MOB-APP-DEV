@@ -42,76 +42,67 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Col 2: Flagship Destination */}
+          {/* Col 2: Venue Location */}
           <div className="space-y-3">
             <h4 className="font-cinzel text-xs uppercase tracking-[0.2em] text-[#D4AF37] font-bold border-b border-[#D4AF37]/20 pb-2 inline-block">
-              Flagship Destination
+              Venue Location
             </h4>
             <div className="flex items-start gap-2.5 text-xs text-[#EDE8DC]">
               <MapPin className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
               <div>
                 <span className="block font-medium">QM73+544, Nosenuru Rd, Haragadde</span>
                 <span className="text-[#CBD5E1] text-[11px] block">Bengaluru, Karnataka 560105</span>
-                <a 
-                  href="https://maps.app.goo.gl/PirWhJBqftV9Md5v9?g_st=atm" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-[11px] text-[#D4AF37] hover:underline font-semibold mt-1"
-                >
-                  <span>Google Maps: QM73+544</span>
-                  <ArrowUpRight className="w-3 h-3" />
-                </a>
+                <span className="text-[11px] text-[#A1A1AA] block mt-0.5">Plus Code: QM73+544</span>
               </div>
             </div>
+            <div className="pt-1">
+              <a 
+                href="https://maps.app.goo.gl/PirWhJBqftV9Md5v9?g_st=atm" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0F1626] border border-[#D4AF37]/40 text-[#D4AF37] hover:border-[#D4AF37] hover:bg-[#D4AF37]/10 text-xs font-semibold transition-all shadow-sm"
+              >
+                <span>View on Google Maps</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </a>
+            </div>
+            <p className="text-[11px] text-[#CBD5E1] pt-1">
+              Garden Dining, Open-Air Cabanas &amp; Craft Cocktail Bar.
+            </p>
+          </div>
+
+          {/* Col 3: Direct Contact & Hours */}
+          <div className="space-y-3">
+            <h4 className="font-cinzel text-xs uppercase tracking-[0.2em] text-[#D4AF37] font-bold border-b border-[#D4AF37]/20 pb-2 inline-block">
+              Direct Contact &amp; Hours
+            </h4>
             <div className="flex items-center gap-2.5 text-xs text-[#EDE8DC]">
               <Phone className="w-4 h-4 text-[#D4AF37] shrink-0" />
-              <a href="tel:+919741744886" className="hover:text-[#D4AF37] transition-colors font-medium">
-                +91 97417 44886 (Direct)
-              </a>
+              <div>
+                <span className="text-[10px] text-[#A1A1AA] uppercase block">Owner &amp; Reservations</span>
+                <a href="tel:+919741744886" className="hover:text-[#D4AF37] transition-colors font-medium text-sm text-[#FDFBF7]">
+                  +91 97417 44886
+                </a>
+              </div>
             </div>
             <div className="flex items-center gap-2.5 text-xs text-[#EDE8DC]">
               <Mail className="w-4 h-4 text-[#D4AF37] shrink-0" />
-              <a href="mailto:publiqbarresto@gmail.com" className="hover:text-[#D4AF37] transition-colors">
-                publiqbarresto@gmail.com
-              </a>
-            </div>
-            <div className="flex items-center gap-2.5 text-xs text-[#EDE8DC]">
-              <Clock className="w-4 h-4 text-[#D4AF37] shrink-0" />
-              <span>12:00 PM – 01:00 AM (Daily)</span>
-            </div>
-          </div>
-
-          {/* Col 3: Sky Deck & Lounge */}
-          <div className="space-y-3">
-            <h4 className="font-cinzel text-xs uppercase tracking-[0.2em] text-[#D4AF37] font-bold border-b border-[#D4AF37]/20 pb-2 inline-block">
-              Sky Deck &amp; Lounge
-            </h4>
-            <div className="flex items-start gap-2.5 text-xs text-[#EDE8DC]">
-              <MapPin className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
               <div>
-                <span>Level 18 Grand Tower, Panoramic View</span>
-                <a 
-                  href="https://maps.app.goo.gl/PirWhJBqftV9Md5v9?g_st=atm" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="block text-[11px] text-[#D4AF37] hover:underline font-semibold mt-0.5"
-                >
-                  Locate via Plus Code: QM73+544
+                <span className="text-[10px] text-[#A1A1AA] uppercase block">Official Email</span>
+                <a href="mailto:publiqbarresto@gmail.com" className="hover:text-[#D4AF37] transition-colors font-medium">
+                  publiqbarresto@gmail.com
                 </a>
               </div>
             </div>
             <div className="flex items-center gap-2.5 text-xs text-[#EDE8DC]">
-              <Phone className="w-4 h-4 text-[#D4AF37] shrink-0" />
-              <a href="tel:+919741744886" className="hover:text-[#D4AF37] transition-colors font-medium">
-                +91 97417 44886 (VIP Lounge)
-              </a>
-            </div>
-            <div className="flex items-center gap-2.5 text-xs text-[#EDE8DC]">
               <Clock className="w-4 h-4 text-[#D4AF37] shrink-0" />
-              <span>04:00 PM – 01:00 AM (Evening Resto-Bar)</span>
+              <div>
+                <span className="text-[10px] text-[#A1A1AA] uppercase block">Opening Hours</span>
+                <span className="font-medium">12:00 PM – 01:00 AM (Daily)</span>
+              </div>
             </div>
             <p className="text-[11px] text-[#CBD5E1] pt-1">
-              Complimentary VIP Valet Parking &amp; Private Lift Access.
+              Complimentary Valet Parking Available.
             </p>
           </div>
 

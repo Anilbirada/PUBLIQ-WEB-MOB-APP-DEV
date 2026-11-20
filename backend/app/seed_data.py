@@ -68,9 +68,9 @@ def seed_database():
         
         skydeck_outlet = Outlet(
             restaurant_id=rest.id,
-            name="PUBLIQ Sky Deck & Lounge",
-            code="PUB-SKY-02",
-            address="QM73+544, Nosenuru Rd, Haragadde (Level 18 Grand Tower)",
+            name="PUBLIQ Garden Courtyard & Lounge",
+            code="PUB-GDN-02",
+            address="QM73+544, Nosenuru Rd, Haragadde",
             city="Bengaluru",
             state="Karnataka",
             postal_code="560105",

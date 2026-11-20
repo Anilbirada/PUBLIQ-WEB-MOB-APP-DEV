@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "PUBLIQ Waiter",
+    "slug": "publiq-waiter-mobile",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#070B12"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.publiq.waiter",
+      "infoPlist": {
+        "NSCameraUsageDescription": "PUBLIQ Waiter uses camera to verify table QR codes."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#070B12"
+      },
+      "package": "com.publiq.waiter",
+      "permissions": [
+        "CAMERA",
+        "INTERNET",
+        "VIBRATE"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow PUBLIQ Waiter to scan Table QR tokens."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "publiq-waiter-mobile"
+      }
+    }
+  }
+}

@@ -218,7 +218,7 @@ export default function HomePage() {
     } catch (err) {
       setAiMessages(prev => [...prev, { 
         sender: "ai", 
-        text: "I am pleased to assist. For immediate reservations or sommelier pairings, our hosts are available at +91 98000 12345." 
+        text: "I am pleased to assist. For immediate reservations or sommelier pairings, our hosts are available at +91 97417 44886 or via email at publiqbarresto@gmail.com." 
       }]);
     } finally {
       setAiLoading(false);

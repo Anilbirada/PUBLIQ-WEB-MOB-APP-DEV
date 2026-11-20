@@ -245,8 +245,13 @@ export const Navbar: React.FC = () => {
                 <div className="flex items-start gap-3 text-[#EDE8DC]">
                   <Phone className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold block text-[#FDFBF7]">Direct Reservations</span>
-                    <span className="text-[#CBD5E1]">+91 98000 12345 / concierge@publiq.com</span>
+                    <span className="font-semibold block text-[#FDFBF7]">Direct Reservations &amp; Owner</span>
+                    <a href="tel:+919741744886" className="text-[#CBD5E1] hover:text-[#D4AF37] block font-mono">
+                      +91 97417 44886
+                    </a>
+                    <a href="mailto:publiqbarresto@gmail.com" className="text-[11px] text-[#D4AF37] hover:underline block">
+                      publiqbarresto@gmail.com
+                    </a>
                   </div>
                 </div>
 
@@ -254,7 +259,14 @@ export const Navbar: React.FC = () => {
                   <MapPin className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
                   <div>
                     <span className="font-semibold block text-[#FDFBF7]">Location</span>
-                    <span className="text-[#CBD5E1]">Flagship Avenue, Luxury Dining District</span>
+                    <a 
+                      href="https://maps.app.goo.gl/PirWhJBqftV9Md5v9?g_st=atm" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-[#CBD5E1] hover:text-[#D4AF37] block"
+                    >
+                      QM73+544, Nosenuru Rd, Haragadde, Bengaluru
+                    </a>
                   </div>
                 </div>
               </div>

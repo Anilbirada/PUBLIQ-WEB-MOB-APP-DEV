@@ -49,20 +49,30 @@ export const Footer: React.FC = () => {
             </h4>
             <div className="flex items-start gap-2.5 text-xs text-[#EDE8DC]">
               <MapPin className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
-              <span>
-                Level 4 &amp; Rooftop, Central Promenade, Luxury Hospitality District
-              </span>
+              <div>
+                <span className="block font-medium">QM73+544, Nosenuru Rd, Haragadde</span>
+                <span className="text-[#CBD5E1] text-[11px] block">Bengaluru, Karnataka 560105</span>
+                <a 
+                  href="https://maps.app.goo.gl/PirWhJBqftV9Md5v9?g_st=atm" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] text-[#D4AF37] hover:underline font-semibold mt-1"
+                >
+                  <span>Google Maps: QM73+544</span>
+                  <ArrowUpRight className="w-3 h-3" />
+                </a>
+              </div>
             </div>
             <div className="flex items-center gap-2.5 text-xs text-[#EDE8DC]">
               <Phone className="w-4 h-4 text-[#D4AF37] shrink-0" />
-              <a href="tel:+919800012345" className="hover:text-[#D4AF37] transition-colors font-medium">
-                +91 98000 12345 / +91 98000 67890
+              <a href="tel:+919741744886" className="hover:text-[#D4AF37] transition-colors font-medium">
+                +91 97417 44886 (Direct)
               </a>
             </div>
             <div className="flex items-center gap-2.5 text-xs text-[#EDE8DC]">
               <Mail className="w-4 h-4 text-[#D4AF37] shrink-0" />
-              <a href="mailto:concierge@publiqrestaurant.com" className="hover:text-[#D4AF37] transition-colors">
-                concierge@publiqrestaurant.com
+              <a href="mailto:publiqbarresto@gmail.com" className="hover:text-[#D4AF37] transition-colors">
+                publiqbarresto@gmail.com
               </a>
             </div>
             <div className="flex items-center gap-2.5 text-xs text-[#EDE8DC]">
@@ -78,14 +88,22 @@ export const Footer: React.FC = () => {
             </h4>
             <div className="flex items-start gap-2.5 text-xs text-[#EDE8DC]">
               <MapPin className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
-              <span>
-                Level 18 Grand Tower, Panoramic City Skyline Avenue
-              </span>
+              <div>
+                <span>Level 18 Grand Tower, Panoramic View</span>
+                <a 
+                  href="https://maps.app.goo.gl/PirWhJBqftV9Md5v9?g_st=atm" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="block text-[11px] text-[#D4AF37] hover:underline font-semibold mt-0.5"
+                >
+                  Locate via Plus Code: QM73+544
+                </a>
+              </div>
             </div>
             <div className="flex items-center gap-2.5 text-xs text-[#EDE8DC]">
               <Phone className="w-4 h-4 text-[#D4AF37] shrink-0" />
-              <a href="tel:+919800067890" className="hover:text-[#D4AF37] transition-colors font-medium">
-                +91 98000 67890 (Skyline VIP)
+              <a href="tel:+919741744886" className="hover:text-[#D4AF37] transition-colors font-medium">
+                +91 97417 44886 (VIP Lounge)
               </a>
             </div>
             <div className="flex items-center gap-2.5 text-xs text-[#EDE8DC]">

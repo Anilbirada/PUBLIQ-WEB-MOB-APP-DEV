@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.kickbunk.customer",
+      "sha256_cert_fingerprints": [
+        "14:6D:E9:7D:6F:4A:8D:2B:5B:3C:9A:8E:7F:6D:5C:4B:3A:29:18:07:FA:EB:DC:CD:BA:A9:98:87:76:65:54:43"
+      ]
+    }
+  }
+]

@@ -1,0 +1,152 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { 
+  CheckCircle2, Sparkles, Clock, ArrowRight, 
+  MapPin, Utensils, Receipt, PhoneCall 
+} from "lucide-react";
+import { api } from "../../../lib/api";
+
+export default function OrderConfirmationPage() {
+  const params = useParams();
+  const router = useRouter();
+  const orderId = params?.orderId as string;
+
+  const [order, setOrder] = useState<any | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    async function loadOrder() {
+      if (!orderId) return;
+      try {
+        const data = await api.getOrder(orderId);
+        setOrder(data);
+      } catch (err: any) {
+        setError(err.message || "Unable to fetch order details.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadOrder();
+  }, [orderId]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center p-4 bg-[#070B12]">
+        <div className="text-center space-y-3">
+          <div className="w-8 h-8 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs text-slate-400">Retrieving your order confirmation...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !order) {
+    return (
+      <div className="min-h-[70vh] flex items-center justify-center p-4 bg-[#070B12]">
+        <div className="text-center space-y-3 max-w-sm">
+          <p className="text-sm text-rose-400">{error || "Order not found."}</p>
+          <a href="/menu" className="text-xs font-bold text-[#D4AF37] underline">
+            Back to Digital Menu
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#070B12] text-slate-100 py-10 sm:py-16 selection:bg-[#D4AF37] selection:text-[#070B12]">
+      <div className="max-w-xl mx-auto px-4">
+        <div className="bg-[#0A111F] rounded-3xl shadow-2xl border border-[#D4AF37]/30 overflow-hidden p-6 sm:p-8 space-y-6 text-center">
+          {/* Animated Success Badge */}
+          <div className="w-20 h-20 rounded-full bg-emerald-950/60 text-emerald-400 flex items-center justify-center mx-auto border-2 border-emerald-500/40 shadow-inner">
+            <CheckCircle2 className="w-10 h-10 animate-bounce" />
+          </div>
+
+          <div>
+            <span className="text-xs font-bold uppercase tracking-widest text-[#D4AF37] block">
+              Order Confirmed & Sent to Kitchen
+            </span>
+            <h1 className="font-serif text-2xl sm:text-3xl font-normal text-white mt-1">
+              Thank You for Dining with Us!
+            </h1>
+            <p className="text-xs text-slate-400 mt-1.5">
+              Your order has been queued directly into the PUBLIQ kitchen & bar display system.
+            </p>
+          </div>
+
+          {/* Key Reference Card */}
+          <div className="bg-[#070B12] rounded-2xl p-4 border border-[#D4AF37]/20 space-y-3 text-left text-xs">
+            <div className="flex items-center justify-between pb-2 border-b border-[#D4AF37]/15">
+              <span className="text-slate-400 font-semibold">Order Number:</span>
+              <span className="font-mono font-bold text-sm text-white">
+                {order.order_number}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between pb-2 border-b border-[#D4AF37]/15">
+              <span className="text-slate-400 font-semibold">Dining Location:</span>
+              <span className="font-bold text-white">
+                {order.table_number ? `Dine-In • Table ${order.table_number}` : "Takeaway / Delivery"}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between pb-2 border-b border-[#D4AF37]/15">
+              <span className="text-slate-400 font-semibold">Estimated Prep Time:</span>
+              <span className="font-bold text-[#D4AF37] flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5" />
+                ~{order.estimated_prep_time_minutes} minutes
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-slate-400 font-semibold">Payment Status:</span>
+              <span className="font-bold px-2.5 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-500/40">
+                {order.payment_status} ({order.payment_method})
+              </span>
+            </div>
+          </div>
+
+          {/* Order Items Snapshot */}
+          <div className="text-left space-y-2 border-t border-[#D4AF37]/15 pt-4">
+            <span className="text-xs font-bold text-slate-300 block uppercase tracking-wider">Ordered Items:</span>
+            <div className="space-y-1.5 max-h-40 overflow-y-auto">
+              {order.items.map((item: any) => (
+                <div key={item.id} className="flex justify-between text-xs text-slate-300">
+                  <span>
+                    {item.quantity}x {item.item_name} {item.variant_name ? `(${item.variant_name})` : ""}
+                  </span>
+                  <span className="font-serif font-semibold text-[#D4AF37]">₹{item.total_price}</span>
+                </div>
+              ))}
+            </div>
+            <div className="pt-2 border-t border-[#D4AF37]/15 flex justify-between font-bold text-sm text-white">
+              <span>Final Total Paid:</span>
+              <span className="font-serif text-[#D4AF37]">₹{order.final_amount}</span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="space-y-3 pt-2">
+            <a
+              href={`/track/${order.order_number}`}
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#B38728] hover:opacity-95 text-[#070B12] font-bold text-xs uppercase tracking-widest transition-all shadow-xl shadow-[#D4AF37]/15 flex items-center justify-center gap-2"
+            >
+              <span>Track Live Order Status</span>
+              <ArrowRight className="w-4 h-4" />
+            </a>
+
+            <a
+              href="/menu"
+              className="block text-xs font-bold text-[#D4AF37] hover:underline"
+            >
+              Add more items to this order
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

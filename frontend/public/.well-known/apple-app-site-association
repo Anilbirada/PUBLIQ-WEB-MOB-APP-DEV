@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TEAMID1234.com.kickbunk.customer",
+        "paths": ["/order/*", "/dine-in/*"]
+      }
+    ]
+  }
+}

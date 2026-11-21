@@ -606,14 +606,14 @@ export default function WaiterMobileApp() {
           </button>
 
           <a
-            href="https://expo.dev/artifacts/eas/kakk6kE9uTeZfzFPAXzaPXNC9yXAKi3Nw3w9IpUzLNs.apk"
+            href="https://expo.dev/artifacts/eas/LtMYT2uVL7ZC19BJSr0VGKnvxi-URSRNtcXTzvhc9kE.apk"
             target="_blank"
             rel="noopener noreferrer"
             download="publiq-w.apk"
             className="w-full py-2.5 rounded-xl bg-emerald-950/50 hover:bg-emerald-900/60 border border-emerald-500/50 text-[11px] font-bold text-emerald-300 tracking-wider transition-all flex items-center justify-center gap-2 mb-2"
           >
             <Download className="w-4 h-4 text-emerald-400" />
-            Download PUBLIQ W v2.0.2 APK (83.2 MB)
+            Download PUBLIQ W v2.0.3 APK (83.3 MB)
           </a>
 
           <a

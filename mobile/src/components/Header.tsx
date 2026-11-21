@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { COLORS } from "../theme/colors";
 import { useAuth } from "../context/AuthContext";
 
@@ -9,13 +9,20 @@ interface HeaderProps {
   onManagerPress?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ title = "PUBLIQ", subtitle, onManagerPress }) => {
+export const Header: React.FC<HeaderProps> = ({ title = "PUBLIQ W", subtitle, onManagerPress }) => {
   const { waiter } = useAuth();
 
   return (
     <View style={styles.container}>
       <View style={styles.left}>
-        <Text style={styles.brandTitle}>P U B L I Q</Text>
+        <View style={styles.brandRow}>
+          <Image 
+            source={require("../../assets/logo.png")} 
+            style={styles.logoBadge} 
+            resizeMode="contain" 
+          />
+          <Text style={styles.brandTitle}>P U B L I Q   W</Text>
+        </View>
         <Text style={styles.subtitle}>{subtitle || waiter?.outlet_name || "Enterprise Operations"}</Text>
       </View>
 
@@ -44,6 +51,15 @@ const styles = StyleSheet.create({
   },
   left: {
     flex: 1
+  },
+  brandRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8
+  },
+  logoBadge: {
+    width: 26,
+    height: 26
   },
   brandTitle: {
     fontSize: 16,

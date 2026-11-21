@@ -407,11 +407,13 @@ export default function WaiterMobileApp() {
     return (
       <div className="min-h-screen bg-[#070B12] flex items-center justify-center p-4">
         <div className="w-full max-w-sm bg-[#0D131F] border border-[#D4AF37]/40 rounded-3xl p-6 shadow-2xl flex flex-col items-center">
-          <div className="w-16 h-16 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37] flex items-center justify-center mb-4">
-            <Utensils className="w-8 h-8 text-[#D4AF37]" />
-          </div>
+          <img 
+            src="/logo-transparent.png" 
+            alt="PUBLIQ" 
+            className="h-16 w-auto object-contain mb-2 drop-shadow-[0_0_12px_rgba(212,175,55,0.4)]" 
+          />
 
-          <h1 className="text-xl font-bold tracking-[0.25em] text-[#D4AF37] uppercase">P U B L I Q</h1>
+          <h1 className="text-xl font-bold tracking-[0.25em] text-[#D4AF37] uppercase">P U B L I Q   W</h1>
           <p className="text-xs text-slate-400 tracking-widest uppercase mt-1 mb-6 font-semibold">Service Staff Mobile App</p>
 
           <p className="text-xs text-slate-300 font-medium mb-3">Enter 4-Digit Employee PIN</p>
@@ -481,8 +483,8 @@ export default function WaiterMobileApp() {
         <div className="bg-[#0D131F] border-b border-slate-800 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
           <div>
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-sm font-black tracking-widest text-[#D4AF37]">PUBLIQ WAITER</span>
+              <img src="/logo-badge.png" alt="PUBLIQ" className="w-6 h-6 object-contain" />
+              <span className="text-sm font-black tracking-widest text-[#D4AF37]">PUBLIQ W</span>
             </div>
             <p className="text-[10px] text-slate-400 tracking-wider">
               {waiter?.name} • Table Floor Active

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, SafeAreaView, Image } from "react-native";
 import { COLORS } from "../theme/colors";
 import { useAuth } from "../context/AuthContext";
 
@@ -44,7 +44,12 @@ export const LoginScreen: React.FC = () => {
       <View style={styles.container}>
         {/* Header Branding */}
         <View style={styles.header}>
-          <Text style={styles.brandTitle}>P U B L I Q</Text>
+          <Image 
+            source={require("../../assets/logo.png")} 
+            style={styles.logoImage} 
+            resizeMode="contain" 
+          />
+          <Text style={styles.brandTitle}>P U B L I Q   W</Text>
           <Text style={styles.brandSubtitle}>SERVICE STEWARD TERMINAL</Text>
           <Text style={styles.instruction}>Enter your 4-digit Employee PIN</Text>
 
@@ -124,7 +129,12 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    marginTop: 30
+    marginTop: 20
+  },
+  logoImage: {
+    width: 160,
+    height: 70,
+    marginBottom: 6
   },
   brandTitle: {
     fontSize: 28,

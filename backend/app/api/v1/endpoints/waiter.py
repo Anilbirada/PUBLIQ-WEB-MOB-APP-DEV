@@ -31,7 +31,7 @@ def waiter_login(payload: Dict[str, Any] = Body(...), db: Session = Depends(get_
     Authenticate service staff using 4-digit PIN code or employee email/phone.
     Restricted to employees with WAITER, CASHIER, or MANAGER roles.
     """
-    pin_code = str(payload.get("pin_code", "")).strip()
+    pin_code = str(payload.get("pin_code") or payload.get("pin") or "").strip()
     identifier = str(payload.get("identifier", "")).strip()
     
     query = db.query(Employee).filter(Employee.is_active == True)

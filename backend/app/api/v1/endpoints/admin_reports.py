@@ -10,6 +10,7 @@ from app.models import (
     Expense, PosBill, Order, OrderItem, LiquorItem, RawMaterial
 )
 from app.services.qr_service import QrService
+from app.core.config import settings
 
 router = APIRouter()
 

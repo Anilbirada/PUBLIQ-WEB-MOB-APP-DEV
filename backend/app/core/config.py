@@ -34,8 +34,8 @@ class Settings(BaseSettings):
     ]
     
     # Host and Base URLs
-    WEB_BASE_URL: str = os.getenv("WEB_BASE_URL", "http://localhost:3000")
-    API_BASE_URL: str = os.getenv("API_BASE_URL", "http://localhost:8000")
+    WEB_BASE_URL: str = os.getenv("WEB_BASE_URL", "https://publiq-frontend.onrender.com")
+    API_BASE_URL: str = os.getenv("API_BASE_URL", "https://publiq-backend-5oyh.onrender.com")
     APP_SCHEME: str = "publiq"
     
     # POS Integration Mode: "LOCAL_EMULATOR" or "DIRECT_API"

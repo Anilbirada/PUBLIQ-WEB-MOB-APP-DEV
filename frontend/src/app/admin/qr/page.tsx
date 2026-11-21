@@ -52,6 +52,21 @@ export default function QrManagementPage() {
     setTimeout(() => setNotification(null), 4000);
   };
 
+  // Dynamic Universal Link Resolver ensuring mobile camera scans open the live app
+  const getUniversalLink = (rawLink: string, token: string, tableNumber: string) => {
+    const origin = typeof window !== "undefined" && window.location.origin.startsWith("http")
+      ? window.location.origin
+      : "https://publiq-frontend.onrender.com";
+
+    // If already points to a valid non-localhost domain, preserve it
+    if (rawLink && !rawLink.includes("localhost") && rawLink.startsWith("http")) {
+      return rawLink;
+    }
+
+    const cleanToken = token || `table-${tableNumber.toLowerCase().replace(/\s+/g, "-")}`;
+    return `${origin}/order/${cleanToken}`;
+  };
+
   const fetchQRs = async () => {
     try {
       const res = await fetch(`${API_BASE}/admin/management/qr/list`);
@@ -63,6 +78,10 @@ export default function QrManagementPage() {
       }
     } catch (_) {
       // Fallback luxury sample tables
+      const origin = typeof window !== "undefined" && window.location.origin.startsWith("http")
+        ? window.location.origin
+        : "https://publiq-frontend.onrender.com";
+
       setTokens([
         {
           id: "tok-1",
@@ -71,7 +90,7 @@ export default function QrManagementPage() {
           dining_area: "Open-Air Lush Garden",
           capacity: 4,
           qr_token: "sample-table-08",
-          universal_link: "http://localhost:3001/order/sample-table-08",
+          universal_link: `${origin}/order/sample-table-08`,
           scan_count: 84,
           is_active: true,
           created_at: "2026-11-16T10:00:00Z"
@@ -83,7 +102,7 @@ export default function QrManagementPage() {
           dining_area: "Family Dining Pavilion",
           capacity: 6,
           qr_token: "sample-table-04",
-          universal_link: "http://localhost:3001/order/sample-table-04",
+          universal_link: `${origin}/order/sample-table-04`,
           scan_count: 52,
           is_active: true,
           created_at: "2026-11-16T10:00:00Z"
@@ -95,7 +114,7 @@ export default function QrManagementPage() {
           dining_area: "Private Luxury Cabanas",
           capacity: 8,
           qr_token: "sample-cabana-01",
-          universal_link: "http://localhost:3001/order/sample-cabana-01",
+          universal_link: `${origin}/order/sample-cabana-01`,
           scan_count: 67,
           is_active: true,
           created_at: "2026-11-16T10:00:00Z"
@@ -107,7 +126,7 @@ export default function QrManagementPage() {
           dining_area: "Resto-Bar & Cocktail Lounge",
           capacity: 2,
           qr_token: "sample-bar-02",
-          universal_link: "http://localhost:3001/order/sample-bar-02",
+          universal_link: `${origin}/order/sample-bar-02`,
           scan_count: 31,
           is_active: true,
           created_at: "2026-11-16T10:00:00Z"
@@ -187,14 +206,18 @@ export default function QrManagementPage() {
     } catch (err) {
       // Local fallback creation
       const mockToken = `tok-custom-${Date.now()}`;
+      const cleanTok = `sample-${newTableNumber.trim().toLowerCase().replace(/\s+/g, "-")}`;
+      const origin = typeof window !== "undefined" && window.location.origin.startsWith("http")
+        ? window.location.origin
+        : "https://publiq-frontend.onrender.com";
       const newMockItem: TableToken = {
         id: mockToken,
         table_id: mockToken,
         table_number: newTableNumber.trim(),
         dining_area: sectionFinal,
         capacity: Number(newCapacity) || 4,
-        qr_token: `sample-${newTableNumber.trim().toLowerCase().replace(/\s+/g, "-")}`,
-        universal_link: `http://localhost:3001/order/sample-${newTableNumber.trim().toLowerCase().replace(/\s+/g, "-")}`,
+        qr_token: cleanTok,
+        universal_link: `${origin}/order/${cleanTok}`,
         scan_count: 0,
         is_active: true,
         created_at: new Date().toISOString()
@@ -356,8 +379,9 @@ export default function QrManagementPage() {
       {/* QR Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredTokens.map((t) => {
-          const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-            t.universal_link
+          const liveUniversalLink = getUniversalLink(t.universal_link, t.qr_token, t.table_number);
+          const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
+            liveUniversalLink
           )}&margin=1`;
 
           return (
@@ -385,7 +409,7 @@ export default function QrManagementPage() {
                 </p>
 
                 {/* QR Code Container */}
-                <div className="w-40 h-40 bg-white rounded-2xl p-2.5 mx-auto border-2 border-[#D4AF37] shadow-lg my-3 flex items-center justify-center">
+                <div className="w-44 h-44 bg-white rounded-2xl p-2.5 mx-auto border-2 border-[#D4AF37] shadow-lg my-3 flex items-center justify-center">
                   <img
                     src={qrImageUrl}
                     alt={`QR Code for Table ${t.table_number}`}
@@ -394,7 +418,7 @@ export default function QrManagementPage() {
                 </div>
 
                 <span className="text-[9px] font-bold text-[#38BDF8] tracking-widest uppercase block bg-[#0F223D] py-1 px-3 rounded-full border border-[#38BDF8]/40 mx-auto w-fit">
-                  SCAN TO DINE & ORDER
+                  SCAN FOR DIRECT DIGITAL MENU
                 </span>
               </div>
 
@@ -413,7 +437,7 @@ export default function QrManagementPage() {
                   </span>
                   <span className="inline-flex items-center gap-1 text-emerald-400 font-semibold text-[11px]">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Active HMAC Signed
+                    Active HMAC Signed • Direct Order
                   </span>
                 </div>
 
@@ -423,9 +447,9 @@ export default function QrManagementPage() {
                 </div>
 
                 <div className="pt-1">
-                  <span className="text-[10px] text-slate-400 block">Dine-In Link:</span>
+                  <span className="text-[10px] text-slate-400 block">Live Dine-In URL:</span>
                   <span className="font-mono text-[10px] text-slate-300 truncate block bg-[#070E1A] px-2 py-1 rounded-lg border border-[#38BDF8]/20 select-all">
-                    {t.universal_link}
+                    {liveUniversalLink}
                   </span>
                 </div>
               </div>
@@ -433,7 +457,7 @@ export default function QrManagementPage() {
               {/* Action Buttons */}
               <div className="pt-3 border-t border-[#38BDF8]/20 flex items-center gap-2">
                 <button
-                  onClick={() => handleCopy(t.universal_link, t.qr_token)}
+                  onClick={() => handleCopy(liveUniversalLink, t.qr_token)}
                   className="flex-1 py-2.5 bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/30 text-white font-semibold text-xs rounded-xl flex items-center justify-center gap-1.5 transition"
                   title="Copy QR Order Link"
                 >
@@ -451,14 +475,14 @@ export default function QrManagementPage() {
                 </button>
 
                 <a
-                  href={`/order/${t.qr_token}`}
+                  href={liveUniversalLink}
                   target="_blank"
                   rel="noreferrer"
                   className="py-2.5 px-3 bg-gradient-to-r from-[#D4AF37] to-[#E5C378] text-[#070B12] font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition shadow-md"
-                  title="Open Customer Dine-In Menu"
+                  title="Test Direct Customer Menu on Phone or Browser"
                 >
                   <ExternalLink className="w-3.5 h-3.5 text-[#070B12]" />
-                  <span>Dine In</span>
+                  <span>Open Menu</span>
                 </a>
 
                 <button

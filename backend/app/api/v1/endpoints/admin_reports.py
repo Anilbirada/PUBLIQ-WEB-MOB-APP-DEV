@@ -59,6 +59,7 @@ def get_qr_management_list(outlet_id: str = None, db: Session = Depends(get_db))
         tables_q = tables_q.filter(RestaurantTable.outlet_id == outlet_id)
     tables = tables_q.order_by(RestaurantTable.table_number).all()
 
+    base_web = settings.WEB_BASE_URL.rstrip("/")
     results = []
     for tbl in tables:
         active_tok = next((tok for tok in tbl.qr_tokens if tok.is_active), None)
@@ -66,13 +67,15 @@ def get_qr_management_list(outlet_id: str = None, db: Session = Depends(get_db))
             try:
                 res = QrService.generate_table_qr(db, tbl.outlet_id, tbl.table_number)
                 token_val = res["token"]
-                qr_link = f"http://localhost:3000/order/{token_val}"
+                qr_link = f"{base_web}/order/{token_val}"
             except Exception:
                 token_val = f"table-{tbl.table_number.lower()}"
-                qr_link = f"http://localhost:3000/order/{token_val}"
+                qr_link = f"{base_web}/order/{token_val}"
         else:
             token_val = active_tok.token
-            qr_link = f"http://localhost:3000/order/{token_val}"
+            qr_link = active_tok.qr_url or f"{base_web}/order/{token_val}"
+            if "localhost:3000" in qr_link:
+                qr_link = qr_link.replace("http://localhost:3000", base_web)
 
         results.append({
             "id": active_tok.id if active_tok else f"tok-{tbl.id}",

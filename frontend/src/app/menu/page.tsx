@@ -12,7 +12,7 @@ import { useCart } from "../../context/CartContext";
 import { ProductDetailModal } from "../../components/ProductDetailModal";
 
 export default function MenuPage() {
-  const { tableNumber, diningArea, isDineInActive, outletName } = useTableSession();
+  const { tableNumber, diningArea, isDineInActive, outletName, setTableSession } = useTableSession();
   const { addItem, itemCount } = useCart();
 
   // Menu Mode: Food vs Drinks
@@ -24,6 +24,24 @@ export default function MenuPage() {
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [addedNotice, setAddedNotice] = useState<string | null>(null);
+
+  // Sync URL ?table= query parameter if present
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const urlTable = params.get("table");
+      if (urlTable && (!tableNumber || tableNumber !== urlTable)) {
+        const cleanedNum = urlTable.replace(/^(table-|t-)/i, "").toUpperCase();
+        setTableSession({
+          tableNumber: cleanedNum,
+          outletName: "PUBLIQ HARAGADDE",
+          outletCode: "PUB-HARAGADDE",
+          diningArea: "Grand Dining Hall",
+          isDineInActive: true,
+        });
+      }
+    }
+  }, [tableNumber, setTableSession]);
 
   useEffect(() => {
     async function loadMenu() {

@@ -33,7 +33,7 @@ def test_xss_payload_handling_in_orders_and_reservations():
     
     # 1. Cart line item instructions
     db = SessionLocal()
-    item = db.query(MenuItem).first()
+    item = db.query(MenuItem).filter(MenuItem.is_available == True).first()
     db.close()
     
     session_id = "test-sec-xss-session"
@@ -51,7 +51,7 @@ def test_xss_payload_handling_in_orders_and_reservations():
 def test_negative_and_zero_quantity_cart_protection():
     """Verify cart cannot be exploited with negative or absurd quantities."""
     db = SessionLocal()
-    item = db.query(MenuItem).first()
+    item = db.query(MenuItem).filter(MenuItem.is_available == True).first()
     db.close()
     
     session_id = "test-sec-qty-session"

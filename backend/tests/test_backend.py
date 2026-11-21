@@ -79,7 +79,7 @@ def test_cart_calculation_and_gst():
     client.delete(f"/api/v1/cart/{session_id}")
     
     db = SessionLocal()
-    item = db.query(MenuItem).filter(MenuItem.name.ilike("%Butter Chicken%")).first()
+    item = db.query(MenuItem).filter(MenuItem.name.ilike("%Butter Chicken%"), MenuItem.is_available == True).first()
     assert item is not None
     item_id = item.id
     base_price = item.base_price
@@ -104,7 +104,7 @@ def test_order_creation_and_pos_outbox():
     client.delete(f"/api/v1/cart/{session_id}")
     db = SessionLocal()
     outlet = db.query(Outlet).filter(Outlet.code == "PUB-HARAGADDE").first()
-    item = db.query(MenuItem).filter(MenuItem.is_alcohol == False).first()
+    item = db.query(MenuItem).filter(MenuItem.is_alcohol == False, MenuItem.is_available == True).first()
     db.close()
     
     # Add item
@@ -178,7 +178,7 @@ def test_payment_initiation_and_verification():
     client.delete(f"/api/v1/cart/{session_id}")
     db = SessionLocal()
     outlet = db.query(Outlet).first()
-    item = db.query(MenuItem).first()
+    item = db.query(MenuItem).filter(MenuItem.is_available == True).first()
     db.close()
     
     client.post(f"/api/v1/cart/{session_id}/items", json={"item_id": item.id, "quantity": 1})

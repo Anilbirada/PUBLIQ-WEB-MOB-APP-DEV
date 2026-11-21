@@ -90,6 +90,12 @@ def on_startup():
         from app.seed_enterprise_data import seed_enterprise
         seed_database()
         seed_enterprise()
+        try:
+            from scripts.import_full_catalogue import run_import
+            run_import()
+        except Exception as catalogue_err:
+            import logging
+            logging.getLogger(__name__).warning(f"Catalogue import note: {catalogue_err}")
     except Exception as e:
         import logging
         logging.getLogger(__name__).warning(f"Database seed note: {e}")

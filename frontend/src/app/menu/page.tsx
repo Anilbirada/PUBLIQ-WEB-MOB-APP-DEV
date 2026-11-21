@@ -76,22 +76,13 @@ export default function MenuPage() {
 
   // Filter categories strictly based on activeMenuTab (Food vs Drinks)
   const isAlcoholOrDrink = (cat: any) => {
-    return (
-      cat.is_alcohol ||
-      cat.slug === "cocktails" ||
-      cat.slug === "spirits" ||
-      cat.slug === "beverages" ||
-      cat.slug === "mocktails" ||
-      cat.slug === "whisky" ||
-      cat.slug === "vodka" ||
-      cat.slug === "gin" ||
-      cat.slug === "beer" ||
-      cat.slug === "wine" ||
-      cat.slug === "rum" ||
-      cat.slug === "classic-cocktails" ||
-      cat.slug === "signature-cocktails" ||
-      cat.slug === "soft-drinks"
-    );
+    const drinkSlugs = [
+      "mocktails", "fresh-juices", "milkshakes", "soft-drinks-beverages",
+      "signature-cocktails", "beer", "whisky", "vodka", "rum", "gin",
+      "tequila-brandy", "wine", "cocktails", "spirits", "beverages",
+      "classic-cocktails", "soft-drinks"
+    ];
+    return cat.is_alcohol || drinkSlugs.includes(cat.slug);
   };
 
   const filteredCategories = categories
@@ -156,50 +147,57 @@ export default function MenuPage() {
       )}
 
       {/* Hero Header */}
-      <div className="relative py-16 sm:py-20 border-b border-[#D4AF37]/15 bg-cover bg-center overflow-hidden" style={{ backgroundImage: "linear-gradient(to bottom, rgba(10,17,31,0.92), rgba(7,11,18,0.96)), url('/images/publiq/backgrounds/bg-menu.webp')" }}>
+      <div className="relative py-14 sm:py-18 border-b border-[#D4AF37]/15 bg-cover bg-center overflow-hidden" style={{ backgroundImage: "linear-gradient(to bottom, rgba(10,17,31,0.92), rgba(7,11,18,0.96)), url('/images/publiq/backgrounds/bg-menu.webp')" }}>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#D4AF37]/10 via-transparent to-transparent pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4 relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0F1626] border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-bold uppercase tracking-[0.25em] shadow-lg">
-            <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-            PUBLIQ Culinary & Cellar Collection
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3 relative z-10">
+          {/* PUBLIQ Official Crest */}
+          <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl bg-[#0B1528] p-2 border border-[#D4AF37]/50 shadow-2xl flex items-center justify-center">
+            <img src="/logo.png?v=4" alt="PUBLIQ Logo" className="w-full h-full object-contain" />
           </div>
-          <h1 className="font-serif text-4xl sm:text-6xl font-normal tracking-tight text-white">
-            The Digital <span className="italic text-[#D4AF37]">Menu</span>
-          </h1>
-          <p className="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto font-light leading-relaxed">
-            Select between our signature artisanal gastronomy crafted over authentic charcoal tandoor ovens, or discover masterclass mixology and rare reserve spirits.
+
+          <div className="space-y-1">
+            <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#D4AF37] block">
+              PUBLIQ BAR &amp; RESTAURANT
+            </span>
+            <h1 className="font-serif text-3xl sm:text-5xl font-normal tracking-tight text-white">
+              An Experience <span className="italic text-[#D4AF37]">Beyond Dining</span>
+            </h1>
+          </div>
+
+          <p className="text-xs sm:text-sm text-slate-400 max-w-2xl mx-auto font-light leading-relaxed">
+            Discover our complete 281-creation gastronomic collection, from charcoal clay oven tikkas and rich dum biryanis to artisan mixology and rare reserve single malts.
           </p>
 
-          {/* DUAL MENU SWITCHER: FOOD VS DRINKS */}
-          <div className="pt-6 flex justify-center">
-            <div className="inline-flex p-1.5 rounded-full bg-[#0A111F] border border-[#D4AF37]/30 shadow-2xl">
+          {/* DUAL MENU SWITCHER: CULINARY VS ARTISAN BAR */}
+          <div className="pt-4 flex justify-center">
+            <div className="inline-flex p-1.5 rounded-full bg-[#0A111F] border border-[#D4AF37]/35 shadow-2xl">
               <button
                 onClick={() => {
                   setActiveMenuTab("FOOD");
                   setSelectedCategorySlug("all");
                 }}
-                className={`flex items-center gap-2.5 px-8 py-3 rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 ${
+                className={`flex items-center gap-2.5 px-7 py-3 rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 ${
                   activeMenuTab === "FOOD"
-                    ? "bg-gradient-to-r from-[#D4AF37] to-[#B38728] text-[#070B12] shadow-lg"
+                    ? "bg-gradient-to-r from-[#D4AF37] to-[#B38728] text-[#070B12] shadow-xl"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
                 <UtensilsCrossed className="w-4 h-4" />
-                <span>Culinary Food Menu</span>
+                <span>CULINARY (Food)</span>
               </button>
               <button
                 onClick={() => {
                   setActiveMenuTab("DRINKS");
                   setSelectedCategorySlug("all");
                 }}
-                className={`flex items-center gap-2.5 px-8 py-3 rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 ${
+                className={`flex items-center gap-2.5 px-7 py-3 rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 ${
                   activeMenuTab === "DRINKS"
-                    ? "bg-gradient-to-r from-[#D4AF37] to-[#B38728] text-[#070B12] shadow-lg"
+                    ? "bg-gradient-to-r from-[#D4AF37] to-[#B38728] text-[#070B12] shadow-xl"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
                 <Wine className="w-4 h-4" />
-                <span>Artisan Bar & Cocktails</span>
+                <span>ARTISAN BAR (Drinks)</span>
               </button>
             </div>
           </div>
@@ -371,6 +369,18 @@ export default function MenuPage() {
                         <h3 className="font-serif text-lg font-normal text-white group-hover:text-[#D4AF37] transition-colors">
                           {item.name}
                         </h3>
+                        {item.serving_size && (
+                          <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                            <span className="text-[10px] text-[#D4AF37] font-semibold bg-[#0F1626] px-2 py-0.5 rounded-full border border-[#D4AF37]/30">
+                              {item.serving_size}
+                            </span>
+                            {item.variants && item.variants.length > 1 && (
+                              <span className="text-[10px] text-slate-400">
+                                (Tap to choose size)
+                              </span>
+                            )}
+                          </div>
+                        )}
                         <p className="text-xs text-slate-300 mt-1.5 line-clamp-2 leading-relaxed font-normal">
                           {item.description || "Artisanal preparation with fine spices and luxury ingredients."}
                         </p>

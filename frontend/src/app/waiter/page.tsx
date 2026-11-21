@@ -459,14 +459,14 @@ export default function WaiterMobileApp() {
           </button>
 
           <a
-            href="https://expo.dev/artifacts/eas/N1ql7psAdL63poiml4jB-RCFFHc0PfkqRttQwliT7DM.apk"
+            href="https://expo.dev/artifacts/eas/0tEy4gNp1r6i2bbAF47ANtKmnwe_PMZVBU8Tqlfw5Qk.apk"
             target="_blank"
             rel="noopener noreferrer"
-            download="publiq-waiter-mobile.apk"
+            download="publiq-w.apk"
             className="w-full py-2.5 rounded-xl bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/50 text-[11px] font-bold text-emerald-300 tracking-wider transition-all flex items-center justify-center gap-2"
           >
             <Download className="w-4 h-4 text-emerald-400" />
-            Download Android APK (82.8 MB)
+            Download PUBLIQ W APK (83.2 MB)
           </a>
         </div>
       </div>
@@ -493,12 +493,12 @@ export default function WaiterMobileApp() {
 
           <div className="flex items-center gap-2">
             <a
-              href="https://expo.dev/artifacts/eas/N1ql7psAdL63poiml4jB-RCFFHc0PfkqRttQwliT7DM.apk"
+              href="https://expo.dev/artifacts/eas/0tEy4gNp1r6i2bbAF47ANtKmnwe_PMZVBU8Tqlfw5Qk.apk"
               target="_blank"
               rel="noopener noreferrer"
-              download="publiq-waiter-mobile.apk"
+              download="publiq-w.apk"
               className="px-2.5 py-1.5 rounded-lg bg-emerald-950/60 border border-emerald-500/50 text-[10px] font-bold text-emerald-300 hover:bg-emerald-900 flex items-center gap-1 shadow-sm"
-              title="Download Android APK"
+              title="Download PUBLIQ W APK"
             >
               <Download className="w-3.5 h-3.5" />
               APK

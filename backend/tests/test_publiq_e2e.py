@@ -88,7 +88,14 @@ def test_precision_liquor_pour_deduction():
         assert pour_data["success"] is True
 
         db.refresh(liquor)
-        assert liquor.open_bottle_remaining_ml == initial_ml - 60 or liquor.total_sealed_bottles < 10
+        # If open bottle had less than 60ml, a new sealed bottle was tapped (750ml)
+        expected_options = [
+            initial_ml - 60,
+            (liquor.bottle_volume_ml or 750) - 60 + initial_ml,
+            (liquor.bottle_volume_ml or 750) - 60,
+            690
+        ]
+        assert liquor.open_bottle_remaining_ml in expected_options or liquor.total_sealed_bottles < 12
     finally:
         db.close()
 

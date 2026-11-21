@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { API_BASE } from "@/lib/api";
 import {
   TrendingUp, ShoppingCart, Flame, Wine, Users, AlertTriangle,
   Receipt, ArrowUpRight, CheckCircle2, Clock, DollarSign, QrCode,
@@ -15,8 +16,7 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     async function fetchDashboard() {
       try {
-        const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001/api/v1";
-        const res = await fetch(`${apiBase}/admin/management/reports/dashboard`);
+        const res = await fetch(`${API_BASE}/admin/management/reports/dashboard`);
         if (res.ok) {
           const json = await res.json();
           setData(json);

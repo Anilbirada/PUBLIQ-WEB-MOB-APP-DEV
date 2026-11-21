@@ -6,6 +6,7 @@ import {
   Clock, CheckCircle2, ChevronRight, ShieldCheck, Heart, 
   Music, Briefcase, Wine, GlassWater, ArrowRight, X, Send
 } from "lucide-react";
+import { API_BASE } from "@/lib/api";
 
 interface EventPackage {
   id: string;
@@ -34,8 +35,6 @@ export default function PartyAndEventsPage() {
   const [specialRequests, setSpecialRequests] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationNotice, setConfirmationNotice] = useState<string | null>(null);
-
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001/api/v1";
 
   useEffect(() => {
     async function loadEvents() {

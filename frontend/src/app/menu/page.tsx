@@ -343,7 +343,7 @@ export default function MenuPage() {
 
                       {/* Price Badge */}
                       <span className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold bg-[#070B12]/85 text-[#D4AF37] border border-[#D4AF37]/40 shadow-lg backdrop-blur-md">
-                        ₹{item.price}
+                        ₹{item.base_price ?? item.price}
                       </span>
                     </div>
 

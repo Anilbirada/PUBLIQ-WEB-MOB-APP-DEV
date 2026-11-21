@@ -26,9 +26,17 @@ class OrderService:
         if not cart or not cart.items:
             raise ValueError("Cart is empty. Please add items before checking out.")
             
-        outlet = db.query(Outlet).filter(Outlet.id == req.outlet_id).first()
+        outlet = None
+        if req.outlet_id and req.outlet_id != "default-outlet":
+            outlet = db.query(Outlet).filter(
+                (Outlet.id == req.outlet_id) | (Outlet.code == req.outlet_id)
+            ).first()
         if not outlet:
-            raise ValueError("Invalid restaurant outlet specified.")
+            outlet = db.query(Outlet).filter(Outlet.is_active == True).first()
+        if not outlet:
+            outlet = db.query(Outlet).first()
+        if not outlet:
+            raise ValueError("No active restaurant outlet configured.")
             
         cart_calc = CartService.calculate_cart_details(db, req.session_id)
         if not cart_calc["items"]:

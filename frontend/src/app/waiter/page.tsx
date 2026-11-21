@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { 
   Smartphone, Utensils, QrCode, Clock, CheckCircle2, AlertTriangle, 
   Search, Plus, Minus, UserCheck, ShieldAlert, ArrowRight, X, RefreshCw,
-  CreditCard, Banknote, Split, Send, Bell
+  CreditCard, Banknote, Split, Send, Bell, Download
 } from "lucide-react";
 import { API_BASE } from "@/lib/api";
 
@@ -451,10 +451,21 @@ export default function WaiterMobileApp() {
           <button
             onClick={handleDemoLogin}
             disabled={isLoggingIn}
-            className="w-full py-3 rounded-xl bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 border border-[#D4AF37] text-xs font-bold text-[#D4AF37] tracking-wider transition-all"
+            className="w-full py-3 rounded-xl bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 border border-[#D4AF37] text-xs font-bold text-[#D4AF37] tracking-wider transition-all mb-3"
           >
             {isLoggingIn ? "Authenticating..." : "⚡ Fast Demo: Steward Raju (PIN: 6666)"}
           </button>
+
+          <a
+            href="https://expo.dev/artifacts/eas/N1ql7psAdL63poiml4jB-RCFFHc0PfkqRttQwliT7DM.apk"
+            target="_blank"
+            rel="noopener noreferrer"
+            download="publiq-waiter-mobile.apk"
+            className="w-full py-2.5 rounded-xl bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/50 text-[11px] font-bold text-emerald-300 tracking-wider transition-all flex items-center justify-center gap-2"
+          >
+            <Download className="w-4 h-4 text-emerald-400" />
+            Download Android APK (82.8 MB)
+          </a>
         </div>
       </div>
     );
@@ -479,6 +490,17 @@ export default function WaiterMobileApp() {
           </div>
 
           <div className="flex items-center gap-2">
+            <a
+              href="https://expo.dev/artifacts/eas/N1ql7psAdL63poiml4jB-RCFFHc0PfkqRttQwliT7DM.apk"
+              target="_blank"
+              rel="noopener noreferrer"
+              download="publiq-waiter-mobile.apk"
+              className="px-2.5 py-1.5 rounded-lg bg-emerald-950/60 border border-emerald-500/50 text-[10px] font-bold text-emerald-300 hover:bg-emerald-900 flex items-center gap-1 shadow-sm"
+              title="Download Android APK"
+            >
+              <Download className="w-3.5 h-3.5" />
+              APK
+            </a>
             <button
               onClick={() => setShowManagerModal(true)}
               className="px-2.5 py-1.5 rounded-lg bg-rose-950/60 border border-rose-600/50 text-[10px] font-bold text-rose-300 hover:bg-rose-900 flex items-center gap-1 shadow-sm"

@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS } from "../theme/colors";
 import { useAuth } from "../context/AuthContext";
 
@@ -11,9 +12,10 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ title = "PUBLIQ W", subtitle, onManagerPress }) => {
   const { waiter } = useAuth();
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: Math.max(insets.top, 14) + 8 }]}>
       <View style={styles.left}>
         <View style={styles.brandRow}>
           <Image 
@@ -21,9 +23,11 @@ export const Header: React.FC<HeaderProps> = ({ title = "PUBLIQ W", subtitle, on
             style={styles.logoBadge} 
             resizeMode="contain" 
           />
-          <Text style={styles.brandTitle}>P U B L I Q   W</Text>
+          <View>
+            <Text style={styles.brandTitle}>P U B L I Q   W</Text>
+            <Text style={styles.subtitle}>{subtitle || waiter?.outlet_name || "PUBLIQ HARAGADDE"}</Text>
+          </View>
         </View>
-        <Text style={styles.subtitle}>{subtitle || waiter?.outlet_name || "Enterprise Operations"}</Text>
       </View>
 
       <View style={styles.right}>
@@ -44,8 +48,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: COLORS.surface,
     paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 14,
+    paddingBottom: 12,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border
   },
@@ -55,11 +58,11 @@ const styles = StyleSheet.create({
   brandRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8
+    gap: 10
   },
   logoBadge: {
-    width: 26,
-    height: 26
+    width: 38,
+    height: 38
   },
   brandTitle: {
     fontSize: 16,

@@ -118,7 +118,7 @@ export const DashboardScreen: React.FC<{ navigation: any }> = ({ navigation }) =
         {/* Pending Settlement Tile */}
         <TouchableOpacity
           style={styles.billingBanner}
-          onPress={() => navigation.navigate("Tables")}
+          onPress={() => navigation.navigate("BillPayment")}
           activeOpacity={0.85}
         >
           <View>

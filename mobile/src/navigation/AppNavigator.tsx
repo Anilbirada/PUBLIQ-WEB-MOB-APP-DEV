@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { COLORS } from "../theme/colors";
 import { useAuth } from "../context/AuthContext";
@@ -39,12 +40,19 @@ function TabBarIconLabel({ label, icon, focused, badge }: { label: string; icon:
 
 function MainTabs() {
   const { pendingOrdersCount, readyToServeCount } = useLiveSync();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: [
+          styles.tabBar,
+          {
+            height: 60 + Math.max(insets.bottom, 6),
+            paddingBottom: Math.max(insets.bottom, 8)
+          }
+        ],
         tabBarShowLabel: false
       }}
     >

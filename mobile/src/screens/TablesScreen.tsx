@@ -11,6 +11,7 @@ export const TablesScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [tables, setTables] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedTable, setSelectedTable] = useState<any | null>(null);
+  const [filterStatus, setFilterStatus] = useState<string>("ALL");
 
   const fetchTables = async () => {
     try {
@@ -28,6 +29,12 @@ export const TablesScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const interval = setInterval(fetchTables, 6000);
     return () => clearInterval(interval);
   }, []);
+
+  const filteredTables = tables.filter(t => {
+    if (filterStatus === "OCCUPIED") return t.is_occupied;
+    if (filterStatus === "AVAILABLE") return !t.is_occupied;
+    return true;
+  });
 
   const renderTableCard = ({ item }: { item: any }) => {
     const isOccupied = item.is_occupied;
@@ -71,13 +78,43 @@ export const TablesScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     <SafeAreaView style={styles.safeArea}>
       <Header title="TABLE FLOOR PLAN" subtitle="Live Dining Room & Garden Area" />
 
+      {/* Filter Tabs */}
+      <View style={{ flexDirection: "row", paddingHorizontal: 16, paddingTop: 10, paddingBottom: 6, gap: 8 }}>
+        {[
+          { label: `ALL (${tables.length})`, val: "ALL" },
+          { label: `OCCUPIED (${tables.filter(t => t.is_occupied).length})`, val: "OCCUPIED" },
+          { label: `AVAILABLE (${tables.filter(t => !t.is_occupied).length})`, val: "AVAILABLE" }
+        ].map(f => (
+          <TouchableOpacity
+            key={f.val}
+            style={{
+              backgroundColor: filterStatus === f.val ? COLORS.gold : COLORS.surface,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: filterStatus === f.val ? COLORS.gold : COLORS.border
+            }}
+            onPress={() => setFilterStatus(f.val)}
+          >
+            <Text style={{
+              color: filterStatus === f.val ? "#070B12" : COLORS.textSecondary,
+              fontSize: 11,
+              fontWeight: "bold"
+            }}>
+              {f.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       <View style={styles.container}>
         <FlatList
-          data={tables}
+          data={filteredTables}
           keyExtractor={item => item.id || item.table_number}
           renderItem={renderTableCard}
           numColumns={2}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[styles.listContent, { paddingBottom: 40 }]}
           columnWrapperStyle={styles.columnWrapper}
           refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchTables} tintColor={COLORS.gold} />}
         />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, SafeAreaView, Alert, Modal, TextInput } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, SafeAreaView, Alert, Modal, TextInput, RefreshControl, Image } from "react-native";
 import { COLORS } from "../theme/colors";
 import { Header } from "../components/Header";
 import { DynamicUPIQR } from "../components/DynamicUPIQR";
@@ -24,6 +24,8 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
   const [tablesList, setTablesList] = useState<any[]>([]);
   const [pendingTables, setPendingTables] = useState<any[]>([]);
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState<boolean>(false);
+  const [generatedInvoice, setGeneratedInvoice] = useState<any | null>(null);
+  const [showInvoiceModal, setShowInvoiceModal] = useState<boolean>(false);
 
   useEffect(() => {
     fetchTablesAndPending();
@@ -75,11 +77,8 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
         })
       }, token);
 
-      Alert.alert(
-        "GST Invoice Created",
-        `Invoice: ${inv.invoice_number}\nDate: ${inv.invoice_date}\nGSTIN: ${inv.gstin}\nNet Payable: ₹${inv.grand_total.toFixed(2)}`,
-        [{ text: "OK" }]
-      );
+      setGeneratedInvoice(inv);
+      setShowInvoiceModal(true);
       fetchTablesAndPending();
     } catch (e: any) {
       Alert.alert("Invoice Error", e.message || "Failed to create invoice.");
@@ -148,37 +147,65 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
     <SafeAreaView style={styles.safeArea}>
       <Header title="BILL & PAYMENT" subtitle={`Table ${tableNumber} Guest Settlement`} />
 
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={() => {
+              fetchTablesAndPending();
+              fetchBillPreview();
+            }}
+            tintColor={COLORS.gold}
+          />
+        }
+      >
         {/* 1. Pending Billing Tables (Tables Awaiting Bill Approval) */}
-        {pendingTables.length > 0 && (
-          <View style={{ marginBottom: 16, backgroundColor: "#111927", padding: 12, borderRadius: 16, borderWidth: 1, borderColor: "rgba(212,175,55,0.4)" }}>
-            <Text style={{ color: "#D4AF37", fontSize: 10, fontWeight: "bold", letterSpacing: 1.5, marginBottom: 8 }}>
-              TABLES AWAITING BILL ({pendingTables.length}):
-            </Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        {pendingTables.length > 0 ? (
+          <View style={styles.pendingSection}>
+            <View style={styles.pendingHeaderRow}>
+              <Text style={styles.pendingSectionTitle}>TABLES AWAITING BILL ({pendingTables.length})</Text>
+              <Text style={styles.pendingSectionSub}>Action Required</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.pendingScroll}>
               {pendingTables.map(pt => (
                 <TouchableOpacity
                   key={pt.table_number}
-                  style={{
-                    backgroundColor: tableNumber === pt.table_number ? "#D4AF37" : "#0A0F1A",
-                    paddingHorizontal: 12,
-                    paddingVertical: 8,
-                    borderRadius: 12,
-                    marginRight: 8,
-                    borderWidth: 1,
-                    borderColor: tableNumber === pt.table_number ? "#D4AF37" : "#B38728"
-                  }}
+                  style={[
+                    styles.pendingCard,
+                    tableNumber === pt.table_number && styles.pendingCardActive
+                  ]}
                   onPress={() => setTableNumber(pt.table_number)}
+                  activeOpacity={0.8}
                 >
-                  <Text style={{ color: tableNumber === pt.table_number ? "#070B12" : "#FFFFFF", fontWeight: "bold", fontSize: 12 }}>
-                    Table {pt.table_number} • ₹{pt.final_amount.toFixed(0)}
+                  <View style={styles.pendingCardTop}>
+                    <Text style={[styles.pendingCardTbl, tableNumber === pt.table_number && styles.textDark]}>
+                      Table {pt.table_number}
+                    </Text>
+                    <Text style={[styles.pendingCardAmt, tableNumber === pt.table_number && styles.textDark]}>
+                      ₹{pt.final_amount.toFixed(0)}
+                    </Text>
+                  </View>
+                  <Text style={[styles.pendingCardGuest, tableNumber === pt.table_number && styles.textDarkMuted]} numberOfLines={1}>
+                    {pt.customer_name || "Guest"} • {pt.items_count || 1} items
                   </Text>
-                  <Text style={{ color: tableNumber === pt.table_number ? "#070B12" : "#94A3B8", fontSize: 9 }}>
-                    {pt.customer_name}
+                  <Text style={[styles.pendingCardStatus, tableNumber === pt.table_number && styles.textDark]}>
+                    Tap to Settle →
                   </Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
+          </View>
+        ) : (
+          <View style={styles.emptyPendingBanner}>
+            <Text style={styles.emptyPendingIcon}>✓</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.emptyPendingTitle}>All Dining Tables In Good Standing</Text>
+              <Text style={styles.emptyPendingSub}>
+                No tables currently requesting bill approval. Select any table below to view status or punch a new bill.
+              </Text>
+            </View>
           </View>
         )}
 
@@ -186,7 +213,9 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
         <View style={styles.tablePicker}>
           <Text style={styles.pickerLabel}>ALL OUTLET TABLES ({tablesList.length || 16}):</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.pillsScroll}>
-            {(tablesList.length > 0 ? tablesList.map(t => t.table_number) : ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16"]).map(t => (
+            {(tablesList.length > 0 ? tablesList.map(t => t.table_number) : [
+              "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16"
+            ]).map(t => (
               <TouchableOpacity
                 key={t}
                 style={[styles.tablePill, tableNumber === t && styles.tablePillActive]}
@@ -202,8 +231,20 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
           <ActivityIndicator size="large" color={COLORS.gold} style={styles.loader} />
         ) : !billData ? (
           <View style={styles.noBillBox}>
-            <Text style={styles.noBillTitle}>No Unsettled Order</Text>
-            <Text style={styles.noBillSub}>Table {tableNumber} does not have an active order or is already paid.</Text>
+            <View style={styles.noBillIconCircle}>
+              <Text style={{ fontSize: 32 }}>🍽️</Text>
+            </View>
+            <Text style={styles.noBillTitle}>Table {tableNumber} is Available</Text>
+            <Text style={styles.noBillSub}>
+              Table {tableNumber} currently does not have an active order or is already settled.
+            </Text>
+            <TouchableOpacity
+              style={styles.createOrderBtn}
+              onPress={() => navigation.navigate("ManualOrder", { table_number: tableNumber })}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.createOrderBtnText}>+ CREATE NEW ORDER & BILL FOR TABLE {tableNumber}</Text>
+            </TouchableOpacity>
           </View>
         ) : (
           <View style={styles.invoiceCard}>
@@ -231,6 +272,14 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
                 </View>
               ))}
             </View>
+
+            {/* Quick Add More Items Button */}
+            <TouchableOpacity
+              style={styles.addMoreBtn}
+              onPress={() => navigation.navigate("ManualOrder", { table_number: tableNumber })}
+            >
+              <Text style={styles.addMoreText}>+ ADD FOOD / DRINKS TO THIS TABLE</Text>
+            </TouchableOpacity>
 
             {/* Discount selector */}
             <View style={styles.discountRow}>
@@ -303,7 +352,7 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
             <View style={styles.btnStack}>
               {/* Generate GST Tax Invoice */}
               <TouchableOpacity
-                style={[styles.mainActionBtn, { backgroundColor: "#151F33", borderWidth: 1, borderColor: COLORS.gold, marginBottom: 8 }]}
+                style={[styles.mainActionBtn, { backgroundColor: "#151F33", borderWidth: 1, borderColor: COLORS.gold }]}
                 onPress={handleGenerateInvoice}
                 disabled={isGeneratingInvoice}
                 activeOpacity={0.85}
@@ -313,6 +362,17 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
                 </Text>
                 <Text style={{ color: "#94A3B8", fontSize: 10, marginTop: 2 }}>5% GST Tax Receipt with Invoice No</Text>
               </TouchableOpacity>
+
+              {generatedInvoice && (
+                <TouchableOpacity
+                  style={[styles.mainActionBtn, { backgroundColor: "#0F2038", borderWidth: 1, borderColor: "#38BDF8" }]}
+                  onPress={() => setShowInvoiceModal(true)}
+                >
+                  <Text style={{ color: "#38BDF8", fontWeight: "900", fontSize: 12 }}>
+                    📄 VIEW / PRINT GST RECEIPT ({generatedInvoice.invoice_number})
+                  </Text>
+                </TouchableOpacity>
+              )}
 
               {selectedTender === "UPI" ? (
                 <TouchableOpacity
@@ -382,6 +442,83 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
         </Modal>
       )}
 
+      {/* Official Printable GST Invoice Modal */}
+      {showInvoiceModal && generatedInvoice && (
+        <Modal visible={true} transparent={true} animationType="fade">
+          <View style={styles.modalBg}>
+            <View style={styles.invoiceReceiptContent}>
+              <View style={styles.invoiceReceiptHeader}>
+                <Image
+                  source={require("../../assets/logo.png")}
+                  style={{ width: 44, height: 44, alignSelf: "center", marginBottom: 6 }}
+                  resizeMode="contain"
+                />
+                <Text style={styles.invoicePubliqTitle}>PUBLIQ BAR &amp; RESTAURANT</Text>
+                <Text style={styles.invoiceOutletText}>HARAGADDE OUTLET, BANGALORE</Text>
+                <Text style={styles.invoiceGstinText}>GSTIN: {generatedInvoice.gstin || "29AABCP1234F1Z9"} • SAC: 996331</Text>
+              </View>
+
+              <View style={styles.invoiceDivider} />
+
+              <View style={styles.receiptMetaRow}>
+                <Text style={styles.receiptMetaLabel}>Invoice No:</Text>
+                <Text style={styles.receiptMetaVal}>{generatedInvoice.invoice_number}</Text>
+              </View>
+              <View style={styles.receiptMetaRow}>
+                <Text style={styles.receiptMetaLabel}>Date &amp; Time:</Text>
+                <Text style={styles.receiptMetaVal}>{generatedInvoice.invoice_date || new Date().toLocaleString()}</Text>
+              </View>
+              <View style={styles.receiptMetaRow}>
+                <Text style={styles.receiptMetaLabel}>Table &amp; Guest:</Text>
+                <Text style={styles.receiptMetaVal}>Table {generatedInvoice.table_number} • {billData?.customer_name || "Guest"}</Text>
+              </View>
+              <View style={styles.receiptMetaRow}>
+                <Text style={styles.receiptMetaLabel}>Served By:</Text>
+                <Text style={styles.receiptMetaVal}>{generatedInvoice.waiter_name || waiter?.name || "Steward"}</Text>
+              </View>
+
+              <View style={styles.invoiceDivider} />
+
+              <ScrollView style={{ maxHeight: 160 }}>
+                {billData?.items && billData.items.map((it: any) => (
+                  <View key={it.id} style={styles.receiptItemRow}>
+                    <Text style={styles.receiptItemQty}>{it.quantity}x</Text>
+                    <Text style={styles.receiptItemName}>{it.item_name}</Text>
+                    <Text style={styles.receiptItemPrice}>₹{it.total_price.toFixed(2)}</Text>
+                  </View>
+                ))}
+              </ScrollView>
+
+              <View style={styles.invoiceDivider} />
+
+              <View style={styles.receiptMetaRow}>
+                <Text style={styles.receiptMetaLabel}>Item Subtotal:</Text>
+                <Text style={styles.receiptMetaVal}>₹{generatedInvoice.subtotal.toFixed(2)}</Text>
+              </View>
+              <View style={styles.receiptMetaRow}>
+                <Text style={styles.receiptMetaLabel}>CGST (2.5%):</Text>
+                <Text style={styles.receiptMetaVal}>₹{generatedInvoice.cgst.toFixed(2)}</Text>
+              </View>
+              <View style={styles.receiptMetaRow}>
+                <Text style={styles.receiptMetaLabel}>SGST (2.5%):</Text>
+                <Text style={styles.receiptMetaVal}>₹{generatedInvoice.sgst.toFixed(2)}</Text>
+              </View>
+              <View style={[styles.receiptMetaRow, { marginTop: 6, paddingTop: 6, borderTopWidth: 1, borderTopColor: "#334155" }]}>
+                <Text style={[styles.receiptMetaLabel, { color: COLORS.gold, fontSize: 14, fontWeight: "900" }]}>GRAND TOTAL:</Text>
+                <Text style={[styles.receiptMetaVal, { color: COLORS.gold, fontSize: 16, fontWeight: "900" }]}>₹{generatedInvoice.grand_total.toFixed(2)}</Text>
+              </View>
+
+              <TouchableOpacity
+                style={styles.closeInvoiceBtn}
+                onPress={() => setShowInvoiceModal(false)}
+              >
+                <Text style={styles.closeInvoiceText}>CLOSE INVOICE</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
+
       {/* Split Bill Modal */}
       {showSplitModal && billData && (
         <Modal visible={true} transparent={true} animationType="fade">
@@ -432,7 +569,107 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 40
+    paddingBottom: 50
+  },
+  pendingSection: {
+    marginBottom: 16,
+    backgroundColor: "#0B1528",
+    padding: 14,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(212,175,55,0.4)"
+  },
+  pendingHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10
+  },
+  pendingSectionTitle: {
+    color: COLORS.gold,
+    fontSize: 11,
+    fontWeight: "900",
+    letterSpacing: 1.5
+  },
+  pendingSectionSub: {
+    color: COLORS.warning,
+    fontSize: 10,
+    fontWeight: "bold"
+  },
+  pendingScroll: {
+    flexDirection: "row"
+  },
+  pendingCard: {
+    backgroundColor: COLORS.surfaceElevated,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: "rgba(212,175,55,0.3)",
+    minWidth: 140
+  },
+  pendingCardActive: {
+    backgroundColor: COLORS.gold,
+    borderColor: COLORS.gold
+  },
+  pendingCardTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4
+  },
+  pendingCardTbl: {
+    color: COLORS.textPrimary,
+    fontWeight: "bold",
+    fontSize: 13
+  },
+  pendingCardAmt: {
+    color: COLORS.gold,
+    fontWeight: "900",
+    fontSize: 13
+  },
+  pendingCardGuest: {
+    color: COLORS.textMuted,
+    fontSize: 10,
+    marginBottom: 4
+  },
+  pendingCardStatus: {
+    color: COLORS.gold,
+    fontSize: 10,
+    fontWeight: "bold"
+  },
+  textDark: {
+    color: "#070B12"
+  },
+  textDarkMuted: {
+    color: "rgba(7,11,18,0.7)"
+  },
+  emptyPendingBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.surface,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    marginBottom: 16,
+    gap: 12
+  },
+  emptyPendingIcon: {
+    fontSize: 18,
+    color: COLORS.success,
+    fontWeight: "bold"
+  },
+  emptyPendingTitle: {
+    color: COLORS.textPrimary,
+    fontSize: 12,
+    fontWeight: "bold"
+  },
+  emptyPendingSub: {
+    color: COLORS.textMuted,
+    fontSize: 10,
+    marginTop: 2
   },
   tablePicker: {
     marginBottom: 16
@@ -474,12 +711,21 @@ const styles = StyleSheet.create({
   },
   noBillBox: {
     backgroundColor: COLORS.surface,
-    borderRadius: 14,
+    borderRadius: 16,
     padding: 24,
     alignItems: "center",
     borderWidth: 1,
     borderColor: COLORS.border,
-    marginTop: 20
+    marginTop: 10
+  },
+  noBillIconCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: COLORS.surfaceElevated,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 14
   },
   noBillTitle: {
     fontSize: 16,
@@ -490,7 +736,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.textMuted,
     marginTop: 6,
-    textAlign: "center"
+    textAlign: "center",
+    marginBottom: 18
+  },
+  createOrderBtn: {
+    backgroundColor: COLORS.gold,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: "center"
+  },
+  createOrderBtnText: {
+    color: "#070B12",
+    fontWeight: "900",
+    fontSize: 12,
+    letterSpacing: 0.5
   },
   invoiceCard: {
     backgroundColor: COLORS.surface,
@@ -561,6 +821,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.textSecondary,
     fontWeight: "600"
+  },
+  addMoreBtn: {
+    backgroundColor: COLORS.surfaceElevated,
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.borderGold,
+    alignItems: "center",
+    marginVertical: 8
+  },
+  addMoreText: {
+    color: COLORS.gold,
+    fontSize: 11,
+    fontWeight: "bold",
+    letterSpacing: 0.5
   },
   discountRow: {
     flexDirection: "row",
@@ -748,6 +1023,84 @@ const styles = StyleSheet.create({
     color: "#070B12",
     fontSize: 13,
     fontWeight: "900",
+    letterSpacing: 0.5
+  },
+  invoiceReceiptContent: {
+    backgroundColor: "#070B12",
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: COLORS.gold
+  },
+  invoiceReceiptHeader: {
+    alignItems: "center"
+  },
+  invoicePubliqTitle: {
+    color: COLORS.gold,
+    fontWeight: "900",
+    fontSize: 16,
+    letterSpacing: 1.5
+  },
+  invoiceOutletText: {
+    color: COLORS.textSecondary,
+    fontSize: 11,
+    marginTop: 2
+  },
+  invoiceGstinText: {
+    color: COLORS.textMuted,
+    fontSize: 10,
+    marginTop: 2
+  },
+  invoiceDivider: {
+    height: 1,
+    backgroundColor: "#1E293B",
+    marginVertical: 12
+  },
+  receiptMetaRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 2
+  },
+  receiptMetaLabel: {
+    color: COLORS.textMuted,
+    fontSize: 11
+  },
+  receiptMetaVal: {
+    color: COLORS.textPrimary,
+    fontSize: 11,
+    fontWeight: "600"
+  },
+  receiptItemRow: {
+    flexDirection: "row",
+    paddingVertical: 4
+  },
+  receiptItemQty: {
+    color: COLORS.gold,
+    fontSize: 11,
+    fontWeight: "bold",
+    width: 24
+  },
+  receiptItemName: {
+    flex: 1,
+    color: COLORS.textPrimary,
+    fontSize: 12
+  },
+  receiptItemPrice: {
+    color: COLORS.textSecondary,
+    fontSize: 12,
+    fontWeight: "600"
+  },
+  closeInvoiceBtn: {
+    backgroundColor: COLORS.gold,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 14
+  },
+  closeInvoiceText: {
+    color: "#070B12",
+    fontWeight: "900",
+    fontSize: 12,
     letterSpacing: 0.5
   },
   splitModalContent: {

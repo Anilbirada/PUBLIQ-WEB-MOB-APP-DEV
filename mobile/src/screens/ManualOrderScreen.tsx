@@ -17,10 +17,19 @@ export const ManualOrderScreen: React.FC<{ route: any; navigation: any }> = ({ r
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [tablesList, setTablesList] = useState<any[]>([]);
 
   useEffect(() => {
     fetchMenu();
+    fetchTables();
   }, []);
+
+  const fetchTables = async () => {
+    try {
+      const data: any = await mobileApiRequest("/waiter/tables", { method: "GET" }, token);
+      if (Array.isArray(data)) setTablesList(data);
+    } catch (_) {}
+  };
 
   const fetchMenu = async () => {
     try {
@@ -143,8 +152,42 @@ export const ManualOrderScreen: React.FC<{ route: any; navigation: any }> = ({ r
 
       {/* Table Selector & Search */}
       <View style={styles.topControl}>
+        <View style={{ marginBottom: 8 }}>
+          <Text style={{ fontSize: 10, fontWeight: "800", color: COLORS.textMuted, letterSpacing: 1, marginBottom: 6 }}>
+            SELECT OUTLET TABLE:
+          </Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {(tablesList.length > 0 ? tablesList : [
+              { table_number: "01" }, { table_number: "02" }, { table_number: "03" }, { table_number: "04" },
+              { table_number: "05" }, { table_number: "06" }, { table_number: "07" }, { table_number: "08" }
+            ]).map((t: any) => (
+              <TouchableOpacity
+                key={t.table_number}
+                style={{
+                  backgroundColor: tableNumber === t.table_number ? COLORS.gold : COLORS.surface,
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  borderRadius: 8,
+                  marginRight: 6,
+                  borderWidth: 1,
+                  borderColor: tableNumber === t.table_number ? COLORS.gold : COLORS.border
+                }}
+                onPress={() => setTableNumber(t.table_number)}
+              >
+                <Text style={{
+                  color: tableNumber === t.table_number ? "#070B12" : COLORS.textSecondary,
+                  fontWeight: "bold",
+                  fontSize: 11
+                }}>
+                  T-{t.table_number}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+
         <View style={styles.tableInputRow}>
-          <Text style={styles.tableLabel}>TABLE:</Text>
+          <Text style={styles.tableLabel}>TABLE NO:</Text>
           <TextInput
             style={styles.tableInput}
             value={tableNumber}

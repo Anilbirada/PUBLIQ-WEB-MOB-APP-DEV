@@ -95,7 +95,7 @@ class QrService:
                 return {
                     "is_valid": True,
                     "outlet_id": outlet.id if outlet else "",
-                    "outlet_name": outlet.name if outlet else "PUBLIQ Flagship",
+                    "outlet_name": outlet.name if outlet else "PUBLIQ HARAGADDE",
                     "outlet_code": outlet.code if outlet else "PUB-HQ-01",
                     "table_id": table.id,
                     "table_number": table.table_number,

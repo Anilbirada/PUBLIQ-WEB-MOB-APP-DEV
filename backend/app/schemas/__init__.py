@@ -238,7 +238,7 @@ class OrderResponse(BaseModel):
     id: str
     order_number: str
     outlet_id: str
-    outlet_name: Optional[str] = "PUBLIQ Flagship"
+    outlet_name: Optional[str] = "PUBLIQ HARAGADDE"
     table_number: Optional[str] = None
     dining_channel: DiningChannelEnum
     order_status: OrderStatusEnum

@@ -28,12 +28,14 @@ def test_get_restaurant_and_outlets():
     assert response.status_code == 200
     data = response.json()
     assert data["name"] == "PUBLIQ"
-    assert len(data["outlets"]) >= 2
+    assert len(data["outlets"]) == 1
+    assert data["outlets"][0]["name"] == "PUBLIQ HARAGADDE"
     
     outlets_resp = client.get("/api/v1/outlets")
     assert outlets_resp.status_code == 200
     outlets = outlets_resp.json()
-    assert any(o["code"] == "PUB-HQ-01" for o in outlets)
+    assert len(outlets) == 1
+    assert outlets[0]["code"] == "PUB-HARAGADDE"
 
 def test_qr_validation_success_and_tamper_protection():
     db = SessionLocal()
@@ -101,7 +103,7 @@ def test_order_creation_and_pos_outbox():
     session_id = "test-session-order-publiq-2"
     client.delete(f"/api/v1/cart/{session_id}")
     db = SessionLocal()
-    outlet = db.query(Outlet).filter(Outlet.code == "PUB-HQ-01").first()
+    outlet = db.query(Outlet).filter(Outlet.code == "PUB-HARAGADDE").first()
     item = db.query(MenuItem).filter(MenuItem.is_alcohol == False).first()
     db.close()
     

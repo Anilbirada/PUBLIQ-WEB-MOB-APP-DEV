@@ -130,7 +130,7 @@ export default function OrderTrackingPage() {
                 Order #{order.order_number}
               </h1>
               <div className="text-xs text-slate-400 mt-1">
-                {order.table_number ? `Dine-In • Table ${order.table_number}` : "Takeaway / Delivery"} • {order.outlet_name || "PUBLIQ Flagship"}
+                {order.table_number ? `Dine-In • Table ${order.table_number}` : "Takeaway / Delivery"} • {order.outlet_name || "PUBLIQ HARAGADDE"}
               </div>
             </div>
 

@@ -47,11 +47,11 @@ def seed_database():
         db.add(rest)
         db.flush()
 
-        # 2. Flagship Outlets
-        flagship_outlet = Outlet(
+        # 2. Single Venue Outlet: PUBLIQ HARAGADDE
+        haragadde_outlet = Outlet(
             restaurant_id=rest.id,
-            name="PUBLIQ Bar & Restaurant (Flagship)",
-            code="PUB-HQ-01",
+            name="PUBLIQ HARAGADDE",
+            code="PUB-HARAGADDE",
             address="QM73+544, Nosenuru Rd, Haragadde",
             city="Bengaluru",
             state="Karnataka",
@@ -65,60 +65,41 @@ def seed_database():
             alcohol_service_enabled=True,
             legal_drinking_age=21
         )
-        
-        skydeck_outlet = Outlet(
-            restaurant_id=rest.id,
-            name="PUBLIQ Garden Courtyard & Lounge",
-            code="PUB-GDN-02",
-            address="QM73+544, Nosenuru Rd, Haragadde",
-            city="Bengaluru",
-            state="Karnataka",
-            postal_code="560105",
-            phone="+91 97417 44886",
-            email="publiqbarresto@gmail.com",
-            latitude=12.7628867,
-            longitude=77.6528295,
-            google_maps_url="https://maps.app.goo.gl/PirWhJBqftV9Md5v9?g_st=atm",
-            is_active=True,
-            alcohol_service_enabled=True,
-            legal_drinking_age=21
-        )
-        db.add_all([flagship_outlet, skydeck_outlet])
+        db.add(haragadde_outlet)
         db.flush()
 
         # 3. Operating Hours (All 7 Days)
         days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-        for o in [flagship_outlet, skydeck_outlet]:
-            for day in days:
-                db.add(OperatingHours(
-                    outlet_id=o.id,
-                    day_of_week=day,
-                    open_time="12:00",
-                    close_time="01:00",
-                    is_closed=False
-                ))
+        for day in days:
+            db.add(OperatingHours(
+                outlet_id=haragadde_outlet.id,
+                day_of_week=day,
+                open_time="12:00",
+                close_time="01:00",
+                is_closed=False
+            ))
 
         # 4. Dining Areas (Configurable Floor Layout)
         area_atrium = DiningArea(
-            outlet_id=flagship_outlet.id,
+            outlet_id=haragadde_outlet.id,
             name="Main Dining & Atrium",
             description="Double-height illuminated blossom canopy with plush velvet booths",
             is_outdoor=False
         )
         area_bar = DiningArea(
-            outlet_id=flagship_outlet.id,
+            outlet_id=haragadde_outlet.id,
             name="Resto-Bar & Mixology Lounge",
             description="High-energy backlit marble bar counter and cocktail lounge",
             is_outdoor=False
         )
         area_terrace = DiningArea(
-            outlet_id=flagship_outlet.id,
+            outlet_id=haragadde_outlet.id,
             name="Outdoor Terrace & Sky Deck",
             description="Open-air romantic skyline terrace with fire-pits and ambient lighting",
             is_outdoor=True
         )
         area_pdr = DiningArea(
-            outlet_id=flagship_outlet.id,
+            outlet_id=haragadde_outlet.id,
             name="Private Dining Suite",
             description="Intimate private dining salon for exclusive celebrations and corporate dinners",
             is_outdoor=False
@@ -149,7 +130,7 @@ def seed_database():
         created_tables = []
         for t_num, area, cap in tables_to_create:
             t = RestaurantTable(
-                outlet_id=flagship_outlet.id,
+                outlet_id=haragadde_outlet.id,
                 area_id=area.id,
                 table_number=t_num,
                 capacity=cap,
@@ -162,7 +143,7 @@ def seed_database():
 
         # Generate cryptographic QR tokens for all tables
         for t in created_tables:
-            QrService.generate_table_qr(db, flagship_outlet.id, t.table_number)
+            QrService.generate_table_qr(db, haragadde_outlet.id, t.table_number)
 
         # 6. EXACT 17 SPECIFIED MENU CATEGORIES
         cat_defs = [

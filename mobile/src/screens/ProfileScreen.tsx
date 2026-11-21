@@ -37,7 +37,7 @@ export const ProfileScreen: React.FC = () => {
           </View>
           <Text style={styles.waiterName}>{waiter?.name || "Service Steward"}</Text>
           <Text style={styles.waiterRole}>ROLE: {waiter?.role || "WAITER"}</Text>
-          <Text style={styles.outlet}>{waiter?.outlet_name || "PUBLIQ Flagship (Indiranagar)"}</Text>
+          <Text style={styles.outlet}>{waiter?.outlet_name || "PUBLIQ HARAGADDE"}</Text>
 
           <View style={styles.statsRow}>
             <View style={styles.statCol}>

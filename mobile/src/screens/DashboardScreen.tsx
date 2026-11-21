@@ -21,7 +21,7 @@ export const DashboardScreen: React.FC<{ navigation: any }> = ({ navigation }) =
         {/* Welcome Banner */}
         <View style={styles.welcomeBanner}>
           <Text style={styles.welcomeGreeting}>Operational Steward Shift Active</Text>
-          <Text style={styles.outletName}>{waiter?.outlet_name || "PUBLIQ Flagship (Indiranagar)"}</Text>
+          <Text style={styles.outletName}>{waiter?.outlet_name || "PUBLIQ HARAGADDE"}</Text>
           <Text style={styles.shiftMeta}>5% GST Composition Mode Active • Live POS & KDS Sync</Text>
         </View>
 

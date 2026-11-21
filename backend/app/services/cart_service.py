@@ -143,7 +143,7 @@ class CartService:
             }
             
         outlet = db.query(Outlet).filter(Outlet.id == cart.outlet_id).first()
-        outlet_name = outlet.name if outlet else "PUBLIQ Flagship"
+        outlet_name = outlet.name if outlet else "PUBLIQ HARAGADDE"
         
         items_detail = []
         subtotal = 0.0

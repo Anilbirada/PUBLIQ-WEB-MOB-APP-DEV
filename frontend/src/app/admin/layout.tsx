@@ -12,7 +12,6 @@ import {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [selectedOutlet, setSelectedOutlet] = useState("PUB-HQ-01");
 
   const navigationSections = [
     {
@@ -77,25 +76,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </div>
 
-        {/* Outlet Selector */}
+        {/* Dedicated Single Outlet */}
         <div className="p-4 border-b border-[#38BDF8]/15 bg-[#08101E]/60">
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Store className="w-3 h-3 text-[#38BDF8]" /> Active Outlet
+              <Store className="w-3 h-3 text-[#38BDF8]" /> Outlet
             </span>
             <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               Live Sync
             </span>
           </div>
-          <select
-            value={selectedOutlet}
-            onChange={(e) => setSelectedOutlet(e.target.value)}
-            className="w-full bg-[#0A1526] border border-[#38BDF8]/30 text-white text-xs font-medium rounded-lg p-2 focus:outline-none focus:border-[#38BDF8]"
-          >
-            <option value="PUB-HQ-01">PUBLIQ Flagship (Indiranagar)</option>
-            <option value="PUB-SKY-02">PUBLIQ Sky Deck & Lounge (Koramangala)</option>
-          </select>
+          <div className="w-full bg-[#0A1526] border border-[#38BDF8]/30 text-white rounded-lg px-3 py-2 flex items-center justify-between shadow-inner">
+            <div className="flex flex-col">
+              <span className="text-xs font-bold text-white tracking-wide">PUBLIQ HARAGADDE</span>
+              <span className="text-[9px] text-slate-400 font-medium">Haragadde, Bengaluru</span>
+            </div>
+            <span className="text-[9px] text-[#38BDF8] font-bold uppercase tracking-wider bg-[#38BDF8]/10 px-1.5 py-0.5 rounded border border-[#38BDF8]/30">Single Venue</span>
+          </div>
         </div>
 
         {/* Navigation Sections */}

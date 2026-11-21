@@ -114,7 +114,7 @@ export default function MenuPage() {
                   PUBLIQ — TABLE {tableNumber}
                 </div>
                 <div className="text-[11px] text-slate-400">
-                  {diningArea || "Grand Dining Hall"} • {outletName || "PUBLIQ Flagship"}
+                  {diningArea || "Grand Dining Hall"} • {outletName || "PUBLIQ HARAGADDE"}
                 </div>
               </div>
             </div>

@@ -218,7 +218,7 @@ export default function CartPage() {
                     <span className="text-[#D4AF37] font-bold">Table {tableNumber}</span>
                   </div>
                   <p className="text-[11px] text-slate-400">
-                    {outletName || "PUBLIQ Flagship"} • {diningArea || "Grand Dining Hall"}
+                    {outletName || "PUBLIQ HARAGADDE"} • {diningArea || "Grand Dining Hall"}
                   </p>
                 </div>
               )}

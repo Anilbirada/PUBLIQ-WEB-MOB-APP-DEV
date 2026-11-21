@@ -395,7 +395,7 @@ class Order(Base):
 
     @property
     def outlet_name(self) -> str:
-        return self.outlet.name if self.outlet else "PUBLIQ Flagship"
+        return self.outlet.name if self.outlet else "PUBLIQ HARAGADDE"
 
 class OrderItem(Base):
     __tablename__ = "order_items"

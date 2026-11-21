@@ -167,37 +167,17 @@ export default function ReservationsPage() {
                 </div>
               )}
 
-              {/* Outlet Selector */}
+              {/* Destination Venue */}
               <div>
                 <label className="text-xs font-bold text-slate-300 uppercase tracking-widest block mb-2">
-                  Select Destination Outlet
+                  Destination Venue
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedOutletId(outlets[0]?.id || "out-1")}
-                    className={`p-4 rounded-2xl border text-left transition-all ${
-                      selectedOutletId === (outlets[0]?.id || "out-1")
-                        ? "bg-[#0F1626] border-[#D4AF37] shadow-lg ring-1 ring-[#D4AF37]"
-                        : "bg-[#070B12] border-[#D4AF37]/20 text-slate-400 hover:border-[#D4AF37]/50"
-                    }`}
-                  >
-                    <p className="font-serif font-normal text-sm text-white">PUBLIQ Flagship</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">Indiranagar 100ft Rd • Grand Salon & Cabanas</p>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setSelectedOutletId(outlets[1]?.id || "out-2")}
-                    className={`p-4 rounded-2xl border text-left transition-all ${
-                      selectedOutletId === (outlets[1]?.id || "out-2")
-                        ? "bg-[#0F1626] border-[#D4AF37] shadow-lg ring-1 ring-[#D4AF37]"
-                        : "bg-[#070B12] border-[#D4AF37]/20 text-slate-400 hover:border-[#D4AF37]/50"
-                    }`}
-                  >
-                    <p className="font-serif font-normal text-sm text-white">PUBLIQ Sky Deck & Lounge</p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">Koramangala 80ft Rd • Rooftop Garden Bar</p>
-                  </button>
+                <div className="p-4 rounded-2xl border bg-[#0F1626] border-[#D4AF37]/50 shadow-lg text-left flex items-center justify-between">
+                  <div>
+                    <p className="font-serif font-semibold text-base text-white">PUBLIQ HARAGADDE</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">QM73+544, Nosenuru Rd, Haragadde, Bengaluru</p>
+                  </div>
+                  <span className="text-[10px] text-[#D4AF37] font-bold uppercase tracking-wider bg-[#D4AF37]/10 px-2 py-1 rounded-md border border-[#D4AF37]/30">Exclusive Venue</span>
                 </div>
               </div>
 

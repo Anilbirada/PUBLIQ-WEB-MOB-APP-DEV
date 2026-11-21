@@ -57,7 +57,7 @@ export default function AdminDashboardPage() {
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
             <span className="text-xs uppercase tracking-widest text-[#38BDF8] font-bold">
-              Flagship Outlet Operational • Live Sync
+              PUBLIQ HARAGADDE Operational • Live Sync
             </span>
           </div>
           <h1 className="font-serif text-3xl font-bold text-white mt-1">

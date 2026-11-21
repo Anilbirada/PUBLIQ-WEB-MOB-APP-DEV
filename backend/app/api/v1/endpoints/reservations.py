@@ -73,7 +73,7 @@ def list_reservations(
         ReservationResponse(
             id=res.id,
             reservation_ref=res.reservation_ref,
-            outlet_name=outlets.get(res.outlet_id, "PUBLIQ Flagship"),
+            outlet_name=outlets.get(res.outlet_id, "PUBLIQ HARAGADDE"),
             guest_name=res.guest_name,
             guest_phone=res.guest_phone,
             guest_count=res.guest_count,
@@ -123,7 +123,7 @@ def get_reservation(reservation_ref: str, db: Session = Depends(get_db)):
     return ReservationResponse(
         id=res.id,
         reservation_ref=res.reservation_ref,
-        outlet_name=outlet.name if outlet else "PUBLIQ Flagship",
+        outlet_name=outlet.name if outlet else "PUBLIQ HARAGADDE",
         guest_name=res.guest_name,
         guest_phone=res.guest_phone,
         guest_count=res.guest_count,

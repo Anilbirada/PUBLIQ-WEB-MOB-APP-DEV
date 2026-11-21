@@ -54,7 +54,7 @@ def waiter_login(payload: Dict[str, Any] = Body(...), db: Session = Depends(get_
         
     # Retrieve assigned outlet
     outlet = db.query(Outlet).filter(Outlet.id == employee.outlet_id).first()
-    outlet_name = outlet.name if outlet else "PUBLIQ Flagship"
+    outlet_name = outlet.name if outlet else "PUBLIQ HARAGADDE"
     
     token = create_access_token({
         "sub": employee.id,

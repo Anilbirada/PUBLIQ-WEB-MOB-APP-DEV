@@ -13,6 +13,8 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
 
   const [tableNumber, setTableNumber] = useState<string>(route.params?.table_number || "01");
   const [billData, setBillData] = useState<any | null>(null);
+  const [deptBillData, setDeptBillData] = useState<any | null>(null);
+  const [selectedDeptTab, setSelectedDeptTab] = useState<"ALL" | "FOOD" | "BEVERAGE">("ALL");
   const [discountPct, setDiscountPct] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [qrData, setQrData] = useState<any | null>(null);
@@ -50,20 +52,94 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
   const fetchBillPreview = async () => {
     setLoading(true);
     try {
+      // 1. Fetch dual-business department preview (FOOD for Anil, BEVERAGE for Ramesh)
       const data: any = await mobileApiRequest(
-        `/waiter/bills/preview/${tableNumber}?discount_pct=${discountPct}`,
+        `/waiter/bills/department-preview/${tableNumber}?discount_pct=${discountPct}`,
         { method: "GET" },
         token
       );
-      setBillData(data);
+      setDeptBillData(data);
+
+      const f = data.food_bill || {};
+      const b = data.beverage_bill || {};
+      const f_items = f.items || [];
+      const b_items = b.items || [];
+
+      setBillData({
+        order_id: data.order_id,
+        order_number: data.order_number,
+        table_number: data.table_number,
+        customer_name: data.customer_name || "Dine-in Guest",
+        subtotal: round2((f.subtotal || 0) + (b.subtotal || 0)),
+        discount_amount: round2((f.discount_amount || 0) + (b.discount_amount || 0)),
+        taxable_amount: round2((f.taxable_amount || 0) + (b.taxable_amount || 0)),
+        cgst: round2((f.cgst || 0) + (b.cgst || 0)),
+        sgst: round2((f.sgst || 0) + (b.sgst || 0)),
+        grand_total: data.combined_summary?.combined_total || round2((f.grand_total || 0) + (b.grand_total || 0)),
+        items: [...f_items.map((i: any) => ({ ...i, department: "FOOD" })), ...b_items.map((i: any) => ({ ...i, department: "BEVERAGE" }))]
+      });
     } catch (e: any) {
-      setBillData(null);
+      // Fallback to classic preview
+      try {
+        const classic: any = await mobileApiRequest(
+          `/waiter/bills/preview/${tableNumber}?discount_pct=${discountPct}`,
+          { method: "GET" },
+          token
+        );
+        setBillData(classic);
+        setDeptBillData(null);
+      } catch (_) {
+        setBillData(null);
+        setDeptBillData(null);
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  const round2 = (num: number) => Math.round((num + Number.EPSILON) * 100) / 100;
+
+  const handleGenerateDepartmentInvoice = async (dept: "FOOD" | "BEVERAGE") => {
+    if (!billData) return;
+    setIsGeneratingInvoice(true);
+    try {
+      const inv: any = await mobileApiRequest("/waiter/bills/generate-department-invoice", {
+        method: "POST",
+        body: JSON.stringify({
+          table_number: tableNumber,
+          order_id: billData.order_id,
+          department: dept,
+          discount_pct: discountPct,
+          waiter_name: waiter?.name || "Service Steward"
+        })
+      }, token);
+
+      setGeneratedInvoice(inv);
+      setShowInvoiceModal(true);
+      fetchBillPreview();
+      fetchTablesAndPending();
+    } catch (e: any) {
+      Alert.alert("Invoice Error", e.message || `Failed to create ${dept} invoice.`);
+    } finally {
+      setIsGeneratingInvoice(false);
+    }
+  };
+
   const handleGenerateInvoice = async () => {
+    // If dual business active, ask or generate food
+    if (deptBillData?.food_bill && deptBillData?.beverage_bill) {
+      Alert.alert(
+        "Generate Department Invoice",
+        "Select which official GST invoice to generate:",
+        [
+          { text: "Food (Anil: PUB-FOOD-...)", onPress: () => handleGenerateDepartmentInvoice("FOOD") },
+          { text: "Drinks (Ramesh: PUB-BEV-...)", onPress: () => handleGenerateDepartmentInvoice("BEVERAGE") },
+          { text: "Cancel", style: "cancel" }
+        ]
+      );
+      return;
+    }
+
     if (!billData) return;
     setIsGeneratingInvoice(true);
     try {
@@ -87,6 +163,32 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
     }
   };
 
+  const handleShowDepartmentQR = (dept: "FOOD" | "BEVERAGE") => {
+    if (!deptBillData) {
+      handleGenerateUPIQR();
+      return;
+    }
+    const isFood = dept === "FOOD";
+    const bill = isFood ? deptBillData.food_bill : deptBillData.beverage_bill;
+    if (!bill || bill.grand_total <= 0) {
+      Alert.alert("No Items", `There are no active ${dept.toLowerCase()} items for Table ${tableNumber}.`);
+      return;
+    }
+
+    const upiString = `upi://pay?pa=${bill.upi_id}&pn=${encodeURIComponent(bill.owner_name)}&am=${bill.grand_total.toFixed(2)}&cu=INR&tn=${encodeURIComponent(`PUBLIQ T-${tableNumber} ${dept}`)}`;
+
+    setQrData({
+      department: dept,
+      owner_name: bill.owner_name,
+      vpa: bill.upi_id,
+      amount: bill.grand_total,
+      upi_string: upiString,
+      is_food: isFood,
+      qr_instructions: `Scan & Pay via PhonePe, GPay, Paytm to ${bill.owner_name} (${isFood ? "Food Owner" : "Drinks Owner"}).`
+    });
+    setShowQRModal(true);
+  };
+
   const handleGenerateUPIQR = async () => {
     if (!billData) return;
     try {
@@ -99,7 +201,11 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
         })
       }, token);
 
-      setQrData(res);
+      setQrData({
+        ...res,
+        department: "COMBINED",
+        owner_name: res.merchant_name || "PUBLIQ BAR & RESTAURANT"
+      });
       setShowQRModal(true);
     } catch (e: any) {
       Alert.alert("QR Error", e.message || "Failed to generate dynamic payment QR.");
@@ -262,15 +368,68 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
               <Text style={styles.metaText}>Guest: {billData.customer_name}</Text>
             </View>
 
+            {/* Department Filter Tabs (Dual-Business Support) */}
+            {deptBillData && (
+              <View style={{ flexDirection: "row", gap: 8, marginVertical: 10 }}>
+                <TouchableOpacity
+                  style={[
+                    styles.discBtn,
+                    selectedDeptTab === "ALL" && styles.discBtnActive,
+                    { flex: 1, paddingVertical: 8 }
+                  ]}
+                  onPress={() => setSelectedDeptTab("ALL")}
+                >
+                  <Text style={[styles.discText, selectedDeptTab === "ALL" && styles.discTextActive]}>
+                    ALL ITEMS
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.discBtn,
+                    selectedDeptTab === "FOOD" && { backgroundColor: COLORS.gold, borderColor: COLORS.gold },
+                    { flex: 1, paddingVertical: 8 }
+                  ]}
+                  onPress={() => setSelectedDeptTab("FOOD")}
+                >
+                  <Text style={[styles.discText, selectedDeptTab === "FOOD" && { color: "#070B12", fontWeight: "900" }]}>
+                    🍲 FOOD (ANIL)
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.discBtn,
+                    selectedDeptTab === "BEVERAGE" && { backgroundColor: "#38BDF8", borderColor: "#38BDF8" },
+                    { flex: 1, paddingVertical: 8 }
+                  ]}
+                  onPress={() => setSelectedDeptTab("BEVERAGE")}
+                >
+                  <Text style={[styles.discText, selectedDeptTab === "BEVERAGE" && { color: "#070B12", fontWeight: "900" }]}>
+                    🍸 DRINKS (RAMESH)
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
             {/* Line Items */}
             <View style={styles.itemsBlock}>
-              {billData.items && billData.items.map((it: any) => (
-                <View key={it.id} style={styles.itemLine}>
-                  <Text style={styles.itemQty}>{it.quantity}x</Text>
-                  <Text style={styles.itemNameText}>{it.item_name}</Text>
-                  <Text style={styles.itemPriceText}>₹{it.total_price.toFixed(2)}</Text>
-                </View>
-              ))}
+              {billData.items && billData.items
+                .filter((it: any) => selectedDeptTab === "ALL" || it.department === selectedDeptTab)
+                .map((it: any) => (
+                  <View key={it.id} style={styles.itemLine}>
+                    <Text style={styles.itemQty}>{it.quantity}x</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.itemNameText}>{it.item_name}</Text>
+                      {it.department && (
+                        <Text style={{ fontSize: 9, color: it.department === "FOOD" ? COLORS.gold : "#38BDF8", fontWeight: "bold" }}>
+                          {it.department === "FOOD" ? "FOOD (ANIL)" : "BAR (RAMESH)"}
+                        </Text>
+                      )}
+                    </View>
+                    <Text style={styles.itemPriceText}>₹{it.total_price.toFixed(2)}</Text>
+                  </View>
+                ))}
             </View>
 
             {/* Quick Add More Items Button */}
@@ -350,6 +509,38 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
 
             {/* Action Buttons */}
             <View style={styles.btnStack}>
+              {/* Dual-Business UPI QR Buttons */}
+              {deptBillData ? (
+                <View style={{ gap: 8, marginBottom: 4 }}>
+                  <TouchableOpacity
+                    style={[styles.mainActionBtn, { backgroundColor: COLORS.gold }]}
+                    onPress={() => handleShowDepartmentQR("FOOD")}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.mainActionTextDark}>📱 SHOW FOOD QR (ANIL: ₹{(deptBillData.food_bill?.grand_total || 0).toFixed(2)})</Text>
+                    <Text style={styles.mainActionSubDark}>UPI: 8431712924-3@ybl • PhonePe QR</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.mainActionBtn, { backgroundColor: "#38BDF8" }]}
+                    onPress={() => handleShowDepartmentQR("BEVERAGE")}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.mainActionTextDark}>📱 SHOW DRINKS QR (RAMESH: ₹{(deptBillData.beverage_bill?.grand_total || 0).toFixed(2)})</Text>
+                    <Text style={styles.mainActionSubDark}>UPI: ramesh776059@ybl • PhonePe QR</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={[styles.mainActionBtn, { backgroundColor: COLORS.gold }]}
+                  onPress={handleGenerateUPIQR}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.mainActionTextDark}>GENERATE DYNAMIC UPI QR</Text>
+                  <Text style={styles.mainActionSubDark}>Exact Amount: ₹{billData.grand_total.toFixed(2)}</Text>
+                </TouchableOpacity>
+              )}
+
               {/* Generate GST Tax Invoice */}
               <TouchableOpacity
                 style={[styles.mainActionBtn, { backgroundColor: "#151F33", borderWidth: 1, borderColor: COLORS.gold }]}
@@ -360,7 +551,9 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
                 <Text style={{ color: COLORS.gold, fontWeight: "bold", fontSize: 13, letterSpacing: 0.5 }}>
                   {isGeneratingInvoice ? "CREATING INVOICE..." : "GENERATE OFFICIAL GST INVOICE"}
                 </Text>
-                <Text style={{ color: "#94A3B8", fontSize: 10, marginTop: 2 }}>5% GST Tax Receipt with Invoice No</Text>
+                <Text style={{ color: "#94A3B8", fontSize: 10, marginTop: 2 }}>
+                  {deptBillData ? "Select Food (Anil) or Drinks (Ramesh) • 5% GST" : "5% GST Tax Receipt with Invoice No"}
+                </Text>
               </TouchableOpacity>
 
               {generatedInvoice && (
@@ -374,26 +567,18 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
                 </TouchableOpacity>
               )}
 
-              {selectedTender === "UPI" ? (
-                <TouchableOpacity
-                  style={[styles.mainActionBtn, { backgroundColor: COLORS.gold }]}
-                  onPress={handleGenerateUPIQR}
-                  activeOpacity={0.85}
-                >
-                  <Text style={styles.mainActionTextDark}>GENERATE DYNAMIC UPI QR</Text>
-                  <Text style={styles.mainActionSubDark}>Exact Amount: ₹{billData.grand_total.toFixed(2)}</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  style={[styles.mainActionBtn, { backgroundColor: COLORS.success }]}
-                  onPress={() => handleSettlePayment(selectedTender)}
-                  disabled={isSettling}
-                  activeOpacity={0.85}
-                >
-                  <Text style={styles.mainActionTextDark}>{isSettling ? "SETTLING..." : `RECORD ${selectedTender} PAYMENT`}</Text>
-                  <Text style={styles.mainActionSubDark}>Collect ₹{billData.grand_total.toFixed(2)} & Free Table</Text>
-                </TouchableOpacity>
-              )}
+              {/* Record Settlement Button */}
+              <TouchableOpacity
+                style={[styles.mainActionBtn, { backgroundColor: COLORS.success }]}
+                onPress={() => handleSettlePayment(selectedTender)}
+                disabled={isSettling}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.mainActionTextDark}>
+                  {isSettling ? "SETTLING..." : `RECORD ${selectedTender} PAYMENT (₹${billData.grand_total.toFixed(2)})`}
+                </Text>
+                <Text style={styles.mainActionSubDark}>Settle Table &amp; Free Seating</Text>
+              </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.splitBtn}
@@ -412,17 +597,53 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
           <View style={styles.modalBg}>
             <View style={styles.qrModalContent}>
               <View style={styles.qrModalHeader}>
-                <Text style={styles.qrModalTitle}>GUEST PAYMENT QR</Text>
+                <View>
+                  <Text style={styles.qrModalTitle}>
+                    {qrData.department === "FOOD"
+                      ? "FOOD PAYMENT (ANIL)"
+                      : qrData.department === "BEVERAGE"
+                      ? "DRINKS PAYMENT (RAMESH)"
+                      : "GUEST PAYMENT QR"}
+                  </Text>
+                  <Text style={{ fontSize: 11, color: COLORS.gold, fontWeight: "bold", marginTop: 2 }}>
+                    Exact Amount: ₹{qrData.amount.toFixed(2)}
+                  </Text>
+                </View>
                 <TouchableOpacity onPress={() => setShowQRModal(false)} style={styles.modalCloseBtn}>
                   <Text style={styles.modalCloseText}>✕</Text>
                 </TouchableOpacity>
               </View>
 
-              <DynamicUPIQR
-                upiString={qrData.upi_string}
-                amount={qrData.amount}
-                vpa={qrData.vpa}
-              />
+              {/* Display official PhonePe QR plaque image if Food or Beverage */}
+              {qrData.department === "FOOD" ? (
+                <View style={{ alignItems: "center", marginVertical: 8 }}>
+                  <Image
+                    source={require("../../assets/food_upi_qr.jpg")}
+                    style={{ width: 220, height: 260, borderRadius: 12 }}
+                    resizeMode="contain"
+                  />
+                  <Text style={{ color: COLORS.textPrimary, fontSize: 13, fontWeight: "900", marginTop: 6 }}>
+                    ANIL • {qrData.vpa}
+                  </Text>
+                </View>
+              ) : qrData.department === "BEVERAGE" ? (
+                <View style={{ alignItems: "center", marginVertical: 8 }}>
+                  <Image
+                    source={require("../../assets/beverage_upi_qr.jpg")}
+                    style={{ width: 220, height: 260, borderRadius: 12 }}
+                    resizeMode="contain"
+                  />
+                  <Text style={{ color: COLORS.textPrimary, fontSize: 13, fontWeight: "900", marginTop: 6 }}>
+                    RAMESH S P • {qrData.vpa}
+                  </Text>
+                </View>
+              ) : (
+                <DynamicUPIQR
+                  upiString={qrData.upi_string}
+                  amount={qrData.amount}
+                  vpa={qrData.vpa}
+                />
+              )}
 
               <Text style={styles.qrHelper}>
                 {qrData.qr_instructions}
@@ -434,7 +655,7 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
                 disabled={isSettling}
               >
                 <Text style={styles.confirmPaidText}>
-                  {isSettling ? "RECORDING..." : "✓ GUEST PAID VIA UPI"}
+                  {isSettling ? "RECORDING..." : `✓ GUEST PAID ₹${qrData.amount.toFixed(2)} VIA UPI`}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -453,9 +674,24 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
                   style={{ width: 44, height: 44, alignSelf: "center", marginBottom: 6 }}
                   resizeMode="contain"
                 />
-                <Text style={styles.invoicePubliqTitle}>PUBLIQ BAR &amp; RESTAURANT</Text>
-                <Text style={styles.invoiceOutletText}>HARAGADDE OUTLET, BANGALORE</Text>
-                <Text style={styles.invoiceGstinText}>GSTIN: {generatedInvoice.gstin || "29AABCP1234F1Z9"} • SAC: 996331</Text>
+                <Text style={styles.invoicePubliqTitle}>
+                  {generatedInvoice.department === "FOOD"
+                    ? "PUBLIQ FOOD & KITCHEN"
+                    : generatedInvoice.department === "BEVERAGE"
+                    ? "PUBLIQ BAR & BEVERAGES"
+                    : "PUBLIQ BAR & RESTAURANT"}
+                </Text>
+                <Text style={styles.invoiceOutletText}>
+                  {generatedInvoice.owner_name ? `Proprietor: ${generatedInvoice.owner_name} • ` : ""}HARAGADDE OUTLET, BANGALORE
+                </Text>
+                <Text style={styles.invoiceGstinText}>
+                  GSTIN: {generatedInvoice.gstin || "29AABCP1234F1Z9"} • SAC: {generatedInvoice.sac_code || "996331"}
+                </Text>
+                {generatedInvoice.upi_id && (
+                  <Text style={[styles.invoiceGstinText, { color: COLORS.gold, fontWeight: "bold", marginTop: 2 }]}>
+                    Settlement VPA: {generatedInvoice.upi_id}
+                  </Text>
+                )}
               </View>
 
               <View style={styles.invoiceDivider} />

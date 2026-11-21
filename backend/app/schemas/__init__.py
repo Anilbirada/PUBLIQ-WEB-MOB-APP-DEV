@@ -171,6 +171,7 @@ class CartItemDetailSchema(BaseModel):
     item_image: Optional[str]
     is_veg: bool
     is_alcohol: bool
+    department: Optional[str] = "FOOD"
     variant_id: Optional[str]
     variant_name: Optional[str]
     quantity: int
@@ -188,6 +189,12 @@ class CartDetailResponse(BaseModel):
     items: List[CartItemDetailSchema]
     item_count: int
     subtotal: float
+    food_subtotal: float = 0.0
+    beverage_subtotal: float = 0.0
+    food_tax: float = 0.0
+    beverage_tax: float = 0.0
+    food_final: float = 0.0
+    beverage_final: float = 0.0
     cgst: float
     sgst: float
     total_tax: float
@@ -216,6 +223,9 @@ class OrderItemSchema(BaseModel):
     item_id: str
     item_name: str
     variant_name: Optional[str]
+    department: Optional[str] = "FOOD"
+    item_status: Optional[str] = "PENDING"
+    rejection_reason: Optional[str] = None
     quantity: int
     unit_price: float
     total_price: float
@@ -245,6 +255,12 @@ class OrderResponse(BaseModel):
     payment_status: PaymentStatusEnum
     payment_method: PaymentMethodEnum
     subtotal: float
+    food_subtotal: Optional[float] = 0.0
+    beverage_subtotal: Optional[float] = 0.0
+    food_rejection_reason: Optional[str] = None
+    beverage_rejection_reason: Optional[str] = None
+    approved_by_waiter: Optional[str] = None
+    approved_at: Optional[datetime] = None
     cgst: float
     sgst: float
     packaging_fee: float
@@ -367,3 +383,101 @@ class PosOrderEventPayload(BaseModel):
     final_amount: float
     items: List[Dict[str, Any]]
     created_at: str
+
+# --- DUAL-BUSINESS OWNER & INVOICING SCHEMAS ---
+class DepartmentApprovalRequest(BaseModel):
+    department: str = Field(..., description="FOOD or BEVERAGE")
+    action: str = Field(..., description="ACCEPT or REJECT")
+    reason: Optional[str] = "Service steward dispatch decision"
+    waiter_name: Optional[str] = "Service Steward"
+
+class DepartmentInvoiceGenerateRequest(BaseModel):
+    order_id: Optional[str] = None
+    table_number: Optional[str] = None
+    department: str = Field(..., description="FOOD or BEVERAGE")
+    discount_pct: float = 0.0
+    waiter_name: Optional[str] = "Service Steward"
+
+class DepartmentInvoiceResponse(BaseModel):
+    id: str
+    invoice_number: str
+    order_id: str
+    department: str
+    owner_name: str
+    business_name: str
+    upi_id: str
+    qr_image_url: Optional[str]
+    table_number: str
+    customer_name: Optional[str]
+    customer_phone: Optional[str]
+    waiter_name: Optional[str]
+    subtotal: float
+    discount_pct: float
+    discount_amount: float
+    taxable_amount: float
+    cgst: float
+    sgst: float
+    grand_total: float
+    payment_status: str
+    payment_method: str
+    upi_reference: Optional[str]
+    verified_by: Optional[str]
+    items_json: List[Dict[str, Any]]
+    created_at: datetime
+    paid_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+class SubmitUtrRequest(BaseModel):
+    invoice_id: str
+    upi_reference: str = Field(..., min_length=4, max_length=50, description="12-digit UPI UTR reference")
+    customer_name: Optional[str] = "Guest"
+    customer_phone: Optional[str] = None
+
+class DepartmentPaymentVerifyRequest(BaseModel):
+    invoice_id: str
+    verified_by: str = "Admin / Cashier"
+    payment_method: str = "UPI"
+    notes: Optional[str] = "Verified with bank credit"
+
+class OwnerConfigSchema(BaseModel):
+    id: str
+    department: str
+    owner_name: str
+    business_name: str
+    upi_id: str
+    qr_image_url: str
+    gstin: str
+    sac_code: str
+    tax_rate: float
+    contact_phone: Optional[str]
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+class OwnerConfigUpdate(BaseModel):
+    owner_name: Optional[str] = None
+    business_name: Optional[str] = None
+    upi_id: Optional[str] = None
+    qr_image_url: Optional[str] = None
+    gstin: Optional[str] = None
+    sac_code: Optional[str] = None
+    contact_phone: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class OwnerDashboardResponse(BaseModel):
+    department: str
+    owner_name: str
+    business_name: str
+    upi_id: str
+    qr_image_url: str
+    total_revenue: float
+    today_revenue: float
+    total_invoices_count: int
+    paid_invoices_count: int
+    pending_invoices_count: int
+    top_selling_items: List[Dict[str, Any]]
+    recent_invoices: List[Dict[str, Any]]
+

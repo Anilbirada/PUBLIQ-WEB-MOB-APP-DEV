@@ -10,7 +10,7 @@ import { useTableSession } from "../../context/TableSessionContext";
 
 export default function CartPage() {
   const { 
-    items, itemCount, subtotal, cgst, sgst, totalTax, 
+    items, itemCount, subtotal, foodSubtotal, beverageSubtotal, cgst, sgst, totalTax, 
     packagingFee, deliveryFee, finalAmount, updateItemQuantity, 
     removeItem, clearCart, isLoading 
   } = useCart();
@@ -179,6 +179,28 @@ export default function CartPage() {
                   <span>Item Subtotal</span>
                   <span className="font-serif font-bold text-white">₹{subtotal}</span>
                 </div>
+
+                {/* Dual-Business Food vs Drinks Subtotals */}
+                {(foodSubtotal > 0 || beverageSubtotal > 0) && (
+                  <div className="p-3 bg-[#070B12] rounded-xl border border-[#D4AF37]/25 space-y-1.5 my-1">
+                    {foodSubtotal > 0 && (
+                      <div className="flex justify-between text-slate-300">
+                        <span className="flex items-center gap-1.5 text-slate-200">
+                          <span>🍲 Food (Proprietor: Anil)</span>
+                        </span>
+                        <span className="font-serif font-bold text-[#D4AF37]">₹{foodSubtotal}</span>
+                      </div>
+                    )}
+                    {beverageSubtotal > 0 && (
+                      <div className="flex justify-between text-slate-300">
+                        <span className="flex items-center gap-1.5 text-slate-200">
+                          <span>🍸 Drinks (Proprietor: Ramesh)</span>
+                        </span>
+                        <span className="font-serif font-bold text-[#38BDF8]">₹{beverageSubtotal}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
                 
                 {/* Indian GST Breakdown */}
                 <div className="flex justify-between text-slate-400">

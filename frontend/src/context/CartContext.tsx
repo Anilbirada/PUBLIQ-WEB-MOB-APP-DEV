@@ -25,6 +25,10 @@ export interface CartContextType {
   items: CartItemType[];
   itemCount: number;
   subtotal: number;
+  foodSubtotal: number;
+  beverageSubtotal: number;
+  foodFinal: number;
+  beverageFinal: number;
   cgst: number;
   sgst: number;
   totalTax: number;
@@ -56,6 +60,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [items, setItems] = useState<CartItemType[]>([]);
   const [itemCount, setItemCount] = useState<number>(0);
   const [subtotal, setSubtotal] = useState<number>(0);
+  const [foodSubtotal, setFoodSubtotal] = useState<number>(0);
+  const [beverageSubtotal, setBeverageSubtotal] = useState<number>(0);
+  const [foodFinal, setFoodFinal] = useState<number>(0);
+  const [beverageFinal, setBeverageFinal] = useState<number>(0);
   const [cgst, setCgst] = useState<number>(0);
   const [sgst, setSgst] = useState<number>(0);
   const [totalTax, setTotalTax] = useState<number>(0);
@@ -81,6 +89,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setItems(data.items || []);
     setItemCount(data.item_count || 0);
     setSubtotal(data.subtotal || 0);
+    setFoodSubtotal(data.food_subtotal || 0);
+    setBeverageSubtotal(data.beverage_subtotal || 0);
+    setFoodFinal(data.food_final || 0);
+    setBeverageFinal(data.beverage_final || 0);
     setCgst(data.cgst || 0);
     setSgst(data.sgst || 0);
     setTotalTax(data.total_tax || 0);
@@ -177,6 +189,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         items,
         itemCount,
         subtotal,
+        foodSubtotal,
+        beverageSubtotal,
+        foodFinal,
+        beverageFinal,
         cgst,
         sgst,
         totalTax,

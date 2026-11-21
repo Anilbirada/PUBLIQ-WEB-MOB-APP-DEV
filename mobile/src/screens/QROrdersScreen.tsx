@@ -31,39 +31,39 @@ export const QROrdersScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
     return () => clearInterval(interval);
   }, []);
 
-  const handleAcceptOrder = async (order: any) => {
+  const handleDepartmentApproval = async (orderId: string, department: "FOOD" | "BEVERAGE" | "BOTH", action: "ACCEPT" | "REJECT", reason?: string) => {
     try {
-      await mobileApiRequest(`/waiter/orders/${order.order_id}/accept`, {
+      await mobileApiRequest(`/waiter/orders/${orderId}/department-approval`, {
         method: "POST",
-        body: JSON.stringify({ waiter_name: waiter?.name || "Service Steward" })
+        body: JSON.stringify({
+          department,
+          action,
+          rejection_reason: reason,
+          waiter_name: waiter?.name || "Service Steward"
+        })
       }, token);
 
-      Alert.alert("Order Dispatched", `Order ${order.order_number} sent to Kitchen and Bar stations.`);
+      const actionText = action === "ACCEPT" ? "dispatched to station" : "rejected";
+      Alert.alert(
+        `${department === "BOTH" ? "Complete Order" : department} ${action === "ACCEPT" ? "Accepted" : "Rejected"}`,
+        `${department} items have been ${actionText}.`
+      );
       fetchPendingOrders();
       refreshData();
     } catch (e: any) {
-      Alert.alert("Action Failed", e.message || "Failed to accept order.");
+      Alert.alert("Action Failed", e.message || "Failed to process approval.");
     }
+  };
+
+  const handleAcceptOrder = async (order: any) => {
+    await handleDepartmentApproval(order.order_id, "BOTH", "ACCEPT");
   };
 
   const confirmRejectOrder = async () => {
     if (!rejectingOrder) return;
-    try {
-      await mobileApiRequest(`/waiter/orders/${rejectingOrder.order_id}/reject`, {
-        method: "POST",
-        body: JSON.stringify({
-          waiter_name: waiter?.name || "Service Steward",
-          reason: rejectReason
-        })
-      }, token);
-
-      Alert.alert("Order Rejected", `Order ${rejectingOrder.order_number} has been rejected.`);
-      setRejectingOrder(null);
-      fetchPendingOrders();
-      refreshData();
-    } catch (e: any) {
-      Alert.alert("Error", e.message || "Failed to reject order.");
-    }
+    const dept = rejectingOrder.department || "BOTH";
+    await handleDepartmentApproval(rejectingOrder.order.order_id, dept, "REJECT", rejectReason);
+    setRejectingOrder(null);
   };
 
   const renderOrderItem = ({ item }: { item: any }) => (
@@ -90,7 +90,15 @@ export const QROrdersScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
       {/* Food Section */}
       {item.food_items && item.food_items.length > 0 && (
         <View style={styles.itemsSection}>
-          <Text style={styles.sectionTitle}>🍳 KITCHEN DISHES ({item.food_items.length})</Text>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+            <Text style={styles.sectionTitle}>🍳 KITCHEN DISHES ({item.food_items.length}) • FOOD (ANIL)</Text>
+            {item.food_status === "ACCEPTED" && (
+              <Text style={{ color: COLORS.success, fontSize: 10, fontWeight: "bold" }}>✓ IN KITCHEN</Text>
+            )}
+            {item.food_status === "REJECTED" && (
+              <Text style={{ color: COLORS.danger, fontSize: 10, fontWeight: "bold" }}>✕ REJECTED</Text>
+            )}
+          </View>
           {item.food_items.map((fi: any) => (
             <View key={fi.id} style={styles.itemRow}>
               <Text style={styles.qtyBadge}>{fi.quantity}x</Text>
@@ -98,13 +106,37 @@ export const QROrdersScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
               <Text style={styles.itemPrice}>₹{fi.total_price.toFixed(0)}</Text>
             </View>
           ))}
+          {(!item.food_status || item.food_status === "PENDING_APPROVAL") && (
+            <View style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
+              <TouchableOpacity
+                style={[styles.deptBtn, { backgroundColor: COLORS.gold, flex: 2 }]}
+                onPress={() => handleDepartmentApproval(item.order_id, "FOOD", "ACCEPT")}
+              >
+                <Text style={styles.deptBtnTextDark}>✓ ACCEPT FOOD</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.deptBtn, { backgroundColor: COLORS.dangerBg, borderColor: COLORS.danger, borderWidth: 1, flex: 1 }]}
+                onPress={() => setRejectingOrder({ order: item, department: "FOOD" })}
+              >
+                <Text style={[styles.deptBtnText, { color: COLORS.danger }]}>✕ REJECT</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       )}
 
       {/* Bar Section */}
       {item.bar_items && item.bar_items.length > 0 && (
         <View style={styles.itemsSection}>
-          <Text style={styles.sectionTitle}>🍸 BAR & COCKTAILS ({item.bar_items.length})</Text>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+            <Text style={styles.sectionTitle}>🍸 BAR & COCKTAILS ({item.bar_items.length}) • DRINKS (RAMESH)</Text>
+            {item.beverage_status === "ACCEPTED" && (
+              <Text style={{ color: COLORS.info, fontSize: 10, fontWeight: "bold" }}>✓ IN BAR</Text>
+            )}
+            {item.beverage_status === "REJECTED" && (
+              <Text style={{ color: COLORS.danger, fontSize: 10, fontWeight: "bold" }}>✕ REJECTED</Text>
+            )}
+          </View>
           {item.bar_items.map((bi: any) => (
             <View key={bi.id} style={styles.itemRow}>
               <Text style={[styles.qtyBadge, { backgroundColor: COLORS.infoBg, color: COLORS.info }]}>{bi.quantity}x</Text>
@@ -112,17 +144,33 @@ export const QROrdersScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
               <Text style={styles.itemPrice}>₹{bi.total_price.toFixed(0)}</Text>
             </View>
           ))}
+          {(!item.beverage_status || item.beverage_status === "PENDING_APPROVAL") && (
+            <View style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
+              <TouchableOpacity
+                style={[styles.deptBtn, { backgroundColor: "#38BDF8", flex: 2 }]}
+                onPress={() => handleDepartmentApproval(item.order_id, "BEVERAGE", "ACCEPT")}
+              >
+                <Text style={styles.deptBtnTextDark}>✓ ACCEPT DRINKS</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.deptBtn, { backgroundColor: COLORS.dangerBg, borderColor: COLORS.danger, borderWidth: 1, flex: 1 }]}
+                onPress={() => setRejectingOrder({ order: item, department: "BEVERAGE" })}
+              >
+                <Text style={[styles.deptBtnText, { color: COLORS.danger }]}>✕ REJECT</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       )}
 
-      {/* Action Buttons */}
+      {/* Action Buttons for Combined Order */}
       <View style={styles.buttonRow}>
         <TouchableOpacity
           style={styles.rejectBtn}
-          onPress={() => setRejectingOrder(item)}
+          onPress={() => setRejectingOrder({ order: item, department: "BOTH" })}
           activeOpacity={0.8}
         >
-          <Text style={styles.rejectBtnText}>REJECT</Text>
+          <Text style={styles.rejectBtnText}>REJECT ALL</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -130,7 +178,7 @@ export const QROrdersScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
           onPress={() => handleAcceptOrder(item)}
           activeOpacity={0.8}
         >
-          <Text style={styles.acceptBtnText}>ACCEPT &amp; SEND TO KDS</Text>
+          <Text style={styles.acceptBtnText}>ACCEPT ALL (KDS & BAR)</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -159,7 +207,9 @@ export const QROrdersScreen: React.FC<{ navigation: any }> = ({ navigation }) =>
         <Modal visible={true} transparent={true} animationType="fade">
           <View style={styles.modalOverlay}>
             <View style={styles.modalBox}>
-              <Text style={styles.modalHeading}>Reject Order {rejectingOrder.order_number}?</Text>
+              <Text style={styles.modalHeading}>
+                Reject {rejectingOrder.department === "BOTH" ? "Complete Order" : rejectingOrder.department} ({rejectingOrder.order?.order_number || rejectingOrder.order_number})?
+              </Text>
               <Text style={styles.modalSub}>Select or specify the operational reason:</Text>
 
               {["Item currently 86'd / unavailable", "Kitchen peak capacity", "Guest requested cancellation"].map(r => (
@@ -305,6 +355,24 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center"
+  },
+  deptBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  deptBtnTextDark: {
+    color: "#070B12",
+    fontSize: 11,
+    fontWeight: "900",
+    letterSpacing: 0.5
+  },
+  deptBtnText: {
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 0.5
   },
   rejectBtnText: {
     color: COLORS.danger,

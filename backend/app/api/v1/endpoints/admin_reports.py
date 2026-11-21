@@ -75,8 +75,8 @@ def get_qr_management_list(outlet_id: str = None, db: Session = Depends(get_db))
         else:
             token_val = active_tok.token
             qr_link = active_tok.qr_url or f"{base_web}/order/{token_val}"
-            if "localhost:3000" in qr_link:
-                qr_link = qr_link.replace("http://localhost:3000", base_web)
+            if "localhost" in qr_link or "127.0.0.1" in qr_link:
+                qr_link = f"{base_web}/order/{token_val}"
 
         results.append({
             "id": active_tok.id if active_tok else f"tok-{tbl.id}",
@@ -157,7 +157,7 @@ def create_table_with_qr(payload: dict, db: Session = Depends(get_db)):
     # Generate cryptographic QR token
     qr_data = QrService.generate_table_qr(db, outlet.id, tbl.table_number)
     token_str = qr_data["token"]
-    universal_url = f"http://localhost:3001/order/{token_str}"
+    universal_url = qr_data.get("universal_url") or f"{settings.WEB_BASE_URL.rstrip('/')}/order/{token_str}"
 
     return {
         "success": True,

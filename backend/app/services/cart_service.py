@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from typing import List, Dict, Any, Optional
 from app.models import Cart, CartItem, MenuItem, MenuVariant, MenuAddon, Outlet, DiningChannelEnum
 from app.core.config import settings
+from app.core.department import determine_item_department
 
 class CartService:
     @staticmethod
@@ -133,6 +134,12 @@ class CartService:
                 "items": [],
                 "item_count": 0,
                 "subtotal": 0.0,
+                "food_subtotal": 0.0,
+                "beverage_subtotal": 0.0,
+                "food_tax": 0.0,
+                "beverage_tax": 0.0,
+                "food_final": 0.0,
+                "beverage_final": 0.0,
                 "cgst": 0.0,
                 "sgst": 0.0,
                 "total_tax": 0.0,
@@ -147,6 +154,8 @@ class CartService:
         
         items_detail = []
         subtotal = 0.0
+        food_subtotal = 0.0
+        beverage_subtotal = 0.0
         total_items_count = 0
         
         for item in cart.items:
@@ -160,6 +169,12 @@ class CartService:
             item_total = round(item.unit_price * item.quantity, 2)
             subtotal += item_total
             total_items_count += item.quantity
+
+            dept = determine_item_department(m_item)
+            if dept == "BEVERAGE":
+                beverage_subtotal += item_total
+            else:
+                food_subtotal += item_total
             
             items_detail.append({
                 "id": item.id,
@@ -168,6 +183,7 @@ class CartService:
                 "item_image": m_item.image_url,
                 "is_veg": m_item.is_veg,
                 "is_alcohol": m_item.is_alcohol,
+                "department": dept,
                 "variant_id": item.variant_id,
                 "variant_name": variant_name,
                 "quantity": item.quantity,
@@ -177,9 +193,22 @@ class CartService:
                 "special_request": item.special_request
             })
             
-        # Taxes: 2.5% CGST + 2.5% SGST = 5.0% total GST
-        cgst = round(subtotal * settings.TAX_RATE_CGST, 2)
-        sgst = round(subtotal * settings.TAX_RATE_SGST, 2)
+        # Taxes: 2.5% CGST + 2.5% SGST = 5.0% total GST split by department
+        food_subtotal = round(food_subtotal, 2)
+        beverage_subtotal = round(beverage_subtotal, 2)
+        
+        food_cgst = round(food_subtotal * settings.TAX_RATE_CGST, 2)
+        food_sgst = round(food_subtotal * settings.TAX_RATE_SGST, 2)
+        food_tax = round(food_cgst + food_sgst, 2)
+        food_final = round(food_subtotal + food_tax, 2)
+        
+        beverage_cgst = round(beverage_subtotal * settings.TAX_RATE_CGST, 2)
+        beverage_sgst = round(beverage_subtotal * settings.TAX_RATE_SGST, 2)
+        beverage_tax = round(beverage_cgst + beverage_sgst, 2)
+        beverage_final = round(beverage_subtotal + beverage_tax, 2)
+
+        cgst = round(food_cgst + beverage_cgst, 2)
+        sgst = round(food_sgst + beverage_sgst, 2)
         total_tax = round(cgst + sgst, 2)
         
         packaging_fee = 0.0
@@ -202,6 +231,12 @@ class CartService:
             "items": items_detail,
             "item_count": total_items_count,
             "subtotal": round(subtotal, 2),
+            "food_subtotal": food_subtotal,
+            "beverage_subtotal": beverage_subtotal,
+            "food_tax": food_tax,
+            "beverage_tax": beverage_tax,
+            "food_final": food_final,
+            "beverage_final": beverage_final,
             "cgst": cgst,
             "sgst": sgst,
             "total_tax": total_tax,

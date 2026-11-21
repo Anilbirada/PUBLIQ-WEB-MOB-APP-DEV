@@ -11,6 +11,7 @@ from app.models import (
 from app.schemas import OrderCreateRequest
 from app.services.cart_service import CartService
 from app.core.config import settings
+from app.core.department import determine_item_department
 
 class OrderService:
     @staticmethod
@@ -58,6 +59,12 @@ class OrderService:
         if req.payment_method.value == "COUNTER_BILLING":
             initial_payment_status = PaymentStatusEnum.PAY_AT_COUNTER
             
+        food_subtotal = float(cart_calc.get("food_subtotal", 0.0))
+        beverage_subtotal = float(cart_calc.get("beverage_subtotal", 0.0))
+
+        initial_food_status = "PENDING_APPROVAL" if food_subtotal > 0 else "NOT_ORDERED"
+        initial_bev_status = "PENDING_APPROVAL" if beverage_subtotal > 0 else "NOT_ORDERED"
+
         order = Order(
             order_number=order_number,
             outlet_id=outlet.id,
@@ -68,6 +75,8 @@ class OrderService:
             payment_status=initial_payment_status,
             payment_method=req.payment_method,
             subtotal=cart_calc["subtotal"],
+            food_subtotal=food_subtotal,
+            beverage_subtotal=beverage_subtotal,
             cgst=cart_calc["cgst"],
             sgst=cart_calc["sgst"],
             packaging_fee=cart_calc["packaging_fee"],
@@ -75,8 +84,8 @@ class OrderService:
             discount_amount=cart_calc["discount_amount"],
             final_amount=cart_calc["final_amount"],
             estimated_prep_time_minutes=25 if has_alcohol else 20,
-            food_status="WAITING",
-            beverage_status="WAITING" if has_alcohol else "NONE",
+            food_status=initial_food_status,
+            beverage_status=initial_bev_status,
             special_instructions=req.special_instructions,
             customer_name=req.customer_name,
             customer_phone=req.customer_phone,
@@ -85,7 +94,7 @@ class OrderService:
         db.add(order)
         db.flush()  # populate order.id
         
-        # 4. Copy line items
+        # 4. Copy line items with dual-business department tagging
         for ci in cart.items:
             m_item = db.query(MenuItem).filter(MenuItem.id == ci.item_id).first()
             if not m_item:
@@ -96,18 +105,21 @@ class OrderService:
                 variant_name = ci.variant.name
                 
             item_total = round(ci.unit_price * ci.quantity, 2)
+            dept = determine_item_department(m_item)
             
             order_item = OrderItem(
                 order_id=order.id,
                 item_id=m_item.id,
                 item_name=m_item.name,
                 variant_name=variant_name,
+                department=dept,
+                item_status="PENDING",
                 quantity=ci.quantity,
                 unit_price=ci.unit_price,
                 total_price=item_total,
                 selected_addons=ci.selected_addons or [],
                 special_request=ci.special_request,
-                kitchen_station=m_item.kitchen_station or "MAIN_KITCHEN"
+                kitchen_station="BAR_STATION" if dept == "BEVERAGE" else (m_item.kitchen_station or "MAIN_KITCHEN")
             )
             db.add(order_item)
             

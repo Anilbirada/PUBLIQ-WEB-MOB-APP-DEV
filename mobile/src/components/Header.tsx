@@ -15,17 +15,19 @@ export const Header: React.FC<HeaderProps> = ({ title = "PUBLIQ W", subtitle, on
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { paddingTop: Math.max(insets.top, 14) + 8 }]}>
+    <View style={[styles.container, { paddingTop: Math.max(insets.top, 32) + 10 }]}>
       <View style={styles.left}>
         <View style={styles.brandRow}>
-          <Image 
-            source={require("../../assets/logo.png")} 
-            style={styles.logoBadge} 
-            resizeMode="contain" 
-          />
-          <View>
-            <Text style={styles.brandTitle}>P U B L I Q   W</Text>
-            <Text style={styles.subtitle}>{subtitle || waiter?.outlet_name || "PUBLIQ HARAGADDE"}</Text>
+          <View style={styles.logoContainer}>
+            <Image 
+              source={require("../../assets/logo.png")} 
+              style={styles.logoBadge} 
+              resizeMode="contain" 
+            />
+          </View>
+          <View style={styles.titleWrap}>
+            <Text style={styles.brandTitle}>PUBLIQ WAITER</Text>
+            <Text style={styles.subtitle} numberOfLines={1}>{subtitle || waiter?.outlet_name || "PUBLIQ HARAGADDE"}</Text>
           </View>
         </View>
       </View>
@@ -48,7 +50,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: COLORS.surface,
     paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingBottom: 14,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border
   },
@@ -58,17 +60,31 @@ const styles = StyleSheet.create({
   brandRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10
+    gap: 12
+  },
+  logoContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    backgroundColor: COLORS.surfaceElevated,
+    borderWidth: 1,
+    borderColor: COLORS.borderGold,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 3
   },
   logoBadge: {
-    width: 38,
-    height: 38
+    width: "100%",
+    height: "100%"
+  },
+  titleWrap: {
+    flex: 1
   },
   brandTitle: {
     fontSize: 16,
     fontWeight: "900",
     color: COLORS.gold,
-    letterSpacing: 2
+    letterSpacing: 1.5
   },
   subtitle: {
     fontSize: 11,
@@ -84,7 +100,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.danger,
     borderWidth: 1,
     paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingVertical: 7,
     borderRadius: 8
   },
   managerText: {

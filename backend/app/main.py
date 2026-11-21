@@ -88,8 +88,14 @@ def on_startup():
     try:
         from app.seed_data import seed_database
         from app.seed_enterprise_data import seed_enterprise
+        from app.core.init_dual_business import init_dual_business
         seed_database()
         seed_enterprise()
+        try:
+            init_dual_business()
+        except Exception as dual_err:
+            import logging
+            logging.getLogger(__name__).warning(f"Dual business init note: {dual_err}")
         try:
             from scripts.import_full_catalogue import run_import
             run_import()

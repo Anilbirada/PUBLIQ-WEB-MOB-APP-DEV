@@ -59,6 +59,7 @@ export default function WaiterMobileApp() {
   // Billing & Invoice State
   const [billTableNum, setBillTableNum] = useState<string>("01");
   const [billPreview, setBillPreview] = useState<any | null>(null);
+  const [deptBillPreview, setDeptBillPreview] = useState<any | null>(null);
   const [discountPct, setDiscountPct] = useState<number>(0);
   const [qrPayload, setQrPayload] = useState<any | null>(null);
   const [showQRModal, setShowQRModal] = useState<boolean>(false);
@@ -195,46 +196,44 @@ export default function WaiterMobileApp() {
     }
   };
 
-  // Accept QR Order
-  const handleAcceptOrder = async (orderId: string) => {
+  // Department Order Approval (FOOD, BEVERAGE, or BOTH)
+  const handleDepartmentApproval = async (orderId: string, department: "FOOD" | "BEVERAGE" | "BOTH", action: "ACCEPT" | "REJECT", reason?: string) => {
     try {
-      const res = await fetch(`${API_BASE}/waiter/orders/${orderId}/accept`, {
+      const res = await fetch(`${API_BASE}/waiter/orders/${orderId}/department-approval`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}` 
         },
-        body: JSON.stringify({ waiter_name: waiter?.name || "Steward Raju" })
+        body: JSON.stringify({ 
+          department, 
+          action, 
+          rejection_reason: reason, 
+          waiter_name: waiter?.name || "Service Steward" 
+        })
       });
       if (res.ok) {
         fetchData();
-        alert("Order approved and dispatched to Kitchen KDS and Bar Station.");
+        alert(`${department} items ${action === "ACCEPT" ? "dispatched to station" : "rejected"}.`);
+      } else {
+        const err = await res.json();
+        alert(err.detail || "Action failed.");
       }
     } catch (e) {
-      alert("Failed to accept order.");
+      alert("Failed to process department approval.");
     }
+  };
+
+  // Accept QR Order
+  const handleAcceptOrder = async (orderId: string) => {
+    await handleDepartmentApproval(orderId, "BOTH", "ACCEPT");
   };
 
   // Reject QR Order
   const handleRejectOrder = async (orderId: string) => {
     const reason = prompt("Enter rejection reason (e.g. 86'd / kitchen full):", "Item currently unavailable");
     if (!reason) return;
-    try {
-      const res = await fetch(`${API_BASE}/waiter/orders/${orderId}/reject`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` 
-        },
-        body: JSON.stringify({ waiter_name: waiter?.name, reason })
-      });
-      if (res.ok) {
-        fetchData();
-        alert("Order rejected.");
-      }
-    } catch (e) {
-      alert("Failed to reject order.");
-    }
+    await handleDepartmentApproval(orderId, "BOTH", "REJECT", reason);
   };
 
   // Mark Order Served
@@ -401,17 +400,49 @@ export default function WaiterMobileApp() {
   const fetchBillForTable = async (tNum: string) => {
     setBillTableNum(tNum);
     try {
+      const deptRes = await fetch(`${API_BASE}/waiter/bills/department-preview/${tNum}?discount_pct=${discountPct}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (deptRes.ok) {
+        const dd = await deptRes.json();
+        setDeptBillPreview(dd);
+        const f = dd.food_bill || {};
+        const b = dd.beverage_bill || {};
+        setBillPreview({
+          order_id: dd.order_id,
+          order_number: dd.order_number,
+          table_number: dd.table_number,
+          customer_name: dd.customer_name || "Dine-in Guest",
+          subtotal: (f.subtotal || 0) + (b.subtotal || 0),
+          discount_amount: (f.discount_amount || 0) + (b.discount_amount || 0),
+          taxable_amount: (f.taxable_amount || 0) + (b.taxable_amount || 0),
+          cgst: (f.cgst || 0) + (b.cgst || 0),
+          sgst: (f.sgst || 0) + (b.sgst || 0),
+          grand_total: dd.combined_summary?.combined_total || ((f.grand_total || 0) + (b.grand_total || 0)),
+          items: [
+            ...(f.items || []).map((i: any) => ({ ...i, department: "FOOD" })),
+            ...(b.items || []).map((i: any) => ({ ...i, department: "BEVERAGE" }))
+          ]
+        });
+        return;
+      }
+    } catch (_) {}
+
+    try {
       const res = await fetch(`${API_BASE}/waiter/bills/preview/${tNum}?discount_pct=${discountPct}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
         const d = await res.json();
         setBillPreview(d);
+        setDeptBillPreview(null);
       } else {
         setBillPreview(null);
+        setDeptBillPreview(null);
       }
     } catch (e) {
       setBillPreview(null);
+      setDeptBillPreview(null);
     }
   };
 
@@ -421,8 +452,53 @@ export default function WaiterMobileApp() {
     }
   }, [billTableNum, discountPct, activeTab]);
 
+  const handleGenerateDepartmentInvoice = async (department: "FOOD" | "BEVERAGE") => {
+    if (!billPreview) return;
+    setIsGeneratingInvoice(true);
+    try {
+      const res = await fetch(`${API_BASE}/waiter/bills/generate-department-invoice`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          table_number: billTableNum,
+          order_id: billPreview.order_id,
+          department,
+          discount_pct: discountPct,
+          waiter_name: waiter?.name || "Service Steward"
+        })
+      });
+      if (res.ok) {
+        const inv = await res.json();
+        setGeneratedInvoice(inv);
+        setShowInvoiceModal(true);
+        fetchBillForTable(billTableNum);
+        fetchData();
+      } else {
+        const err = await res.json();
+        alert(err.detail || `Failed to generate ${department} invoice.`);
+      }
+    } catch (e) {
+      alert("Invoice generation failed.");
+    } finally {
+      setIsGeneratingInvoice(false);
+    }
+  };
+
   // Generate Official Tax Invoice
   const handleGenerateInvoice = async () => {
+    if (deptBillPreview?.food_bill && deptBillPreview?.beverage_bill) {
+      const choice = confirm("Click OK to generate Food Invoice (Anil: PUB-FOOD-...) or Cancel to generate Drinks Invoice (Ramesh: PUB-BEV-...)");
+      if (choice) {
+        await handleGenerateDepartmentInvoice("FOOD");
+      } else {
+        await handleGenerateDepartmentInvoice("BEVERAGE");
+      }
+      return;
+    }
+
     if (!billPreview) return;
     setIsGeneratingInvoice(true);
     try {
@@ -1136,7 +1212,29 @@ export default function WaiterMobileApp() {
                     {/* Food Items */}
                     {order.food_items && order.food_items.length > 0 && (
                       <div className="space-y-1">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">🍳 Kitchen Dishes ({order.food_items.length})</p>
+                        <div className="flex justify-between items-center">
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">🍳 Kitchen Dishes ({order.food_items.length}) • Owner: Anil</p>
+                          {order.food_status === "ACCEPTED" ? (
+                            <span className="text-[10px] text-emerald-400 font-bold">✓ IN KITCHEN</span>
+                          ) : order.food_status === "REJECTED" ? (
+                            <span className="text-[10px] text-rose-400 font-bold">✕ REJECTED</span>
+                          ) : (
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => handleDepartmentApproval(order.order_id, "FOOD", "ACCEPT")}
+                                className="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold"
+                              >
+                                Accept Food
+                              </button>
+                              <button
+                                onClick={() => handleDepartmentApproval(order.order_id, "FOOD", "REJECT", "Unavailable")}
+                                className="px-2 py-0.5 rounded bg-rose-900 hover:bg-rose-800 text-rose-300 text-[10px] font-bold"
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          )}
+                        </div>
                         {order.food_items.map((fi: any) => (
                           <div key={fi.id} className="flex justify-between text-xs py-0.5">
                             <span className="text-slate-200"><span className="text-[#D4AF37] font-bold">{fi.quantity}x</span> {fi.item_name}</span>
@@ -1149,10 +1247,32 @@ export default function WaiterMobileApp() {
                     {/* Drink Items */}
                     {order.drink_items && order.drink_items.length > 0 && (
                       <div className="space-y-1 pt-1 border-t border-slate-800/60">
-                        <p className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-wider">🍸 Artisan Bar Drinks ({order.drink_items.length})</p>
+                        <div className="flex justify-between items-center">
+                          <p className="text-[10px] font-bold text-[#38BDF8] uppercase tracking-wider">🍸 Artisan Bar Drinks ({order.drink_items.length}) • Owner: Ramesh</p>
+                          {order.beverage_status === "ACCEPTED" ? (
+                            <span className="text-[10px] text-[#38BDF8] font-bold">✓ IN BAR</span>
+                          ) : order.beverage_status === "REJECTED" ? (
+                            <span className="text-[10px] text-rose-400 font-bold">✕ REJECTED</span>
+                          ) : (
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => handleDepartmentApproval(order.order_id, "BEVERAGE", "ACCEPT")}
+                                className="px-2 py-0.5 rounded bg-[#38BDF8] hover:bg-sky-400 text-black text-[10px] font-bold"
+                              >
+                                Accept Drinks
+                              </button>
+                              <button
+                                onClick={() => handleDepartmentApproval(order.order_id, "BEVERAGE", "REJECT", "Unavailable")}
+                                className="px-2 py-0.5 rounded bg-rose-900 hover:bg-rose-800 text-rose-300 text-[10px] font-bold"
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          )}
+                        </div>
                         {order.drink_items.map((di: any) => (
                           <div key={di.id} className="flex justify-between text-xs py-0.5">
-                            <span className="text-slate-200"><span className="text-[#D4AF37] font-bold">{di.quantity}x</span> {di.item_name} ({di.variant_name || "Standard"})</span>
+                            <span className="text-slate-200"><span className="text-[#38BDF8] font-bold">{di.quantity}x</span> {di.item_name} ({di.variant_name || "Standard"})</span>
                             <span className="text-slate-400">₹{di.total_price.toFixed(2)}</span>
                           </div>
                         ))}
@@ -1556,6 +1676,36 @@ export default function WaiterMobileApp() {
                     </div>
                   </div>
 
+                  {/* Dual Business Department Actions */}
+                  {deptBillPreview && (
+                    <div className="space-y-2 p-3 bg-[#090E17] rounded-xl border border-slate-800 text-xs">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                        Dual-Business Department Invoicing
+                      </span>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => handleGenerateDepartmentInvoice("FOOD")}
+                          disabled={isGeneratingInvoice}
+                          className="p-2.5 rounded-lg bg-[#151F33] border border-[#D4AF37]/50 text-[#D4AF37] text-[11px] font-bold hover:bg-[#1E2B45] text-left"
+                        >
+                          <span className="block text-[9px] text-slate-400">ANIL (FOOD)</span>
+                          <span className="font-serif">₹{(deptBillPreview.food_bill?.grand_total || 0).toFixed(2)}</span>
+                          <span className="block text-[8px] text-emerald-400 mt-0.5">PUB-FOOD Invoice →</span>
+                        </button>
+
+                        <button
+                          onClick={() => handleGenerateDepartmentInvoice("BEVERAGE")}
+                          disabled={isGeneratingInvoice}
+                          className="p-2.5 rounded-lg bg-[#151F33] border border-[#38BDF8]/50 text-[#38BDF8] text-[11px] font-bold hover:bg-[#1E2B45] text-left"
+                        >
+                          <span className="block text-[9px] text-slate-400">RAMESH (DRINKS)</span>
+                          <span className="font-serif">₹{(deptBillPreview.beverage_bill?.grand_total || 0).toFixed(2)}</span>
+                          <span className="block text-[8px] text-sky-400 mt-0.5">PUB-BEV Invoice →</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Invoice Generation & Payment Actions */}
                   <div className="space-y-2 pt-2">
                     {/* 1. Generate GST Tax Invoice Button */}
@@ -1774,10 +1924,10 @@ export default function WaiterMobileApp() {
 
               {/* Invoice Line Items */}
               <div className="space-y-1 text-xs max-h-36 overflow-y-auto pr-1">
-                {generatedInvoice.items.map((it: any) => (
-                  <div key={it.id} className="flex justify-between py-0.5 border-b border-slate-800/40">
+                {(generatedInvoice.items || billPreview?.items || []).map((it: any) => (
+                  <div key={it.id || it.item_name} className="flex justify-between py-0.5 border-b border-slate-800/40">
                     <span className="text-slate-200">{it.quantity}x {it.item_name}</span>
-                    <span className="text-white font-medium">₹{it.total_price.toFixed(2)}</span>
+                    <span className="text-white font-medium">₹{(it.total_price || 0).toFixed(2)}</span>
                   </div>
                 ))}
               </div>

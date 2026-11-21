@@ -14,8 +14,9 @@ from app.core.database import get_db
 from app.models import (
     Employee, Outlet, RestaurantTable, Order, OrderItem,
     PosBill, CashierShift, TableQrToken, AuditLog, MenuItem,
-    MenuCategory, MenuVariant, MenuAddon
+    MenuCategory, MenuVariant, MenuAddon, BusinessOwner, DepartmentInvoice
 )
+from app.core.department import determine_item_department
 from app.core.security import create_access_token
 from app.websockets.connection_manager import manager
 
@@ -101,7 +102,7 @@ def get_waiter_dashboard(outlet_id: Optional[str] = None, db: Session = Depends(
     pending_approval = order_q.filter(Order.order_status == "PLACED").count()
     preparing_orders = order_q.filter(Order.order_status.in_(["ACCEPTED", "PREPARING"])).count()
     ready_to_serve = order_q.filter(Order.order_status == "READY").count()
-    served_active = order_q.filter(Order.order_status == "SERVED", Order.payment_status == "PENDING").count()
+    unsettled_orders = order_q.filter(Order.order_status.notin_(["CANCELLED", "REJECTED"]), Order.payment_status != "PAID").count()
     
     return {
         "status": "success",
@@ -113,7 +114,7 @@ def get_waiter_dashboard(outlet_id: Optional[str] = None, db: Session = Depends(
             "pending_approval": pending_approval,
             "preparing_orders": preparing_orders,
             "ready_to_serve": ready_to_serve,
-            "pending_bills": served_active
+            "pending_bills": unsettled_orders
         }
     }
 
@@ -252,7 +253,11 @@ def update_table_status(table_number: str, payload: Dict[str, Any] = Body(...), 
 @router.get("/orders/pending-approval")
 def get_pending_qr_orders(outlet_id: Optional[str] = None, db: Session = Depends(get_db)):
     """List customer orders submitted via QR code that need waiter review."""
-    q = db.query(Order).filter(Order.order_status == "PLACED")
+    q = db.query(Order).filter(
+        (Order.order_status == "PLACED") |
+        (Order.food_status == "PENDING_APPROVAL") |
+        (Order.beverage_status == "PENDING_APPROVAL")
+    )
     if outlet_id:
         q = q.filter(Order.outlet_id == outlet_id)
     orders = q.order_by(Order.created_at.asc()).all()
@@ -260,8 +265,8 @@ def get_pending_qr_orders(outlet_id: Optional[str] = None, db: Session = Depends
     results = []
     for ord in orders:
         items = db.query(OrderItem).filter(OrderItem.order_id == ord.id).all()
-        food_items = [it for it in items if not it.kitchen_station or "BAR" not in it.kitchen_station]
-        bar_items = [it for it in items if it.kitchen_station and "BAR" in it.kitchen_station]
+        food_items = [it for it in items if (it.department == "FOOD" or (not it.department and ("BAR" not in (it.kitchen_station or ""))))]
+        bar_items = [it for it in items if (it.department == "BEVERAGE" or (not it.department and ("BAR" in (it.kitchen_station or ""))))]
         
         results.append({
             "order_id": ord.id,
@@ -271,6 +276,12 @@ def get_pending_qr_orders(outlet_id: Optional[str] = None, db: Session = Depends
             "customer_phone": ord.customer_phone,
             "created_at": ord.created_at.isoformat() if ord.created_at else None,
             "subtotal": ord.subtotal,
+            "food_subtotal": ord.food_subtotal or sum(it.total_price for it in food_items if it.item_status != "REJECTED"),
+            "beverage_subtotal": ord.beverage_subtotal or sum(it.total_price for it in bar_items if it.item_status != "REJECTED"),
+            "food_status": ord.food_status,
+            "beverage_status": ord.beverage_status,
+            "food_rejection_reason": ord.food_rejection_reason,
+            "beverage_rejection_reason": ord.beverage_rejection_reason,
             "cgst": ord.cgst,
             "sgst": ord.sgst,
             "final_amount": ord.final_amount,
@@ -280,26 +291,171 @@ def get_pending_qr_orders(outlet_id: Optional[str] = None, db: Session = Depends
                 {
                     "id": it.id,
                     "item_name": it.item_name,
+                    "department": it.department or "FOOD",
+                    "item_status": it.item_status or "PENDING",
                     "quantity": it.quantity,
                     "variant_name": it.variant_name,
                     "unit_price": it.unit_price,
                     "total_price": it.total_price,
-                    "special_request": it.special_request
+                    "special_request": it.special_request,
+                    "rejection_reason": it.rejection_reason
                 } for it in food_items
             ],
             "bar_items": [
                 {
                     "id": it.id,
                     "item_name": it.item_name,
+                    "department": it.department or "BEVERAGE",
+                    "item_status": it.item_status or "PENDING",
                     "quantity": it.quantity,
                     "variant_name": it.variant_name,
                     "unit_price": it.unit_price,
                     "total_price": it.total_price,
-                    "special_request": it.special_request
+                    "special_request": it.special_request,
+                    "rejection_reason": it.rejection_reason
+                } for it in bar_items
+            ],
+            "beverage_items": [
+                {
+                    "id": it.id,
+                    "item_name": it.item_name,
+                    "department": it.department or "BEVERAGE",
+                    "item_status": it.item_status or "PENDING",
+                    "quantity": it.quantity,
+                    "variant_name": it.variant_name,
+                    "unit_price": it.unit_price,
+                    "total_price": it.total_price,
+                    "special_request": it.special_request,
+                    "rejection_reason": it.rejection_reason
                 } for it in bar_items
             ]
         })
     return results
+
+@router.post("/orders/{order_id}/department-approval")
+async def department_order_approval(
+    order_id: str,
+    payload: Dict[str, Any] = Body(...),
+    db: Session = Depends(get_db)
+):
+    """
+    Independent waiter approval / rejection for Food (Kitchen - Anil) and Beverage (Bar - Ramesh).
+    Payload: {
+        "department": "FOOD" | "BEVERAGE" | "BOTH",
+        "action": "ACCEPT" | "REJECT",
+        "reason": "Kitchen closed / out of stock",
+        "waiter_name": "Steward Raju"
+    }
+    """
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found.")
+        
+    dept = str(payload.get("department", "BOTH")).strip().upper()
+    action = str(payload.get("action", "ACCEPT")).strip().upper()
+    reason = str(payload.get("reason", "Item unavailable or kitchen/bar capacity reached")).strip()
+    waiter_name = str(payload.get("waiter_name", "Service Steward")).strip()
+    now_utc = datetime.now(timezone.utc)
+    
+    items = db.query(OrderItem).filter(OrderItem.order_id == order.id).all()
+    
+    # Process FOOD
+    if dept in ["FOOD", "BOTH"]:
+        food_items = [it for it in items if (it.department == "FOOD" or (not it.department and ("BAR" not in (it.kitchen_station or ""))))]
+        if action == "ACCEPT":
+            order.food_status = "ACCEPTED"
+            order.food_rejection_reason = None
+            for it in food_items:
+                it.item_status = "ACCEPTED"
+                it.rejection_reason = None
+        else: # REJECT
+            order.food_status = "REJECTED"
+            order.food_rejection_reason = reason
+            for it in food_items:
+                it.item_status = "REJECTED"
+                it.rejection_reason = reason
+
+    # Process BEVERAGE
+    if dept in ["BEVERAGE", "BOTH"]:
+        bev_items = [it for it in items if (it.department == "BEVERAGE" or (not it.department and ("BAR" in (it.kitchen_station or ""))))]
+        if action == "ACCEPT":
+            order.beverage_status = "ACCEPTED"
+            order.beverage_rejection_reason = None
+            for it in bev_items:
+                it.item_status = "ACCEPTED"
+                it.rejection_reason = None
+        else: # REJECT
+            order.beverage_status = "REJECTED"
+            order.beverage_rejection_reason = reason
+            for it in bev_items:
+                it.item_status = "REJECTED"
+                it.rejection_reason = reason
+
+    # Recompute active billables (rejected items never billed)
+    active_food = [it for it in items if (it.department == "FOOD" or (not it.department and ("BAR" not in (it.kitchen_station or "")))) and it.item_status != "REJECTED"]
+    active_bev = [it for it in items if (it.department == "BEVERAGE" or (not it.department and ("BAR" in (it.kitchen_station or "")))) and it.item_status != "REJECTED"]
+    
+    order.food_subtotal = round(sum(it.total_price for it in active_food), 2)
+    order.beverage_subtotal = round(sum(it.total_price for it in active_bev), 2)
+    order.subtotal = round(order.food_subtotal + order.beverage_subtotal, 2)
+    order.cgst = round(order.subtotal * 0.025, 2)
+    order.sgst = round(order.subtotal * 0.025, 2)
+    order.final_amount = round(order.subtotal + order.cgst + order.sgst, 2)
+    order.updated_at = now_utc
+    order.approved_by_waiter = waiter_name
+    order.approved_at = now_utc
+    
+    # Check overall order status
+    any_accepted = (order.food_status in ["ACCEPTED", "PREPARING", "READY", "SERVED"]) or \
+                   (order.beverage_status in ["ACCEPTED", "PREPARING", "READY", "SERVED"])
+    all_rejected = (order.food_status in ["REJECTED", "NOT_ORDERED"]) and \
+                   (order.beverage_status in ["REJECTED", "NOT_ORDERED"])
+                   
+    if all_rejected:
+        order.order_status = "CANCELLED"
+    elif any_accepted:
+        order.order_status = "ACCEPTED"
+        if order.table_number:
+            tbl = db.query(RestaurantTable).filter(RestaurantTable.table_number == order.table_number).first()
+            if tbl:
+                tbl.is_occupied = True
+                
+    audit = AuditLog(
+        entity_type="ORDER",
+        entity_id=order.id,
+        action=f"ORDER_{dept}_{action}_BY_WAITER",
+        details={"waiter": waiter_name, "department": dept, "action": action, "reason": reason if action == "REJECT" else "Approved"}
+    )
+    db.add(audit)
+    db.commit()
+    
+    # Broadcast WebSocket notification
+    await manager.broadcast_order_update(order.id, {
+        "event": "DEPARTMENT_APPROVAL",
+        "order_id": order.id,
+        "order_number": order.order_number,
+        "department": dept,
+        "action": action,
+        "reason": reason if action == "REJECT" else None,
+        "order_status": order.order_status if isinstance(order.order_status, str) else order.order_status.value,
+        "food_status": order.food_status,
+        "beverage_status": order.beverage_status,
+        "food_subtotal": order.food_subtotal,
+        "beverage_subtotal": order.beverage_subtotal,
+        "waiter": waiter_name
+    })
+    
+    return {
+        "status": "success",
+        "message": f"{dept} items marked as {action} by {waiter_name}.",
+        "order_id": order.id,
+        "order_number": order.order_number,
+        "department": dept,
+        "action": action,
+        "food_status": order.food_status,
+        "beverage_status": order.beverage_status,
+        "order_status": order.order_status if isinstance(order.order_status, str) else order.order_status.value
+    }
 
 @router.post("/orders/{order_id}/accept")
 async def accept_customer_order(
@@ -308,57 +464,13 @@ async def accept_customer_order(
     db: Session = Depends(get_db)
 ):
     """
-    Waiter reviews and accepts order.
-    Routes food items to Kitchen KDS and beverage items to Bar Dispense Station.
+    Accept all pending departments in customer order.
     """
-    order = db.query(Order).filter(Order.id == order_id).first()
-    if not order:
-        raise HTTPException(status_code=404, detail="Order not found.")
-        
-    if order.order_status != "PLACED":
-        raise HTTPException(status_code=400, detail=f"Order is already in '{order.order_status}' status.")
-        
-    waiter_name = payload.get("waiter_name", "Service Steward")
-    
-    # Advance status
-    order.order_status = "ACCEPTED"
-    order.food_status = "PREPARING"
-    order.beverage_status = "PREPARING"
-    order.updated_at = datetime.now(timezone.utc)
-    
-    # Mark table occupied
-    if order.table_number:
-        table = db.query(RestaurantTable).filter(RestaurantTable.table_number == order.table_number).first()
-        if table:
-            table.is_occupied = True
-            
-    # Audit log
-    audit = AuditLog(
-        entity_type="ORDER",
-        entity_id=order.id,
-        action="ORDER_ACCEPTED_BY_WAITER",
-        details={"waiter": waiter_name, "table": order.table_number, "order_number": order.order_number}
+    return await department_order_approval(
+        order_id=order_id,
+        payload={"department": "BOTH", "action": "ACCEPT", "waiter_name": payload.get("waiter_name", "Service Steward")},
+        db=db
     )
-    db.add(audit)
-    db.commit()
-    
-    # Broadcast WebSocket notification
-    await manager.broadcast_order_update(order.id, {
-        "event": "ORDER_ACCEPTED",
-        "order_id": order.id,
-        "order_number": order.order_number,
-        "status": "ACCEPTED",
-        "food_status": "PREPARING",
-        "beverage_status": "PREPARING",
-        "waiter": waiter_name
-    })
-    
-    return {
-        "status": "success",
-        "message": f"Order {order.order_number} approved and dispatched to Kitchen KDS and Bar Station.",
-        "order_id": order.id,
-        "order_number": order.order_number
-    }
 
 @router.post("/orders/{order_id}/reject")
 async def reject_customer_order(
@@ -366,36 +478,19 @@ async def reject_customer_order(
     payload: Dict[str, Any] = Body(...),
     db: Session = Depends(get_db)
 ):
-    """Reject an order with an operational reason."""
-    reason = payload.get("reason", "Item unavailable or kitchen capacity reached")
-    waiter_name = payload.get("waiter_name", "Service Steward")
-    
-    order = db.query(Order).filter(Order.id == order_id).first()
-    if not order:
-        raise HTTPException(status_code=404, detail="Order not found.")
-        
-    order.order_status = "CANCELLED"
-    order.food_status = "CANCELLED"
-    order.beverage_status = "CANCELLED"
-    order.special_instructions = f"Rejected: {reason}"
-    order.updated_at = datetime.now(timezone.utc)
-    
-    audit = AuditLog(
-        entity_type="ORDER",
-        entity_id=order.id,
-        action="ORDER_REJECTED_BY_WAITER",
-        details={"waiter": waiter_name, "reason": reason, "table": order.table_number}
+    """
+    Reject all departments in customer order with an operational reason.
+    """
+    return await department_order_approval(
+        order_id=order_id,
+        payload={
+            "department": "BOTH",
+            "action": "REJECT",
+            "reason": payload.get("reason", "Item unavailable or kitchen capacity reached"),
+            "waiter_name": payload.get("waiter_name", "Service Steward")
+        },
+        db=db
     )
-    db.add(audit)
-    db.commit()
-    
-    await manager.broadcast_order_update(order.id, {
-        "event": "ORDER_REJECTED",
-        "order_id": order.id,
-        "reason": reason
-    })
-    
-    return {"status": "success", "message": f"Order {order.order_number} has been rejected.", "reason": reason}
 
 # -----------------------------------------------------------------------------
 # 5. WAITER MANUAL ORDER CREATION
@@ -430,6 +525,8 @@ async def create_manual_waiter_order(
     
     # Calculate pricing and prepare items
     subtotal = 0.0
+    food_subtotal = 0.0
+    beverage_subtotal = 0.0
     order_items_to_create = []
     
     for it in items_data:
@@ -440,6 +537,7 @@ async def create_manual_waiter_order(
         special_req = it.get("special_request", "")
         item_name = it.get("item_name", "Dish")
         is_alcohol = bool(it.get("is_alcohol", False))
+        dept = "BEVERAGE" if is_alcohol else "FOOD"
         
         # Verify from database if item exists
         if item_id:
@@ -448,16 +546,22 @@ async def create_manual_waiter_order(
                 item_name = db_item.name
                 unit_price = db_item.base_price
                 is_alcohol = db_item.is_alcohol
+                dept = determine_item_department(db_item)
                 
         line_total = round(unit_price * qty, 2)
         subtotal += line_total
+        if dept == "BEVERAGE":
+            beverage_subtotal += line_total
+        else:
+            food_subtotal += line_total
         
-        station = "BAR" if is_alcohol else "MAIN_KITCHEN"
+        station = "BAR" if dept == "BEVERAGE" else "MAIN_KITCHEN"
         
         order_items_to_create.append({
             "item_id": item_id or str(uuid.uuid4()),
             "item_name": item_name,
             "variant_name": variant_name,
+            "department": dept,
             "quantity": qty,
             "unit_price": unit_price,
             "total_price": line_total,
@@ -479,9 +583,11 @@ async def create_manual_waiter_order(
         table_number=table_number,
         order_status="ACCEPTED",
         payment_status="PENDING",
-        food_status="PREPARING",
-        beverage_status="PREPARING",
+        food_status="ACCEPTED" if food_subtotal > 0 else "NOT_ORDERED",
+        beverage_status="ACCEPTED" if beverage_subtotal > 0 else "NOT_ORDERED",
         subtotal=subtotal,
+        food_subtotal=round(food_subtotal, 2),
+        beverage_subtotal=round(beverage_subtotal, 2),
         cgst=cgst,
         sgst=sgst,
         final_amount=final_amount,
@@ -500,6 +606,8 @@ async def create_manual_waiter_order(
             item_id=oic["item_id"],
             item_name=oic["item_name"],
             variant_name=oic["variant_name"],
+            department=oic["department"],
+            item_status="ACCEPTED",
             quantity=oic["quantity"],
             unit_price=oic["unit_price"],
             total_price=oic["total_price"],
@@ -586,27 +694,306 @@ def get_live_prep_orders(outlet_id: Optional[str] = None, db: Session = Depends(
 
 @router.post("/orders/{order_id}/serve")
 async def mark_order_served(order_id: str, payload: Dict[str, Any] = Body(default={}), db: Session = Depends(get_db)):
-    """Mark an entire order as served to the guests."""
+    """
+    Mark food, beverage, or entire order as served.
+    Payload: { "department": "FOOD" | "BEVERAGE" | "ALL", "waiter_name": "..." }
+    """
     waiter_name = payload.get("waiter_name", "Service Steward")
+    dept = str(payload.get("department", "ALL")).strip().upper()
     order = db.query(Order).filter(Order.id == order_id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found.")
         
-    order.order_status = "SERVED"
-    order.food_status = "SERVED"
-    order.beverage_status = "SERVED"
-    order.updated_at = datetime.now(timezone.utc)
+    now_utc = datetime.now(timezone.utc)
+    if dept in ["FOOD", "ALL"]:
+        order.food_status = "SERVED"
+    if dept in ["BEVERAGE", "ALL"]:
+        order.beverage_status = "SERVED"
+        
+    # Check if both are served
+    food_done = order.food_status in ["SERVED", "REJECTED", "NOT_ORDERED"]
+    bev_done = order.beverage_status in ["SERVED", "REJECTED", "NOT_ORDERED"]
+    if food_done and bev_done:
+        order.order_status = "SERVED"
+        
+    order.updated_at = now_utc
     
     audit = AuditLog(
         entity_type="ORDER",
         entity_id=order.id,
-        action="ORDER_SERVED",
-        details={"waiter": waiter_name, "table": order.table_number}
+        action=f"ORDER_{dept}_SERVED",
+        details={"waiter": waiter_name, "table": order.table_number, "department": dept}
     )
     db.add(audit)
     db.commit()
     
-    return {"status": "success", "message": f"Order {order.order_number} marked as SERVED."}
+    await manager.broadcast_order_update(order.id, {
+        "event": "ORDER_SERVED",
+        "order_id": order.id,
+        "department": dept,
+        "food_status": order.food_status,
+        "beverage_status": order.beverage_status,
+        "order_status": order.order_status if isinstance(order.order_status, str) else order.order_status.value
+    })
+    
+    return {
+        "status": "success",
+        "message": f"Order {order.order_number} ({dept}) marked as SERVED.",
+        "food_status": order.food_status,
+        "beverage_status": order.beverage_status,
+        "order_status": order.order_status if isinstance(order.order_status, str) else order.order_status.value
+    }
+
+@router.get("/bills/department-preview/{table_number}")
+def preview_department_bills(table_number: str, discount_pct: float = 0.0, db: Session = Depends(get_db)):
+    """
+    Generate independent Food Bill (Anil: 8431712924-3@ybl) and Beverage Bill (Ramesh S P: ramesh776059@ybl)
+    along with combined summary for the table.
+    """
+    cands = [table_number, table_number.replace("T-", "").replace("T", "").strip()]
+    if len(cands) > 1 and cands[1].isdigit():
+        cands.append(cands[1].zfill(2))
+        cands.append(str(int(cands[1])))
+    cands = list(set(c for c in cands if c))
+
+    order = db.query(Order).filter(
+        Order.table_number.in_(cands),
+        Order.order_status.notin_(["CANCELLED", "REJECTED"]),
+        Order.payment_status != "PAID"
+    ).order_by(Order.created_at.desc()).first()
+    
+    if not order:
+        raise HTTPException(status_code=404, detail=f"No active unsettled order found for Table {table_number}.")
+        
+    items = db.query(OrderItem).filter(
+        OrderItem.order_id == order.id,
+        OrderItem.item_status != "REJECTED"
+    ).all()
+    
+    # Owners
+    food_owner = db.query(BusinessOwner).filter(BusinessOwner.department == "FOOD").first()
+    bev_owner = db.query(BusinessOwner).filter(BusinessOwner.department == "BEVERAGE").first()
+    
+    food_owner_name = food_owner.owner_name if food_owner else "ANIL"
+    food_upi = food_owner.upi_id if food_owner else "8431712924-3@ybl"
+    food_qr = food_owner.qr_image_url if food_owner else "/payments/food_upi_qr.jpg"
+    food_biz = food_owner.business_name if food_owner else "PUBLIQ Food & Kitchen"
+    
+    bev_owner_name = bev_owner.owner_name if bev_owner else "RAMESH S P"
+    bev_upi = bev_owner.upi_id if bev_owner else "ramesh776059@ybl"
+    bev_qr = bev_owner.qr_image_url if bev_owner else "/payments/beverage_upi_qr.jpg"
+    bev_biz = bev_owner.business_name if bev_owner else "PUBLIQ Bar & Beverages"
+    
+    # Separate items
+    food_items = [it for it in items if (it.department == "FOOD" or (not it.department and ("BAR" not in (it.kitchen_station or ""))))]
+    bev_items = [it for it in items if (it.department == "BEVERAGE" or (not it.department and ("BAR" in (it.kitchen_station or ""))))]
+    
+    # Existing invoices
+    food_inv = db.query(DepartmentInvoice).filter(DepartmentInvoice.order_id == order.id, DepartmentInvoice.department == "FOOD").first()
+    bev_inv = db.query(DepartmentInvoice).filter(DepartmentInvoice.order_id == order.id, DepartmentInvoice.department == "BEVERAGE").first()
+    
+    # Food calculations
+    f_subtotal = round(sum(it.total_price for it in food_items), 2)
+    f_disc = round(f_subtotal * (discount_pct / 100.0), 2)
+    f_taxable = round(f_subtotal - f_disc, 2)
+    f_cgst = round(f_taxable * 0.025, 2)
+    f_sgst = round(f_taxable * 0.025, 2)
+    f_grand = round(f_taxable + f_cgst + f_sgst, 2)
+    
+    # Beverage calculations
+    b_subtotal = round(sum(it.total_price for it in bev_items), 2)
+    b_disc = round(b_subtotal * (discount_pct / 100.0), 2)
+    b_taxable = round(b_subtotal - b_disc, 2)
+    b_cgst = round(b_taxable * 0.025, 2)
+    b_sgst = round(b_taxable * 0.025, 2)
+    b_grand = round(b_taxable + b_cgst + b_sgst, 2)
+    
+    food_paid = (food_inv.payment_status == "PAID") if food_inv else False
+    bev_paid = (bev_inv.payment_status == "PAID") if bev_inv else False
+    
+    return {
+        "order_id": order.id,
+        "order_number": order.order_number,
+        "table_number": table_number,
+        "customer_name": order.customer_name or "Dine-in Guest",
+        "customer_phone": order.customer_phone,
+        "food_bill": {
+            "department": "FOOD",
+            "owner_name": food_owner_name,
+            "business_name": food_biz,
+            "upi_id": food_upi,
+            "qr_image_url": food_qr,
+            "sac_code": "996331",
+            "subtotal": f_subtotal,
+            "discount_pct": discount_pct,
+            "discount_amount": f_disc,
+            "taxable_amount": f_taxable,
+            "cgst": f_cgst,
+            "sgst": f_sgst,
+            "grand_total": f_grand,
+            "payment_status": food_inv.payment_status if food_inv else "PENDING",
+            "invoice_id": food_inv.id if food_inv else None,
+            "invoice_number": food_inv.invoice_number if food_inv else None,
+            "upi_reference": food_inv.upi_reference if food_inv else None,
+            "items": [
+                {
+                    "id": it.id,
+                    "item_name": it.item_name,
+                    "quantity": it.quantity,
+                    "unit_price": it.unit_price,
+                    "total_price": it.total_price
+                } for it in food_items
+            ]
+        },
+        "beverage_bill": {
+            "department": "BEVERAGE",
+            "owner_name": bev_owner_name,
+            "business_name": bev_biz,
+            "upi_id": bev_upi,
+            "qr_image_url": bev_qr,
+            "sac_code": "996331",
+            "subtotal": b_subtotal,
+            "discount_pct": discount_pct,
+            "discount_amount": b_disc,
+            "taxable_amount": b_taxable,
+            "cgst": b_cgst,
+            "sgst": b_sgst,
+            "grand_total": b_grand,
+            "payment_status": bev_inv.payment_status if bev_inv else "PENDING",
+            "invoice_id": bev_inv.id if bev_inv else None,
+            "invoice_number": bev_inv.invoice_number if bev_inv else None,
+            "upi_reference": bev_inv.upi_reference if bev_inv else None,
+            "items": [
+                {
+                    "id": it.id,
+                    "item_name": it.item_name,
+                    "quantity": it.quantity,
+                    "unit_price": it.unit_price,
+                    "total_price": it.total_price
+                } for it in bev_items
+            ]
+        },
+        "combined_summary": {
+            "food_total": f_grand,
+            "beverage_total": b_grand,
+            "combined_total": round(f_grand + b_grand, 2),
+            "is_food_paid": food_paid,
+            "is_beverage_paid": bev_paid,
+            "is_fully_settled": (f_subtotal == 0 or food_paid) and (b_subtotal == 0 or bev_paid)
+        }
+    }
+
+@router.post("/bills/generate-department-invoice")
+def generate_department_invoice(payload: Dict[str, Any] = Body(...), db: Session = Depends(get_db)):
+    """
+    Generate or fetch official Department GST Tax Invoice:
+    - FOOD -> ANIL (8431712924-3@ybl) with prefix PUB-FOOD-YYYYMM-XXXXX
+    - BEVERAGE -> RAMESH S P (ramesh776059@ybl) with prefix PUB-BEV-YYYYMM-XXXXX
+    """
+    table_number = str(payload.get("table_number", "")).strip()
+    order_id = payload.get("order_id")
+    dept = str(payload.get("department", "FOOD")).strip().upper()
+    discount_pct = float(payload.get("discount_pct", 0.0))
+    waiter_name = str(payload.get("waiter_name", "Service Steward"))
+    
+    if dept not in ["FOOD", "BEVERAGE"]:
+        raise HTTPException(status_code=400, detail="Department must be 'FOOD' or 'BEVERAGE'.")
+        
+    order = None
+    if order_id:
+        order = db.query(Order).filter(Order.id == order_id).first()
+    elif table_number:
+        order = db.query(Order).filter(
+            Order.table_number == table_number,
+            Order.order_status.in_(["PLACED", "ACCEPTED", "PREPARING", "READY", "SERVED"]),
+            Order.payment_status.in_(["PENDING", "PAY_AT_COUNTER"])
+        ).order_by(Order.created_at.desc()).first()
+        
+    if not order:
+        raise HTTPException(status_code=404, detail=f"No active unsettled order found for Table {table_number or order_id}.")
+        
+    # Check if invoice already exists
+    existing_inv = db.query(DepartmentInvoice).filter(
+        DepartmentInvoice.order_id == order.id,
+        DepartmentInvoice.department == dept
+    ).first()
+    if existing_inv:
+        return existing_inv
+        
+    # Query items for this department
+    all_items = db.query(OrderItem).filter(
+        OrderItem.order_id == order.id,
+        OrderItem.item_status != "REJECTED"
+    ).all()
+    
+    if dept == "FOOD":
+        dept_items = [it for it in all_items if (it.department == "FOOD" or (not it.department and ("BAR" not in (it.kitchen_station or ""))))]
+    else:
+        dept_items = [it for it in all_items if (it.department == "BEVERAGE" or (not it.department and ("BAR" in (it.kitchen_station or ""))))]
+        
+    if not dept_items:
+        raise HTTPException(status_code=400, detail=f"No billable {dept.lower()} items found for this table.")
+        
+    # Fetch owner settings
+    owner = db.query(BusinessOwner).filter(BusinessOwner.department == dept).first()
+    if dept == "FOOD":
+        owner_name = owner.owner_name if owner else "ANIL"
+        upi_id = owner.upi_id if owner else "8431712924-3@ybl"
+        qr_image = owner.qr_image_url if owner else "/payments/food_upi_qr.jpg"
+        biz_name = owner.business_name if owner else "PUBLIQ Food & Kitchen"
+    else:
+        owner_name = owner.owner_name if owner else "RAMESH S P"
+        upi_id = owner.upi_id if owner else "ramesh776059@ybl"
+        qr_image = owner.qr_image_url if owner else "/payments/beverage_upi_qr.jpg"
+        biz_name = owner.business_name if owner else "PUBLIQ Bar & Beverages"
+        
+    subtotal = round(sum(it.total_price for it in dept_items), 2)
+    discount_amount = round(subtotal * (discount_pct / 100.0), 2)
+    taxable_value = round(subtotal - discount_amount, 2)
+    cgst = round(taxable_value * 0.025, 2)
+    sgst = round(taxable_value * 0.025, 2)
+    grand_total = round(taxable_value + cgst + sgst, 2)
+    
+    prefix = "PUB-FOOD" if dept == "FOOD" else "PUB-BEV"
+    inv_number = f"{prefix}-{datetime.now().strftime('%Y%m')}-{str(uuid.uuid4())[:5].upper()}"
+    
+    items_json = [
+        {
+            "item_name": it.item_name,
+            "quantity": it.quantity,
+            "unit_price": it.unit_price,
+            "total_price": it.total_price,
+            "variant_name": it.variant_name
+        } for it in dept_items
+    ]
+    
+    new_invoice = DepartmentInvoice(
+        invoice_number=inv_number,
+        order_id=order.id,
+        department=dept,
+        owner_name=owner_name,
+        business_name=biz_name,
+        upi_id=upi_id,
+        qr_image_url=qr_image,
+        table_number=order.table_number or table_number or "Takeaway",
+        customer_name=order.customer_name or "Dine-in Guest",
+        customer_phone=order.customer_phone,
+        waiter_name=waiter_name,
+        subtotal=subtotal,
+        discount_pct=discount_pct,
+        discount_amount=discount_amount,
+        taxable_amount=taxable_value,
+        cgst=cgst,
+        sgst=sgst,
+        grand_total=grand_total,
+        payment_status="PENDING",
+        payment_method="UPI",
+        items_json=items_json
+    )
+    db.add(new_invoice)
+    db.commit()
+    db.refresh(new_invoice)
+    return new_invoice
 
 # -----------------------------------------------------------------------------
 # 7. BILL PREVIEW, GENERATION & INVOICE PDF
@@ -617,10 +1004,16 @@ def preview_table_bill(table_number: str, discount_pct: float = 0.0, db: Session
     """
     Generate an itemized bill preview with Indian 5% GST computation.
     """
+    cands = [table_number, table_number.replace("T-", "").replace("T", "").strip()]
+    if len(cands) > 1 and cands[1].isdigit():
+        cands.append(cands[1].zfill(2))
+        cands.append(str(int(cands[1])))
+    cands = list(set(c for c in cands if c))
+
     order = db.query(Order).filter(
-        Order.table_number == table_number,
-        Order.order_status.in_(["ACCEPTED", "PREPARING", "READY", "SERVED"]),
-        Order.payment_status == "PENDING"
+        Order.table_number.in_(cands),
+        Order.order_status.notin_(["CANCELLED", "REJECTED"]),
+        Order.payment_status != "PAID"
     ).order_by(Order.created_at.desc()).first()
     
     if not order:
@@ -668,8 +1061,8 @@ def preview_table_bill(table_number: str, discount_pct: float = 0.0, db: Session
 def get_pending_billing_tables(db: Session = Depends(get_db)):
     """Fetch all tables with active unsettled orders awaiting billing or settlement."""
     orders = db.query(Order).filter(
-        Order.payment_status == "PENDING",
-        Order.order_status.in_(["PLACED", "ACCEPTED", "PREPARING", "READY", "SERVED"])
+        Order.payment_status != "PAID",
+        Order.order_status.notin_(["CANCELLED", "REJECTED"])
     ).order_by(Order.created_at.desc()).all()
     
     seen_tables = set()
@@ -909,6 +1302,13 @@ async def settle_waiter_payment(payload: Dict[str, Any] = Body(...), db: Session
     order.final_amount = amount_paid or order.final_amount
     order.updated_at = datetime.now(timezone.utc)
     
+    # Also update associated DepartmentInvoices so Anil & Ramesh dashboards reflect settlement
+    dept_invoices = db.query(DepartmentInvoice).filter(DepartmentInvoice.order_id == order.id).all()
+    for di in dept_invoices:
+        di.payment_status = "PAID"
+        di.payment_mode = payment_mode
+        di.settled_at = datetime.now(timezone.utc)
+    
     # Free up table
     if order.table_number:
         table = db.query(RestaurantTable).filter(RestaurantTable.table_number == order.table_number).first()
@@ -1004,8 +1404,10 @@ def verify_table_qr_token(payload: Dict[str, Any] = Body(...), db: Session = Dep
     # Clean up common prefixes like T-04 or Table 04
     clean_val = raw_input.upper().replace("TABLE", "").replace("TBL", "").replace("T-", "").replace("T", "").strip()
     
-    # Try finding TableQrToken first
-    token_record = db.query(TableQrToken).filter(TableQrToken.qr_token == extracted_token).first()
+    # Try finding TableQrToken first (column is 'token', not 'qr_token')
+    token_record = db.query(TableQrToken).filter(
+        (TableQrToken.token == extracted_token) | (TableQrToken.token.like(f"%{extracted_token}%"))
+    ).first()
     table = None
     if token_record:
         table = db.query(RestaurantTable).filter(RestaurantTable.id == token_record.table_id).first()

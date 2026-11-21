@@ -9,9 +9,10 @@ router = APIRouter()
 
 @router.get("/kot/tickets")
 def get_kot_tickets(outlet_id: str = None, station: str = None, db: Session = Depends(get_db)):
-    """Fetch live kitchen tickets filtered by preparation status and station."""
+    """Fetch live kitchen tickets filtered by preparation status and station (strictly FOOD items, non-rejected)."""
     q = db.query(Order).filter(
-        Order.order_status.in_(["PLACED", "ACCEPTED", "PREPARING"])
+        Order.order_status.in_(["PLACED", "ACCEPTED", "PREPARING"]),
+        Order.food_status.notin_(["REJECTED", "NOT_ORDERED"])
     )
     if outlet_id:
         q = q.filter(Order.outlet_id == outlet_id)
@@ -21,7 +22,8 @@ def get_kot_tickets(outlet_id: str = None, station: str = None, db: Session = De
     for ord in orders:
         items = db.query(OrderItem).filter(
             OrderItem.order_id == ord.id,
-            OrderItem.is_alcohol == False # Food items
+            (OrderItem.department == "FOOD") | (OrderItem.department == None),
+            OrderItem.item_status != "REJECTED"
         ).all()
 
         if items:
@@ -46,7 +48,7 @@ def get_kot_tickets(outlet_id: str = None, station: str = None, db: Session = De
                         "item_name": it.item_name,
                         "quantity": it.quantity,
                         "variant_name": it.variant_name,
-                        "special_instructions": it.special_instructions,
+                        "special_instructions": getattr(it, "special_instructions", None) or it.special_request,
                     }
                     for it in items
                 ]
@@ -56,7 +58,7 @@ def get_kot_tickets(outlet_id: str = None, station: str = None, db: Session = De
 
 @router.post("/kot/bump")
 def bump_kot_status(payload: dict, db: Session = Depends(get_db)):
-    """Advance KOT status from PLACED -> ACCEPTED -> PREPARING -> READY -> SERVED."""
+    """Advance KOT status: ACCEPTED -> PREPARING -> READY -> SERVED."""
     order_id = payload.get("order_id")
     target_status = payload.get("status") # ACCEPTED, PREPARING, READY, SERVED
 
@@ -64,34 +66,32 @@ def bump_kot_status(payload: dict, db: Session = Depends(get_db)):
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
 
-    if target_status:
-        order.order_status = target_status
+    stages = ["ACCEPTED", "PREPARING", "READY", "SERVED"]
+    cur_food = order.food_status or "ACCEPTED"
+    if target_status and target_status in stages:
+        order.food_status = target_status
     else:
-        # Auto-advance
-        stages = ["PLACED", "ACCEPTED", "PREPARING", "READY", "SERVED"]
-        cur = order.order_status.value if hasattr(order.order_status, "value") else order.order_status
-        if cur in stages:
-            idx = stages.index(cur)
-            order.order_status = stages[min(len(stages) - 1, idx + 1)]
+        if cur_food in stages:
+            idx = stages.index(cur_food)
+            order.food_status = stages[min(len(stages) - 1, idx + 1)]
+        else:
+            order.food_status = "PREPARING"
 
-    cur_status = order.order_status.value if hasattr(order.order_status, "value") else order.order_status
-    if cur_status == "ACCEPTED":
-        order.food_status = "KOT Accepted by Chef"
-    elif cur_status == "PREPARING":
-        order.food_status = "Cooking in Clay Tandoor / Embers"
-    elif cur_status == "READY":
-        order.food_status = "Plated & Ready for Runner"
-    elif cur_status == "SERVED":
-        order.food_status = "Delivered to Table"
+    # Check overall
+    if order.food_status == "SERVED" and order.beverage_status in ["SERVED", "REJECTED", "NOT_ORDERED"]:
+        order.order_status = "SERVED"
+    elif order.food_status in ["PREPARING", "READY", "ACCEPTED"]:
+        order.order_status = "PREPARING" if order.food_status == "PREPARING" else "ACCEPTED"
 
     db.commit()
-    return {"success": True, "order_status": cur_status, "food_status": order.food_status}
+    return {"success": True, "order_status": order.order_status if isinstance(order.order_status, str) else order.order_status.value, "food_status": order.food_status}
 
 @router.get("/bar/tickets")
 def get_bar_tickets(outlet_id: str = None, db: Session = Depends(get_db)):
-    """Fetch live drink and cocktail tickets for bartender station."""
+    """Fetch live drink and cocktail tickets for bartender station (strictly BEVERAGE items, non-rejected)."""
     q = db.query(Order).filter(
-        Order.order_status.in_(["PLACED", "ACCEPTED", "PREPARING"])
+        Order.order_status.in_(["PLACED", "ACCEPTED", "PREPARING"]),
+        Order.beverage_status.notin_(["REJECTED", "NOT_ORDERED"])
     )
     if outlet_id:
         q = q.filter(Order.outlet_id == outlet_id)
@@ -101,7 +101,8 @@ def get_bar_tickets(outlet_id: str = None, db: Session = Depends(get_db)):
     for ord in orders:
         bar_items = db.query(OrderItem).filter(
             OrderItem.order_id == ord.id,
-            OrderItem.is_alcohol == True # Alcoholic cocktails & spirits
+            (OrderItem.department == "BEVERAGE"),
+            OrderItem.item_status != "REJECTED"
         ).all()
 
         if bar_items:
@@ -119,13 +120,41 @@ def get_bar_tickets(outlet_id: str = None, db: Session = Depends(get_db)):
                         "item_name": it.item_name,
                         "quantity": it.quantity,
                         "serving_size": it.variant_name or "Standard Serving",
-                        "special_instructions": it.special_instructions,
+                        "special_instructions": getattr(it, "special_instructions", None) or it.special_request,
                     }
                     for it in bar_items
                 ]
             })
 
     return bar_tickets
+
+@router.post("/bar/bump")
+def bump_bar_status(payload: dict, db: Session = Depends(get_db)):
+    """Advance Bar status: ACCEPTED -> PREPARING -> READY -> SERVED."""
+    order_id = payload.get("order_id")
+    target_status = payload.get("status")
+
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    stages = ["ACCEPTED", "PREPARING", "READY", "SERVED"]
+    cur_bev = order.beverage_status or "ACCEPTED"
+    if target_status and target_status in stages:
+        order.beverage_status = target_status
+    else:
+        if cur_bev in stages:
+            idx = stages.index(cur_bev)
+            order.beverage_status = stages[min(len(stages) - 1, idx + 1)]
+        else:
+            order.beverage_status = "PREPARING"
+
+    # Check overall
+    if order.beverage_status == "SERVED" and order.food_status in ["SERVED", "REJECTED", "NOT_ORDERED"]:
+        order.order_status = "SERVED"
+
+    db.commit()
+    return {"success": True, "order_status": order.order_status if isinstance(order.order_status, str) else order.order_status.value, "beverage_status": order.beverage_status}
 
 @router.post("/bar/dispense")
 def dispense_drink(payload: dict, db: Session = Depends(get_db)):

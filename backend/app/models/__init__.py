@@ -58,6 +58,9 @@ class UserRoleEnum(str, enum.Enum):
     BARTENDER = "BARTENDER"
     STOREKEEPER = "STOREKEEPER"
     ACCOUNTANT = "ACCOUNTANT"
+    FOOD_OWNER = "FOOD_OWNER"
+    BEVERAGE_OWNER = "BEVERAGE_OWNER"
+    CUSTOMER = "CUSTOMER"
 
 # --- 1. RESTAURANT & OUTLETS ---
 class Restaurant(Base):
@@ -376,8 +379,14 @@ class Order(Base):
     final_amount = Column(Float, nullable=False)
     
     estimated_prep_time_minutes = Column(Integer, default=20)
-    food_status = Column(String(30), default="WAITING")    # "WAITING", "PREPARING", "READY"
-    beverage_status = Column(String(30), default="WAITING")# "WAITING", "PREPARING", "READY"
+    food_status = Column(String(30), default="WAITING")    # "WAITING", "ACCEPTED", "REJECTED", "PREPARING", "READY", "SERVED"
+    beverage_status = Column(String(30), default="WAITING")# "WAITING", "ACCEPTED", "REJECTED", "PREPARING", "READY", "SERVED"
+    food_subtotal = Column(Float, default=0.0)
+    beverage_subtotal = Column(Float, default=0.0)
+    food_rejection_reason = Column(String(300), nullable=True)
+    beverage_rejection_reason = Column(String(300), nullable=True)
+    approved_by_waiter = Column(String(100), nullable=True)
+    approved_at = Column(DateTime, nullable=True)
     
     special_instructions = Column(String(300), nullable=True)
     customer_name = Column(String(100), nullable=True)
@@ -412,6 +421,9 @@ class OrderItem(Base):
     selected_addons = Column(JSON, default=list)
     special_request = Column(String(200), nullable=True)
     kitchen_station = Column(String(50), default="MAIN_KITCHEN")
+    department = Column(String(20), default="FOOD")      # "FOOD" or "BEVERAGE"
+    item_status = Column(String(30), default="PENDING")  # "PENDING", "ACCEPTED", "REJECTED", "PREPARING", "READY", "SERVED"
+    rejection_reason = Column(String(200), nullable=True)
     
     order = relationship("Order", back_populates="items")
     item = relationship("MenuItem")
@@ -745,3 +757,58 @@ class PrivateEventBooking(Base):
     special_requirements = Column(Text, nullable=True)
     status = Column(String(30), default="PENDING") # "PENDING", "CONFIRMED", "CONTACTED", "REJECTED"
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+# --- 14. DUAL-BUSINESS OWNER & INDEPENDENT BILLING DOMAIN ---
+class BusinessOwner(Base):
+    __tablename__ = "business_owners"
+    
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    department = Column(String(20), unique=True, nullable=False, index=True) # "FOOD" or "BEVERAGE"
+    owner_name = Column(String(100), nullable=False)                         # "ANIL" or "RAMESH S P"
+    business_name = Column(String(150), nullable=False)                      # "PUBLIQ Food & Kitchen" or "PUBLIQ Bar & Beverages"
+    upi_id = Column(String(100), nullable=False)                             # "8431712924-3@ybl" or "ramesh776059@ybl"
+    qr_image_url = Column(String(300), nullable=False)                       # "/payments/food_upi_qr.jpg" or "/payments/beverage_upi_qr.jpg"
+    gstin = Column(String(30), default="29AABCP1234F1Z9")
+    sac_code = Column(String(20), default="996331")
+    tax_rate = Column(Float, default=0.05)                                   # 5% GST (2.5% CGST + 2.5% SGST)
+    contact_phone = Column(String(30), nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+class DepartmentInvoice(Base):
+    __tablename__ = "department_invoices"
+    
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    invoice_number = Column(String(60), unique=True, nullable=False, index=True) # "PUB-FOOD-202611-1001" or "PUB-BEV-202611-1001"
+    order_id = Column(String(36), ForeignKey("orders.id"), nullable=False, index=True)
+    department = Column(String(20), nullable=False, index=True)                  # "FOOD" or "BEVERAGE"
+    owner_name = Column(String(100), nullable=False)
+    business_name = Column(String(150), nullable=False)
+    upi_id = Column(String(100), nullable=False)
+    qr_image_url = Column(String(300), nullable=True)
+    table_number = Column(String(20), nullable=False)
+    customer_name = Column(String(100), nullable=True)
+    customer_phone = Column(String(30), nullable=True)
+    waiter_name = Column(String(100), default="Service Steward")
+    
+    subtotal = Column(Float, nullable=False)
+    discount_pct = Column(Float, default=0.0)
+    discount_amount = Column(Float, default=0.0)
+    taxable_amount = Column(Float, nullable=False)
+    cgst = Column(Float, default=0.0)
+    sgst = Column(Float, default=0.0)
+    grand_total = Column(Float, nullable=False)
+    
+    # Financial state
+    payment_status = Column(String(30), default="PENDING", index=True) # PENDING, AWAITING_VERIFICATION, PAID, FAILED, REFUNDED
+    payment_method = Column(String(30), default="UPI")                # UPI, CASH, CARD
+    upi_reference = Column(String(100), nullable=True)                 # UTR / Transaction ID
+    verified_by = Column(String(100), nullable=True)
+    verified_at = Column(DateTime, nullable=True)
+    paid_at = Column(DateTime, nullable=True)
+    items_json = Column(JSON, default=list)                           # [{item_name, quantity, unit_price, total_price, variant_name}]
+    
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+

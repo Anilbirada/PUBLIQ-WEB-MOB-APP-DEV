@@ -1,20 +1,11 @@
 import { Platform } from "react-native";
 
-// Automatic API base URL resolution:
-// 1. Android Emulator: http://10.0.2.2:8001/api/v1
-// 2. iOS Simulator: http://localhost:8001/api/v1
-// 3. Physical Device / Production: Configured Render backend or LAN IP
-
-export const DEFAULT_API_BASE = Platform.select({
-  android: "http://10.0.2.2:8001/api/v1",
-  ios: "http://localhost:8001/api/v1",
-  default: "http://localhost:8001/api/v1"
-});
-
-// Production Render Cloud Fallback
+// Production Render Cloud Gateway for real physical Android devices
 export const PRODUCTION_API_BASE = "https://publiq-backend-5oyh.onrender.com/api/v1";
 
-let activeApiBase = DEFAULT_API_BASE;
+export const DEFAULT_API_BASE = PRODUCTION_API_BASE;
+
+let activeApiBase = PRODUCTION_API_BASE;
 
 export function setCustomApiBase(url: string) {
   if (url && url.trim()) {

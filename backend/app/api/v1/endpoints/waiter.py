@@ -170,6 +170,8 @@ def get_waiter_tables(outlet_id: Optional[str] = None, db: Session = Depends(get
             "table_number": t.table_number,
             "capacity": t.capacity,
             "is_occupied": t.is_occupied or (active_order is not None),
+            "has_unsettled_order": active_order is not None,
+            "wants_bill": active_order is not None and active_order.order_status in ["SERVED", "READY"],
             "status": status_label,
             "active_order": order_summary
         })
@@ -662,6 +664,140 @@ def preview_table_bill(table_number: str, discount_pct: float = 0.0, db: Session
         ]
     }
 
+@router.get("/bills/pending-tables")
+def get_pending_billing_tables(db: Session = Depends(get_db)):
+    """Fetch all tables with active unsettled orders awaiting billing or settlement."""
+    orders = db.query(Order).filter(
+        Order.payment_status == "PENDING",
+        Order.order_status.in_(["PLACED", "ACCEPTED", "PREPARING", "READY", "SERVED"])
+    ).order_by(Order.created_at.desc()).all()
+    
+    seen_tables = set()
+    pending_list = []
+    
+    for order in orders:
+        if not order.table_number or order.table_number in seen_tables:
+            continue
+        seen_tables.add(order.table_number)
+        
+        items_count = db.query(OrderItem).filter(OrderItem.order_id == order.id).count()
+        table = db.query(RestaurantTable).filter(RestaurantTable.table_number == order.table_number).first()
+        
+        pending_list.append({
+            "table_number": order.table_number,
+            "table_id": table.id if table else None,
+            "order_id": order.id,
+            "order_number": order.order_number,
+            "order_status": order.order_status,
+            "customer_name": order.customer_name or "Dine-in Guest",
+            "customer_phone": order.customer_phone,
+            "items_count": items_count,
+            "subtotal": order.subtotal,
+            "final_amount": order.final_amount,
+            "wants_bill": order.order_status in ["SERVED", "READY"],
+            "created_at": order.created_at.isoformat() if order.created_at else None
+        })
+        
+    return pending_list
+
+@router.post("/bills/generate-invoice")
+def generate_table_invoice(payload: Dict[str, Any] = Body(...), db: Session = Depends(get_db)):
+    """
+    Generate an official GST tax invoice for a table prior to settlement.
+    Returns invoice number, GSTIN, itemized rows, CGST, SGST, SAC code 996331, and print payload.
+    """
+    table_number = str(payload.get("table_number", ""))
+    order_id = payload.get("order_id")
+    discount_pct = float(payload.get("discount_pct", 0.0))
+    waiter_name = str(payload.get("waiter_name", "Service Steward"))
+    
+    order = None
+    if order_id:
+        order = db.query(Order).filter(Order.id == order_id).first()
+    elif table_number:
+        order = db.query(Order).filter(
+            Order.table_number == table_number,
+            Order.order_status.in_(["PLACED", "ACCEPTED", "PREPARING", "READY", "SERVED"]),
+            Order.payment_status == "PENDING"
+        ).order_by(Order.created_at.desc()).first()
+        
+    if not order:
+        raise HTTPException(status_code=404, detail=f"No active unsettled order found for Table {table_number}.")
+        
+    items = db.query(OrderItem).filter(OrderItem.order_id == order.id).all()
+    subtotal = float(order.subtotal or sum(it.total_price for it in items))
+    
+    discount_amount = round(subtotal * (discount_pct / 100.0), 2)
+    taxable_value = subtotal - discount_amount
+    cgst = round(taxable_value * 0.025, 2)
+    sgst = round(taxable_value * 0.025, 2)
+    grand_total = round(taxable_value + cgst + sgst, 2)
+    
+    # Check if a PosBill already exists for this order
+    bill = db.query(PosBill).filter(PosBill.order_id == order.id).first()
+    if not bill:
+        bill_number = f"PUB-INV-{datetime.now().strftime('%Y%m')}-{str(uuid.uuid4())[:5].upper()}"
+        bill = PosBill(
+            outlet_id=order.outlet_id,
+            order_id=order.id,
+            bill_number=bill_number,
+            table_number=order.table_number,
+            cashier_id=waiter_name,
+            subtotal=subtotal,
+            discount_amount=discount_amount,
+            cgst=cgst,
+            sgst=sgst,
+            final_amount=grand_total,
+            payment_mode="PENDING",
+            status="GENERATED"
+        )
+        db.add(bill)
+        db.commit()
+        db.refresh(bill)
+    else:
+        bill.subtotal = subtotal
+        bill.discount_amount = discount_amount
+        bill.cgst = cgst
+        bill.sgst = sgst
+        bill.final_amount = grand_total
+        bill.printed_at = datetime.now(timezone.utc)
+        db.commit()
+        db.refresh(bill)
+        
+    return {
+        "status": "success",
+        "bill_id": bill.id,
+        "bill_number": bill.bill_number,
+        "invoice_number": bill.bill_number,
+        "invoice_date": bill.created_at.strftime("%d-%b-%Y %I:%M %p") if bill.created_at else datetime.now().strftime("%d-%b-%Y %I:%M %p"),
+        "outlet_name": "PUBLIQ HARAGADDE",
+        "legal_name": "PUBLIQ Hospitality & Entertainment Private Limited",
+        "gstin": "29AABCP1234F1Z9",
+        "fssai": "11223334000555",
+        "sac_code": "996331",
+        "table_number": order.table_number,
+        "order_number": order.order_number,
+        "customer_name": order.customer_name or "Dine-in Guest",
+        "waiter_name": waiter_name,
+        "subtotal": subtotal,
+        "discount_percent": discount_pct,
+        "discount_amount": discount_amount,
+        "taxable_amount": taxable_value,
+        "cgst": cgst,
+        "sgst": sgst,
+        "total_tax": round(cgst + sgst, 2),
+        "grand_total": grand_total,
+        "items": [
+            {
+                "id": it.id,
+                "item_name": it.item_name,
+                "quantity": it.quantity,
+                "unit_price": it.unit_price,
+                "total_price": it.total_price
+            } for it in items
+        ]
+    }
+
 # -----------------------------------------------------------------------------
 # 8. DYNAMIC EXACT-AMOUNT UPI PAYMENT QR
 # -----------------------------------------------------------------------------
@@ -769,7 +905,7 @@ async def settle_waiter_payment(payload: Dict[str, Any] = Body(...), db: Session
     # Mark order completed
     order.order_status = "SERVED"
     order.payment_status = "PAID"
-    order.payment_method = payment_mode
+    order.payment_method = "COUNTER_BILLING" if payment_mode in ["CASH", "SPLIT", "COMPLIMENTARY"] else (payment_mode if payment_mode in ["UPI", "CARD", "NETBANKING"] else "COUNTER_BILLING")
     order.final_amount = amount_paid or order.final_amount
     order.updated_at = datetime.now(timezone.utc)
     
@@ -833,24 +969,102 @@ async def settle_waiter_payment(payload: Dict[str, Any] = Body(...), db: Session
 
 @router.post("/qr/verify-table")
 def verify_table_qr_token(payload: Dict[str, Any] = Body(...), db: Session = Depends(get_db)):
-    """Verify physical table QR code scanned via waiter mobile camera."""
-    qr_token = str(payload.get("token", "")).strip()
-    if not qr_token:
-        raise HTTPException(status_code=400, detail="QR token is required.")
+    """
+    Verify physical table QR code scanned via waiter mobile camera or manual code entry.
+    Supports:
+    - Direct table numbers: '01', '04', 'T-04', 'Table 4'
+    - Scanned URLs: '.../menu?table=04', '.../dine-in/04', '.../order/token'
+    - Cryptographic tokens: 'tbl_tok_...'
+    """
+    raw_input = str(payload.get("token") or payload.get("qr_token") or payload.get("table_number") or "").strip()
+    if not raw_input:
+        raise HTTPException(status_code=400, detail="QR token or table number is required.")
         
-    token_record = db.query(TableQrToken).filter(TableQrToken.qr_token == qr_token).first()
-    if not token_record or not token_record.is_active:
-        raise HTTPException(status_code=404, detail="Invalid or expired table QR code.")
-        
-    table = db.query(RestaurantTable).filter(RestaurantTable.id == token_record.table_id).first()
-    table_num = table.table_number if table else "Unknown"
+    extracted_table_num = None
+    extracted_token = raw_input
     
+    # 1. Parse URL if scanned from physical QR sticker
+    if "http://" in raw_input or "https://" in raw_input or "/" in raw_input or "?" in raw_input:
+        import re
+        # Look for ?table=XX or &table=XX
+        tbl_match = re.search(r'[?&]table=([a-zA-Z0-9_-]+)', raw_input, re.IGNORECASE)
+        if tbl_match:
+            extracted_table_num = tbl_match.group(1)
+        else:
+            # Look for /dine-in/XX or /table/XX
+            path_match = re.search(r'/(?:dine-in|table|tables)/([a-zA-Z0-9_-]+)', raw_input, re.IGNORECASE)
+            if path_match:
+                extracted_table_num = path_match.group(1)
+            else:
+                # Look for /order/token
+                tok_match = re.search(r'/order/([a-zA-Z0-9_-]+)', raw_input, re.IGNORECASE)
+                if tok_match:
+                    extracted_token = tok_match.group(1)
+                    
+    # Clean up common prefixes like T-04 or Table 04
+    clean_val = raw_input.upper().replace("TABLE", "").replace("TBL", "").replace("T-", "").replace("T", "").strip()
+    
+    # Try finding TableQrToken first
+    token_record = db.query(TableQrToken).filter(TableQrToken.qr_token == extracted_token).first()
+    table = None
+    if token_record:
+        table = db.query(RestaurantTable).filter(RestaurantTable.id == token_record.table_id).first()
+        
+    # If not found by token, search RestaurantTable directly
+    if not table:
+        candidates = [extracted_table_num, clean_val, clean_val.zfill(2) if clean_val.isdigit() else None, raw_input]
+        candidates = [c for c in candidates if c]
+        for cand in candidates:
+            table = db.query(RestaurantTable).filter(
+                (RestaurantTable.table_number == cand) |
+                (RestaurantTable.table_number.ilike(cand))
+            ).first()
+            if table:
+                break
+                
+    if not table:
+        raise HTTPException(status_code=404, detail=f"Physical table or QR token '{raw_input}' could not be verified.")
+        
+    # Find active order
+    active_order = db.query(Order).filter(
+        Order.table_number == table.table_number,
+        Order.payment_status == "PENDING"
+    ).order_by(Order.created_at.desc()).first()
+    
+    order_data = None
+    status_label = "AVAILABLE"
+    if active_order:
+        if active_order.order_status == "PLACED":
+            status_label = "ORDER_PENDING"
+        elif active_order.order_status in ["ACCEPTED", "PREPARING"]:
+            status_label = "PREPARING"
+        elif active_order.order_status == "READY":
+            status_label = "READY_TO_SERVE"
+        elif active_order.order_status == "SERVED":
+            status_label = "BILLING"
+            
+        items_count = db.query(OrderItem).filter(OrderItem.order_id == active_order.id).count()
+        order_data = {
+            "order_id": active_order.id,
+            "order_number": active_order.order_number,
+            "order_status": active_order.order_status,
+            "customer_name": active_order.customer_name or "Guest",
+            "items_count": items_count,
+            "final_amount": active_order.final_amount
+        }
+    elif table.is_occupied:
+        status_label = "OCCUPIED"
+        
     return {
         "status": "verified",
-        "table_id": token_record.table_id,
-        "table_number": table_num,
-        "outlet_id": token_record.outlet_id,
-        "is_active": token_record.is_active
+        "table_id": table.id,
+        "table_number": table.table_number,
+        "capacity": table.capacity,
+        "is_occupied": table.is_occupied or (active_order is not None),
+        "status_label": status_label,
+        "outlet_id": table.outlet_id,
+        "is_active": True,
+        "active_order": order_data
     }
 
 # -----------------------------------------------------------------------------

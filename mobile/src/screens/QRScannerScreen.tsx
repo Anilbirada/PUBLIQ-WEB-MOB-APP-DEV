@@ -24,14 +24,20 @@ export const QRScannerScreen: React.FC<{ navigation: any }> = ({ navigation }) =
       }, token);
 
       Alert.alert(
-        "Table Verified",
-        `Confirmed: Table ${res.table_number}\nStatus: Active session enabled.`,
+        `Table ${res.table_number} Verified`,
+        `Capacity: 👥 ${res.capacity} Guests\nStatus: ${res.status_label || (res.is_occupied ? "OCCUPIED" : "AVAILABLE")}${res.active_order ? `\nActive Order: ${res.active_order.order_number} (₹${res.active_order.final_amount})` : ""}`,
         [
           {
-            text: "Open Table",
-            onPress: () => {
-              navigation.navigate("Tables");
-            }
+            text: "Take Order (+POS)",
+            onPress: () => navigation.navigate("ManualOrder", { table_number: res.table_number })
+          },
+          {
+            text: "Billing & Settle",
+            onPress: () => navigation.navigate("MainTabs", { screen: "BillPayment", params: { table_number: res.table_number } })
+          },
+          {
+            text: "Close",
+            style: "cancel"
           }
         ]
       );

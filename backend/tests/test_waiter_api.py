@@ -142,3 +142,67 @@ def test_waiter_call_manager():
     })
     assert response.status_code == 200
     assert "Duty Manager notified" in response.json()["message"]
+
+def test_waiter_physical_table_qr_verification():
+    """Test verifying physical table QR by number, formatted string, and URL."""
+    # 1. Direct table number
+    res1 = client.post("/api/v1/waiter/qr/verify-table", json={"token": "01"})
+    assert res1.status_code == 200
+    assert res1.json()["table_number"] in ["01", "1"]
+
+    # 2. Table with prefix
+    res2 = client.post("/api/v1/waiter/qr/verify-table", json={"token": "Table 02"})
+    assert res2.status_code == 200
+    assert res2.json()["table_number"] in ["02", "2"]
+
+    # 3. Scanned physical URL
+    res3 = client.post("/api/v1/waiter/qr/verify-table", json={"token": "https://publiq-frontend.onrender.com/menu?table=03"})
+    assert res3.status_code == 200
+    assert res3.json()["table_number"] in ["03", "3"]
+
+def test_waiter_invoice_generation_and_pending_tables():
+    """Test generating official GST tax invoice and querying pending billing tables."""
+    # Create an order
+    order_res = client.post("/api/v1/waiter/orders/manual", json={
+        "table_number": "04",
+        "waiter_name": "Steward Raju",
+        "items": [
+            {
+                "item_name": "Paneer Tikka",
+                "quantity": 2,
+                "unit_price": 349.0,
+                "is_alcohol": False
+            }
+        ]
+    })
+    assert order_res.status_code == 200
+    order_id = order_res.json()["order_id"]
+
+    # Check pending tables list
+    pending_res = client.get("/api/v1/waiter/bills/pending-tables")
+    assert pending_res.status_code == 200
+    pending_tables = pending_res.json()
+    assert any(t["table_number"] == "04" for t in pending_tables)
+
+    # Generate invoice
+    inv_res = client.post("/api/v1/waiter/bills/generate-invoice", json={
+        "table_number": "04",
+        "order_id": order_id,
+        "discount_pct": 5.0,
+        "waiter_name": "Steward Raju"
+    })
+    assert inv_res.status_code == 200
+    inv_data = inv_res.json()
+    assert "PUB-INV-" in inv_data["invoice_number"]
+    assert inv_data["sac_code"] == "996331"
+    assert inv_data["gstin"] == "29AABCP1234F1Z9"
+    assert len(inv_data["items"]) == 1
+
+    # Cleanup / Settle
+    client.post("/api/v1/waiter/payments/settle", json={
+        "table_number": "04",
+        "order_id": order_id,
+        "payment_mode": "CASH",
+        "amount_paid": inv_data["grand_total"],
+        "waiter_name": "Steward Raju"
+    })

@@ -21,6 +21,25 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
   const [splitCount, setSplitCount] = useState<number>(2);
   const [selectedTender, setSelectedTender] = useState<string>("UPI");
   const [isSettling, setIsSettling] = useState<boolean>(false);
+  const [tablesList, setTablesList] = useState<any[]>([]);
+  const [pendingTables, setPendingTables] = useState<any[]>([]);
+  const [isGeneratingInvoice, setIsGeneratingInvoice] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetchTablesAndPending();
+  }, []);
+
+  const fetchTablesAndPending = async () => {
+    try {
+      const tbls: any = await mobileApiRequest("/waiter/tables", { method: "GET" }, token);
+      if (Array.isArray(tbls)) setTablesList(tbls);
+
+      const pends: any = await mobileApiRequest("/waiter/bills/pending-tables", { method: "GET" }, token);
+      if (Array.isArray(pends)) setPendingTables(pends);
+    } catch (e) {
+      console.warn("Failed loading tables for billing:", e);
+    }
+  };
 
   useEffect(() => {
     fetchBillPreview();
@@ -39,6 +58,33 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
       setBillData(null);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGenerateInvoice = async () => {
+    if (!billData) return;
+    setIsGeneratingInvoice(true);
+    try {
+      const inv: any = await mobileApiRequest("/waiter/bills/generate-invoice", {
+        method: "POST",
+        body: JSON.stringify({
+          table_number: tableNumber,
+          order_id: billData.order_id,
+          discount_pct: discountPct,
+          waiter_name: waiter?.name || "Service Steward"
+        })
+      }, token);
+
+      Alert.alert(
+        "GST Invoice Created",
+        `Invoice: ${inv.invoice_number}\nDate: ${inv.invoice_date}\nGSTIN: ${inv.gstin}\nNet Payable: ₹${inv.grand_total.toFixed(2)}`,
+        [{ text: "OK" }]
+      );
+      fetchTablesAndPending();
+    } catch (e: any) {
+      Alert.alert("Invoice Error", e.message || "Failed to create invoice.");
+    } finally {
+      setIsGeneratingInvoice(false);
     }
   };
 
@@ -103,11 +149,44 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
       <Header title="BILL & PAYMENT" subtitle={`Table ${tableNumber} Guest Settlement`} />
 
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        {/* Table Selector */}
+        {/* 1. Pending Billing Tables (Tables Awaiting Bill Approval) */}
+        {pendingTables.length > 0 && (
+          <View style={{ marginBottom: 16, backgroundColor: "#111927", padding: 12, borderRadius: 16, borderWidth: 1, borderColor: "rgba(212,175,55,0.4)" }}>
+            <Text style={{ color: "#D4AF37", fontSize: 10, fontWeight: "bold", letterSpacing: 1.5, marginBottom: 8 }}>
+              TABLES AWAITING BILL ({pendingTables.length}):
+            </Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {pendingTables.map(pt => (
+                <TouchableOpacity
+                  key={pt.table_number}
+                  style={{
+                    backgroundColor: tableNumber === pt.table_number ? "#D4AF37" : "#0A0F1A",
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    borderRadius: 12,
+                    marginRight: 8,
+                    borderWidth: 1,
+                    borderColor: tableNumber === pt.table_number ? "#D4AF37" : "#B38728"
+                  }}
+                  onPress={() => setTableNumber(pt.table_number)}
+                >
+                  <Text style={{ color: tableNumber === pt.table_number ? "#070B12" : "#FFFFFF", fontWeight: "bold", fontSize: 12 }}>
+                    Table {pt.table_number} • ₹{pt.final_amount.toFixed(0)}
+                  </Text>
+                  <Text style={{ color: tableNumber === pt.table_number ? "#070B12" : "#94A3B8", fontSize: 9 }}>
+                    {pt.customer_name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
+        {/* 2. All Dynamic Tables Selector */}
         <View style={styles.tablePicker}>
-          <Text style={styles.pickerLabel}>SELECT TABLE FOR BILLING:</Text>
+          <Text style={styles.pickerLabel}>ALL OUTLET TABLES ({tablesList.length || 16}):</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.pillsScroll}>
-            {["01", "02", "03", "04", "05", "06", "07", "08"].map(t => (
+            {(tablesList.length > 0 ? tablesList.map(t => t.table_number) : ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16"]).map(t => (
               <TouchableOpacity
                 key={t}
                 style={[styles.tablePill, tableNumber === t && styles.tablePillActive]}
@@ -222,6 +301,19 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
 
             {/* Action Buttons */}
             <View style={styles.btnStack}>
+              {/* Generate GST Tax Invoice */}
+              <TouchableOpacity
+                style={[styles.mainActionBtn, { backgroundColor: "#151F33", borderWidth: 1, borderColor: COLORS.gold, marginBottom: 8 }]}
+                onPress={handleGenerateInvoice}
+                disabled={isGeneratingInvoice}
+                activeOpacity={0.85}
+              >
+                <Text style={{ color: COLORS.gold, fontWeight: "bold", fontSize: 13, letterSpacing: 0.5 }}>
+                  {isGeneratingInvoice ? "CREATING INVOICE..." : "GENERATE OFFICIAL GST INVOICE"}
+                </Text>
+                <Text style={{ color: "#94A3B8", fontSize: 10, marginTop: 2 }}>5% GST Tax Receipt with Invoice No</Text>
+              </TouchableOpacity>
+
               {selectedTender === "UPI" ? (
                 <TouchableOpacity
                   style={[styles.mainActionBtn, { backgroundColor: COLORS.gold }]}

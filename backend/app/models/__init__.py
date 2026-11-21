@@ -36,6 +36,7 @@ class PaymentStatusEnum(str, enum.Enum):
 class PaymentMethodEnum(str, enum.Enum):
     UPI = "UPI"
     CARD = "CARD"
+    CASH = "CASH"
     NETBANKING = "NETBANKING"
     COUNTER_BILLING = "COUNTER_BILLING"
 

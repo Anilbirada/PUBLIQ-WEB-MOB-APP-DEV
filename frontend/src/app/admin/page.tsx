@@ -6,7 +6,8 @@ import { API_BASE } from "@/lib/api";
 import {
   TrendingUp, ShoppingCart, Flame, Wine, Users, AlertTriangle,
   Receipt, ArrowUpRight, CheckCircle2, Clock, DollarSign, QrCode,
-  Film, Bot, Calendar, PartyPopper, UtensilsCrossed, Sparkles
+  Film, Bot, Calendar, PartyPopper, UtensilsCrossed, Sparkles,
+  ShieldCheck, Star, ChevronRight
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
@@ -50,187 +51,208 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="space-y-8">
-      {/* 1. WELCOME & OUTLET STATUS */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-[#0B1528] to-[#08101E] p-6 rounded-3xl border border-[#38BDF8]/30 shadow-xl">
+    <div className="space-y-8 max-w-7xl mx-auto">
+      {/* 1. TOP HERO BANNER (PURE WHITE CARD WITH SUBTLE BLUE BORDER) */}
+      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="text-xs uppercase tracking-widest text-[#38BDF8] font-bold">
-              PUBLIQ HARAGADDE Operational • Live Sync
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs uppercase tracking-wider text-blue-700 font-bold">
+              PUBLIQ HARAGADDE OPERATIONAL • LIVE CLOUD SYNC
             </span>
           </div>
-          <h1 className="font-serif text-3xl font-bold text-white mt-1">
+          <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Executive Performance Overview
           </h1>
-          <p className="text-xs text-slate-300 mt-0.5">
-            Real-time sales, covers, Indian 5% GST liability, table occupancy, and hospitality media.
+          <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl font-medium">
+            Real-time revenues, covers, Indian 5% GST liability, table occupancy, and dual-owner settlement channels.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <Link
             href="/admin/pos"
-            className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#E5C378] text-[#070B12] text-xs font-bold tracking-wider uppercase transition-all shadow-lg hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center gap-2"
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white text-xs font-bold tracking-wider uppercase transition-all shadow-md shadow-blue-500/25 hover:shadow-lg hover:shadow-blue-500/35 hover:-translate-y-0.5 flex items-center gap-2"
           >
-            <ShoppingCart className="w-4 h-4 text-[#070B12]" />
+            <ShoppingCart className="w-4 h-4 text-white" />
             <span>Launch POS Terminal</span>
           </Link>
         </div>
       </div>
 
-      {/* 2. TOP METRIC CARDS */}
+      {/* 2. TOP METRIC CARDS (WHITE CARDS WITH MULTICOLOUR GRADIENT ICONS) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {/* Gross Sales */}
-        <div className="bg-[#0B1528]/80 rounded-3xl p-6 border border-[#38BDF8]/25 shadow-xl space-y-3 hover:border-[#38BDF8]/50 transition-all">
-          <div className="flex items-center justify-between text-slate-300">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-200">Gross Sales Today</span>
-            <span className="p-2 rounded-xl bg-[#0F223D] text-[#38BDF8] border border-[#38BDF8]/30">
-              <TrendingUp className="w-4 h-4" />
-            </span>
+        {/* Gross Sales - Royal Blue / Indigo */}
+        <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs space-y-3 hover:border-blue-300 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Gross Sales Today</span>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-xs">
+              <TrendingUp className="w-5 h-5" />
+            </div>
           </div>
           <div>
-            <div className="font-serif text-3xl font-bold text-white">
+            <div className="font-serif text-3xl font-black text-slate-900">
               ₹{metrics.gross_sales_today.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
             </div>
-            <p className="text-[11px] text-emerald-400 font-semibold mt-1">
-              +14.8% vs last Tuesday
+            <p className="text-xs text-emerald-600 font-bold mt-1.5 flex items-center gap-1">
+              <span className="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-[10px]">↑ +14.8%</span>
+              <span>vs last Tuesday</span>
             </p>
           </div>
         </div>
 
-        {/* Covers & AOV */}
-        <div className="bg-[#0B1528]/80 rounded-3xl p-6 border border-[#38BDF8]/25 shadow-xl space-y-3 hover:border-[#38BDF8]/50 transition-all">
-          <div className="flex items-center justify-between text-slate-300">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-200">Guest Covers & AOV</span>
-            <span className="p-2 rounded-xl bg-[#0F223D] text-[#D4AF37] border border-[#D4AF37]/30">
-              <Users className="w-4 h-4" />
-            </span>
-          </div>
-          <div>
-            <div className="font-serif text-3xl font-bold text-white">
-              {metrics.covers_count} <span className="text-sm font-sans font-normal text-slate-300">Covers</span>
+        {/* Covers & AOV - Purple / Pink */}
+        <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs space-y-3 hover:border-purple-300 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Guest Covers & AOV</span>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-pink-500 flex items-center justify-center text-white shadow-xs">
+              <Users className="w-5 h-5" />
             </div>
-            <p className="text-[11px] text-slate-300 font-semibold mt-1">
-              AOV: <strong className="text-[#D4AF37]">₹{metrics.average_order_value.toFixed(2)}</strong> per table
+          </div>
+          <div>
+            <div className="font-serif text-3xl font-black text-slate-900">
+              {metrics.covers_count} <span className="text-base font-sans font-medium text-slate-500">Covers</span>
+            </div>
+            <p className="text-xs text-slate-500 font-medium mt-1.5">
+              AOV: <strong className="text-purple-700 font-bold">₹{metrics.average_order_value.toFixed(2)}</strong> per table
             </p>
           </div>
         </div>
 
-        {/* 5% GST Liability */}
-        <div className="bg-[#0B1528]/80 rounded-3xl p-6 border border-[#38BDF8]/25 shadow-xl space-y-3 hover:border-[#38BDF8]/50 transition-all">
-          <div className="flex items-center justify-between text-slate-300">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-200">GST Liability (5%)</span>
-            <span className="p-2 rounded-xl bg-[#0F223D] text-[#38BDF8] border border-[#38BDF8]/30">
-              <Receipt className="w-4 h-4" />
-            </span>
+        {/* 5% GST Liability - Cyan / Blue */}
+        <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs space-y-3 hover:border-cyan-300 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">GST Liability (5%)</span>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-xs">
+              <Receipt className="w-5 h-5" />
+            </div>
           </div>
           <div>
-            <div className="font-serif text-3xl font-bold text-[#38BDF8]">
+            <div className="font-serif text-3xl font-black text-blue-700">
               ₹{metrics.gst_collected.total_gst_5.toFixed(2)}
             </div>
-            <p className="text-[11px] text-slate-300 font-mono mt-1">
+            <p className="text-xs text-slate-500 font-mono mt-1.5">
               CGST: ₹{metrics.gst_collected.cgst_2_5.toFixed(2)} | SGST: ₹{metrics.gst_collected.sgst_2_5.toFixed(2)}
             </p>
           </div>
         </div>
 
-        {/* Floor Occupancy */}
-        <div className="bg-[#0B1528]/80 rounded-3xl p-6 border border-[#38BDF8]/25 shadow-xl space-y-3 hover:border-[#38BDF8]/50 transition-all">
-          <div className="flex items-center justify-between text-slate-300">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-200">Table Occupancy</span>
-            <span className="p-2 rounded-xl bg-[#0F223D] text-[#D4AF37] border border-[#D4AF37]/30">
-              <Clock className="w-4 h-4" />
-            </span>
+        {/* Floor Occupancy - Emerald / Teal */}
+        <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs space-y-3 hover:border-emerald-300 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Table Occupancy</span>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-xs">
+              <Clock className="w-5 h-5" />
+            </div>
           </div>
           <div>
-            <div className="font-serif text-3xl font-bold text-white">
+            <div className="font-serif text-3xl font-black text-slate-900">
               {metrics.table_occupancy.occupancy_rate_percent}%
             </div>
-            <p className="text-[11px] text-slate-300 font-semibold mt-1">
-              {metrics.table_occupancy.occupied} of {metrics.table_occupancy.total} Tables Seated
+            <p className="text-xs text-slate-500 font-medium mt-1.5">
+              <strong className="text-emerald-700 font-bold">{metrics.table_occupancy.occupied}</strong> of {metrics.table_occupancy.total} Tables Seated
             </p>
           </div>
         </div>
       </div>
 
-      {/* 3. HOSPITALITY & AI QUICK LAUNCH SECTION */}
-      <div className="bg-[#0B1528]/80 rounded-3xl p-6 border border-[#38BDF8]/25 shadow-xl space-y-4">
-        <h3 className="font-serif text-lg font-bold text-white flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-[#D4AF37]" />
-          Executive Operations &amp; Governance Portals
-        </h3>
+      {/* 3. DUAL-BUSINESS OWNERS & CORE MODULES */}
+      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-5">
+        <div className="flex items-center justify-between">
+          <h3 className="font-serif text-lg font-bold text-slate-900 flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-blue-600" />
+            Executive Operations & Department Portals
+          </h3>
+          <span className="text-xs font-semibold text-slate-400">5 Distinct Enterprise Roles</span>
+        </div>
+
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <Link
             href="/admin/owner/beverage"
-            className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/30 hover:border-[#38BDF8]/60 text-center transition group"
+            className="p-4 rounded-xl bg-slate-50/70 hover:bg-blue-50/50 border border-slate-200 hover:border-blue-300 transition group text-center"
           >
-            <Wine className="w-6 h-6 text-[#38BDF8] mx-auto mb-2 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold text-white block">Bar Admin (Anil)</span>
-            <span className="text-[10px] text-[#38BDF8]">PhonePe 8431712924-3@ybl</span>
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white flex items-center justify-center mx-auto mb-2.5 shadow-xs group-hover:scale-105 transition-transform">
+              <Wine className="w-6 h-6" />
+            </div>
+            <span className="text-xs font-bold text-slate-900 block">Bar Admin (Anil)</span>
+            <span className="text-[10px] text-blue-600 font-medium">PhonePe 8431712924-3@ybl</span>
           </Link>
 
           <Link
             href="/admin/owner/food"
-            className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#D4AF37]/30 hover:border-[#D4AF37]/60 text-center transition group"
+            className="p-4 rounded-xl bg-slate-50/70 hover:bg-amber-50/50 border border-slate-200 hover:border-amber-300 transition group text-center"
           >
-            <UtensilsCrossed className="w-6 h-6 text-[#D4AF37] mx-auto mb-2 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold text-white block">Food Admin (Ramesh S P)</span>
-            <span className="text-[10px] text-[#D4AF37]">PhonePe ramesh776059@ybl</span>
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-white flex items-center justify-center mx-auto mb-2.5 shadow-xs group-hover:scale-105 transition-transform">
+              <UtensilsCrossed className="w-6 h-6" />
+            </div>
+            <span className="text-xs font-bold text-slate-900 block">Food Admin (Ramesh)</span>
+            <span className="text-[10px] text-amber-700 font-medium">PhonePe ramesh776059@ybl</span>
           </Link>
 
           <Link
             href="/admin/reviews"
-            className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-amber-500/20 hover:border-amber-500/50 text-center transition group"
+            className="p-4 rounded-xl bg-slate-50/70 hover:bg-purple-50/50 border border-slate-200 hover:border-purple-300 transition group text-center"
           >
-            <PartyPopper className="w-6 h-6 text-amber-400 mx-auto mb-2 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold text-white block">Customer Reviews</span>
-            <span className="text-[10px] text-slate-300">5-Star Dining Ratings</span>
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-pink-500 text-white flex items-center justify-center mx-auto mb-2.5 shadow-xs group-hover:scale-105 transition-transform">
+              <Star className="w-6 h-6" />
+            </div>
+            <span className="text-xs font-bold text-slate-900 block">Customer Reviews</span>
+            <span className="text-[10px] text-purple-700 font-medium">5-Star Dining Ratings</span>
           </Link>
 
           <Link
             href="/admin/qr"
-            className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/20 hover:border-[#38BDF8]/50 text-center transition group"
+            className="p-4 rounded-xl bg-slate-50/70 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-300 transition group text-center"
           >
-            <QrCode className="w-6 h-6 text-[#38BDF8] mx-auto mb-2 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold text-white block">Table QR Plaques</span>
-            <span className="text-[10px] text-slate-300">HMAC-SHA256 Tokens</span>
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center mx-auto mb-2.5 shadow-xs group-hover:scale-105 transition-transform">
+              <QrCode className="w-6 h-6" />
+            </div>
+            <span className="text-xs font-bold text-slate-900 block">Table QR Plaques</span>
+            <span className="text-[10px] text-indigo-700 font-medium">HMAC-SHA256 Plaques</span>
+          </Link>
+
+          <Link
+            href="/admin/kot"
+            className="p-4 rounded-xl bg-slate-50/70 hover:bg-orange-50/50 border border-slate-200 hover:border-orange-300 transition group text-center"
+          >
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 text-white flex items-center justify-center mx-auto mb-2.5 shadow-xs group-hover:scale-105 transition-transform">
+              <Flame className="w-6 h-6" />
+            </div>
+            <span className="text-xs font-bold text-slate-900 block">Kitchen Display (KDS)</span>
+            <span className="text-[10px] text-orange-700 font-medium">Food Preparation Line</span>
+          </Link>
+
+          <Link
+            href="/admin/bar"
+            className="p-4 rounded-xl bg-slate-50/70 hover:bg-cyan-50/50 border border-slate-200 hover:border-cyan-300 transition group text-center"
+          >
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-500 text-white flex items-center justify-center mx-auto mb-2.5 shadow-xs group-hover:scale-105 transition-transform">
+              <Wine className="w-6 h-6" />
+            </div>
+            <span className="text-xs font-bold text-slate-900 block">Bar Dispense Station</span>
+            <span className="text-[10px] text-cyan-700 font-medium">Mixology & Draught KDS</span>
           </Link>
 
           <Link
             href="/admin/videos"
-            className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/20 hover:border-[#38BDF8]/50 text-center transition group"
+            className="p-4 rounded-xl bg-slate-50/70 hover:bg-pink-50/50 border border-slate-200 hover:border-pink-300 transition group text-center"
           >
-            <Film className="w-6 h-6 text-[#38BDF8] mx-auto mb-2 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold text-white block">Cinematic Videos</span>
-            <span className="text-[10px] text-slate-300">6 HD AVC1 Reels</span>
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 text-white flex items-center justify-center mx-auto mb-2.5 shadow-xs group-hover:scale-105 transition-transform">
+              <Film className="w-6 h-6" />
+            </div>
+            <span className="text-xs font-bold text-slate-900 block">Cinematic Videos</span>
+            <span className="text-[10px] text-pink-700 font-medium">6 HD AVC1 Visuals</span>
           </Link>
 
           <Link
-            href="/admin/ai-promos"
-            className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/20 hover:border-[#38BDF8]/50 text-center transition group"
+            href="/admin/tables"
+            className="p-4 rounded-xl bg-slate-50/70 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-300 transition group text-center"
           >
-            <Bot className="w-6 h-6 text-[#D4AF37] mx-auto mb-2 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold text-white block">AI Promo Studio</span>
-            <span className="text-[10px] text-slate-300">Review &amp; Approve</span>
-          </Link>
-
-          <Link
-            href="/admin/events"
-            className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/20 hover:border-[#38BDF8]/50 text-center transition group"
-          >
-            <Calendar className="w-6 h-6 text-[#38BDF8] mx-auto mb-2 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold text-white block">Event Enquiries</span>
-            <span className="text-[10px] text-slate-300">Cabanas &amp; DJ Nights</span>
-          </Link>
-
-          <Link
-            href="/admin/reservations"
-            className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/20 hover:border-[#38BDF8]/50 text-center transition group"
-          >
-            <Users className="w-6 h-6 text-[#D4AF37] mx-auto mb-2 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-bold text-white block">Guest Reservations</span>
-            <span className="text-[10px] text-slate-300">Seating &amp; Conflicts</span>
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center mx-auto mb-2.5 shadow-xs group-hover:scale-105 transition-transform">
+              <Users className="w-6 h-6" />
+            </div>
+            <span className="text-xs font-bold text-slate-900 block">Table Floor Plan</span>
+            <span className="text-[10px] text-emerald-700 font-medium">Active Seating Grid</span>
           </Link>
         </div>
       </div>
@@ -238,37 +260,41 @@ export default function AdminDashboardPage() {
       {/* 4. REAL-TIME OPERATIONS & INVENTORY SPLIT */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Payment Tenders Settlement */}
-        <div className="bg-[#0B1528]/80 rounded-3xl p-6 border border-[#38BDF8]/25 shadow-xl space-y-4">
-          <h3 className="font-serif text-base font-bold text-white">
-            Settlement Tender Split
-          </h3>
-          <div className="space-y-3">
+        <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs space-y-5">
+          <div className="flex items-center justify-between">
+            <h3 className="font-serif text-base font-bold text-slate-900">
+              Settlement Tender Split
+            </h3>
+            <span className="text-xs text-blue-600 font-semibold">100% Reconciled</span>
+          </div>
+
+          <div className="space-y-4">
             <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="font-medium text-slate-300">UPI / QR (PhonePe / GPay)</span>
-                <span className="font-bold text-white">₹{metrics.payment_breakdown.upi.toLocaleString("en-IN")}</span>
+              <div className="flex justify-between text-xs mb-1.5">
+                <span className="font-semibold text-slate-700">UPI / QR (PhonePe / GPay)</span>
+                <span className="font-bold text-slate-900">₹{metrics.payment_breakdown.upi.toLocaleString("en-IN")}</span>
               </div>
-              <div className="w-full bg-[#070E1A] h-2 rounded-full overflow-hidden border border-[#38BDF8]/20">
-                <div className="h-full bg-gradient-to-r from-[#38BDF8] to-[#0284C7] rounded-full" style={{ width: "58%" }}></div>
+              <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full" style={{ width: "58%" }}></div>
               </div>
             </div>
 
             <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="font-medium text-slate-300">Credit / Debit Card (EDC Swipe)</span>
-                <span className="font-bold text-white">₹{metrics.payment_breakdown.card.toLocaleString("en-IN")}</span>
+              <div className="flex justify-between text-xs mb-1.5">
+                <span className="font-semibold text-slate-700">Credit / Debit Card (EDC Swipe)</span>
+                <span className="font-bold text-slate-900">₹{metrics.payment_breakdown.card.toLocaleString("en-IN")}</span>
               </div>
-              <div className="w-full bg-[#070E1A] h-2 rounded-full overflow-hidden border border-[#38BDF8]/20">
-                <div className="h-full bg-gradient-to-r from-[#D4AF37] to-[#E5C378] rounded-full" style={{ width: "34%" }}></div>
+              <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-purple-600 to-pink-500 rounded-full" style={{ width: "34%" }}></div>
               </div>
             </div>
 
             <div>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="font-medium text-slate-300">Cash in Register Float</span>
-                <span className="font-bold text-white">₹{metrics.payment_breakdown.cash.toLocaleString("en-IN")}</span>
+              <div className="flex justify-between text-xs mb-1.5">
+                <span className="font-semibold text-slate-700">Cash in Register Float</span>
+                <span className="font-bold text-slate-900">₹{metrics.payment_breakdown.cash.toLocaleString("en-IN")}</span>
               </div>
-              <div className="w-full bg-[#070E1A] h-2 rounded-full overflow-hidden border border-[#38BDF8]/20">
+              <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
                 <div className="h-full bg-emerald-500 rounded-full" style={{ width: "8%" }}></div>
               </div>
             </div>
@@ -276,31 +302,49 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Live Inventory Alerts */}
-        <div className="bg-[#0B1528]/80 rounded-3xl p-6 border border-[#38BDF8]/25 shadow-xl space-y-4">
-          <h3 className="font-serif text-base font-bold text-white">
-            Cellar & Kitchen Inventory Health
-          </h3>
+        <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-serif text-base font-bold text-slate-900">
+              Cellar & Kitchen Inventory Health
+            </h3>
+            <span className="text-xs text-slate-400">Automated Min Threshold</span>
+          </div>
+
           <div className="space-y-3">
-            <div className="p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/30 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <Wine className="w-4 h-4 text-amber-400" />
-                <span className="text-xs font-semibold text-amber-200">
-                  Liquor Cellar Low Stock: Macallan 12 Yrs, Bombay Sapphire Gin
-                </span>
+            <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200/70 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+                  <Wine className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900">
+                    Liquor Cellar Low Stock
+                  </p>
+                  <p className="text-[11px] text-amber-800 font-medium">
+                    Macallan 12 Yrs, Bombay Sapphire Gin
+                  </p>
+                </div>
               </div>
-              <Link href="/admin/inventory/liquor" className="text-xs font-bold text-[#38BDF8] hover:underline">
+              <Link href="/admin/inventory/liquor" className="text-xs font-bold text-blue-700 hover:underline">
                 Reorder
               </Link>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/30 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <Flame className="w-4 h-4 text-amber-400" />
-                <span className="text-xs font-semibold text-amber-200">
-                  Kitchen Raw Material Below Min Threshold: Artisanal Malai Paneer
-                </span>
+            <div className="p-4 rounded-xl bg-orange-50/70 border border-orange-200/70 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center font-bold">
+                  <Flame className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900">
+                    Kitchen Raw Material Below Min
+                  </p>
+                  <p className="text-[11px] text-orange-800 font-medium">
+                    Artisanal Malai Paneer, Basmati Rice
+                  </p>
+                </div>
               </div>
-              <Link href="/admin/inventory/restaurant" className="text-xs font-bold text-[#38BDF8] hover:underline">
+              <Link href="/admin/inventory/restaurant" className="text-xs font-bold text-blue-700 hover:underline">
                 Restock
               </Link>
             </div>

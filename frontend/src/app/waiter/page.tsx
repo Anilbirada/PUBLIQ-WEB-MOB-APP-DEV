@@ -490,7 +490,7 @@ export default function WaiterMobileApp() {
   // Generate Official Tax Invoice
   const handleGenerateInvoice = async () => {
     if (deptBillPreview?.food_bill && deptBillPreview?.beverage_bill) {
-      const choice = confirm("Click OK to generate Food Invoice (Anil: PUB-FOOD-...) or Cancel to generate Drinks Invoice (Ramesh: PUB-BEV-...)");
+      const choice = confirm("Click OK to generate Food Invoice (Ramesh S P: PUB-FOOD-...) or Cancel to generate Drinks Invoice (Anil: PUB-BEV-...)");
       if (choice) {
         await handleGenerateDepartmentInvoice("FOOD");
       } else {
@@ -1213,7 +1213,7 @@ export default function WaiterMobileApp() {
                     {order.food_items && order.food_items.length > 0 && (
                       <div className="space-y-1">
                         <div className="flex justify-between items-center">
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">🍳 Kitchen Dishes ({order.food_items.length}) • Owner: Anil</p>
+                          <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wider">🍳 Kitchen Dishes ({order.food_items.length}) • Owner: Ramesh S P</p>
                           {order.food_status === "ACCEPTED" ? (
                             <span className="text-[10px] text-emerald-400 font-bold">✓ IN KITCHEN</span>
                           ) : order.food_status === "REJECTED" ? (
@@ -1248,7 +1248,7 @@ export default function WaiterMobileApp() {
                     {order.drink_items && order.drink_items.length > 0 && (
                       <div className="space-y-1 pt-1 border-t border-slate-800/60">
                         <div className="flex justify-between items-center">
-                          <p className="text-[10px] font-bold text-[#38BDF8] uppercase tracking-wider">🍸 Artisan Bar Drinks ({order.drink_items.length}) • Owner: Ramesh</p>
+                          <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wider">🍸 Artisan Bar Drinks ({order.drink_items.length}) • Owner: Anil</p>
                           {order.beverage_status === "ACCEPTED" ? (
                             <span className="text-[10px] text-[#38BDF8] font-bold">✓ IN BAR</span>
                           ) : order.beverage_status === "REJECTED" ? (

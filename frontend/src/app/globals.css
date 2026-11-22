@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Inter:wght@300;400;500;600;700;800&family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700&family=Inter:wght@300;400;500;600;700;800;900&family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,12 +6,15 @@
 
 @layer base {
   :root {
-    --bg-primary: #070B12;
-    --bg-secondary: #0F1626;
-    --color-accent: #D4AF37;
-    --color-champagne: #E5C378;
-    --color-heading: #FDFBF7;
-    --color-body: #9DA3AE;
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --color-accent: #2563EB;
+    --color-champagne: #D4AF37;
+    --color-heading: #0F172A;
+    --color-body: #334155;
+    --color-muted: #64748B;
+    --color-border: #E2E8F0;
   }
 
   body {
@@ -25,8 +28,9 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-    letter-spacing: -0.01em;
+    font-family: 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    color: var(--color-heading);
   }
 }
 
@@ -40,53 +44,101 @@
 
 .font-cinzel {
   font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
 }
 
-/* Custom Luxury Dark Scrollbar */
+/* Premium Light Enterprise Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #070B12;
+  background: #F1F5F9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2A364F;
+  background: #CBD5E1;
   border-radius: 9999px;
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  border: 1px solid #F1F5F9;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #D4AF37;
+  background: #94A3B8;
 }
 
-/* Gold Text Shimmer */
+/* Enterprise Card Elevation & Styling */
+.enterprise-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 4px 16px -2px rgba(15, 23, 42, 0.05);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.enterprise-card:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 24px -3px rgba(15, 23, 42, 0.08);
+}
+
+/* Multicolour Gradient Utilities */
+.gradient-blue-violet {
+  background: linear-gradient(135deg, #2563EB 0%, #4F46E5 50%, #7C3AED 100%);
+}
+
+.gradient-cyan-blue {
+  background: linear-gradient(135deg, #06B6D4 0%, #0284C7 50%, #2563EB 100%);
+}
+
+.gradient-emerald-teal {
+  background: linear-gradient(135deg, #10B981 0%, #0D9488 50%, #059669 100%);
+}
+
+.gradient-purple-pink {
+  background: linear-gradient(135deg, #9333EA 0%, #C026D3 50%, #EC4899 100%);
+}
+
+.gradient-amber-orange {
+  background: linear-gradient(135deg, #F59E0B 0%, #EA580C 50%, #D97706 100%);
+}
+
+.gradient-sunset {
+  background: linear-gradient(135deg, #2563EB 0%, #7C3AED 50%, #EC4899 100%);
+}
+
+.gradient-text-blue {
+  background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 50%, #6366F1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-gold {
+  background: linear-gradient(135deg, #B45309 0%, #D97706 50%, #F59E0B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Backward compatibility aliases */
 .gold-shimmer {
-  background: linear-gradient(135deg, #FDFBF7 0%, #D4AF37 50%, #E5C378 100%);
+  background: linear-gradient(135deg, #0F172A 0%, #2563EB 50%, #4F46E5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .gold-gradient {
-  background: linear-gradient(135deg, #D4AF37 0%, #E5C378 50%, #A37B34 100%);
+  background: linear-gradient(135deg, #2563EB 0%, #4F46E5 100%);
 }
 
 .dark-luxury-card {
-  background: linear-gradient(180deg, rgba(18, 24, 38, 0.85) 0%, rgba(10, 17, 31, 0.95) 100%);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(212, 175, 55, 0.18);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05);
 }
 
 .dark-luxury-card:hover {
-  border-color: rgba(212, 175, 55, 0.45);
-  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.85), 0 0 20px -5px rgba(212, 175, 55, 0.2);
+  border-color: #CBD5E1;
+  box-shadow: 0 10px 24px -3px rgba(15, 23, 42, 0.08);
 }
 
-/* Smooth Image / Card Zoom */
 .luxury-card-zoom {
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease, border-color 0.4s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
 }
 .luxury-card-zoom:hover {
-  transform: translateY(-4px) scale(1.012);
+  transform: translateY(-2px);
 }

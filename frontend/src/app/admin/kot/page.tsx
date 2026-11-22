@@ -106,48 +106,48 @@ export default function KotPage() {
   const delayedCount = tickets.filter(t => t.is_delayed).length;
 
   return (
-    <div className="space-y-6">
-      {/* 1. KDS Executive Header & Live Metrics */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-6 bg-[#0B1528]/80 rounded-3xl border border-[#38BDF8]/25 shadow-xl">
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* 1. KDS Executive Header & Live Metrics (Pure White Card) */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-6 sm:p-8 bg-white rounded-2xl border border-slate-200/90 shadow-xs">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="text-xs uppercase tracking-widest text-[#38BDF8] font-bold flex items-center gap-1.5">
-              <ChefHat className="w-3.5 h-3.5 text-[#38BDF8]" /> Real-Time Kitchen Display System (KDS)
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="text-xs uppercase tracking-wider text-blue-700 font-bold flex items-center gap-1.5">
+              <ChefHat className="w-4 h-4 text-blue-600" /> Real-Time Kitchen Display System (KDS)
             </span>
           </div>
-          <h1 className="font-serif text-3xl font-bold text-white mt-1">
+          <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Live Cook Stations & Ticket Routing
           </h1>
-          <p className="text-xs text-slate-300 mt-0.5">
+          <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
             Synchronized dispatch across Clay Oven Tandoor, Curries, Continental & Runner Stations.
           </p>
         </div>
 
         {/* Live Counters */}
-        <div className="flex items-center gap-3">
-          <div className="px-4 py-2.5 rounded-2xl bg-[#070E1A] border border-[#38BDF8]/25 text-center">
-            <p className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Active Tickets</p>
-            <p className="text-xl font-serif font-bold text-[#38BDF8]">{activeCount}</p>
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="px-5 py-3 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-xs">
+            <p className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Active Tickets</p>
+            <p className="text-2xl font-serif font-black text-blue-700">{activeCount}</p>
           </div>
-          <div className={`px-4 py-2.5 rounded-2xl border text-center ${
-            delayedCount > 0 ? "bg-rose-950/80 border-rose-500/40 text-rose-300" : "bg-[#070E1A] border-[#38BDF8]/25 text-slate-400"
+          <div className={`px-5 py-3 rounded-xl border text-center shadow-xs ${
+            delayedCount > 0 ? "bg-rose-50 border-rose-200 text-rose-800" : "bg-slate-50 border-slate-200 text-slate-500"
           }`}>
             <p className="text-[10px] uppercase font-bold tracking-wider">Rush / Delayed</p>
-            <p className="text-xl font-serif font-bold text-rose-400">{delayedCount}</p>
+            <p className="text-2xl font-serif font-black text-rose-600">{delayedCount}</p>
           </div>
           <button
             onClick={fetchTickets}
-            className="p-3 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/30 text-white transition shadow-sm"
+            className="p-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 transition shadow-xs"
             title="Refresh tickets"
           >
-            <RefreshCw className="w-4 h-4 text-[#38BDF8]" />
+            <RefreshCw className="w-4 h-4 text-blue-600" />
           </button>
         </div>
       </div>
 
       {/* 2. Station Filter Tabs */}
-      <div className="flex items-center gap-2 p-1.5 bg-[#0B1528]/80 rounded-2xl border border-[#38BDF8]/25 overflow-x-auto">
+      <div className="flex items-center gap-2 p-1.5 bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-x-auto">
         {[
           { key: "ALL", label: "All Live Stations" },
           { key: "TANDOOR", label: "Clay Oven Tandoor" },
@@ -159,8 +159,8 @@ export default function KotPage() {
             onClick={() => setActiveStation(st.key)}
             className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
               activeStation === st.key
-                ? "bg-gradient-to-r from-[#0284C7] to-[#38BDF8] text-[#070B12] shadow-md font-bold"
-                : "text-slate-400 hover:bg-[#070E1A] hover:text-white"
+                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs font-bold"
+                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             }`}
           >
             {st.label}
@@ -168,7 +168,7 @@ export default function KotPage() {
         ))}
       </div>
 
-      {/* 3. Tickets Grid */}
+      {/* 3. Tickets Grid (Crisp White Ticket Cards) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {tickets.map((t) => {
           const isReady = t.status === "READY";
@@ -179,28 +179,28 @@ export default function KotPage() {
           return (
             <div
               key={t.order_id}
-              className={`rounded-3xl border flex flex-col justify-between overflow-hidden shadow-xl hover:shadow-2xl transition-all bg-[#0B1528]/80 ${
+              className={`rounded-2xl border flex flex-col justify-between overflow-hidden shadow-xs hover:shadow-md transition-all bg-white ${
                 t.is_delayed
-                  ? "border-rose-500/60 ring-2 ring-rose-500/20"
+                  ? "border-rose-400 ring-2 ring-rose-200"
                   : isReady
-                  ? "border-emerald-500/40"
+                  ? "border-emerald-300"
                   : isPreparing
-                  ? "border-[#38BDF8]/50"
-                  : "border-[#38BDF8]/25"
+                  ? "border-amber-300"
+                  : "border-slate-200"
               }`}
             >
               {/* Ticket Top Bar */}
-              <div className={`p-5 border-b border-[#38BDF8]/20 space-y-3 ${
-                t.is_delayed ? "bg-rose-950/40" : isReady ? "bg-emerald-950/40" : "bg-[#070E1A]"
+              <div className={`p-5 border-b border-slate-100 space-y-3 ${
+                t.is_delayed ? "bg-rose-50/60" : isReady ? "bg-emerald-50/60" : "bg-slate-50/70"
               }`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="w-10 h-10 rounded-2xl bg-[#0F223D] border border-[#38BDF8]/40 text-[#38BDF8] font-black flex items-center justify-center text-sm shadow-md">
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-extrabold flex items-center justify-center text-sm shadow-xs">
                       {t.table_number}
                     </span>
                     <div>
-                      <h3 className="font-serif font-bold text-base text-white">Table {t.table_number}</h3>
-                      <p className="text-[11px] font-mono text-slate-400">Order #{t.order_number}</p>
+                      <h3 className="font-serif font-bold text-base text-slate-900">Table {t.table_number}</h3>
+                      <p className="text-[11px] font-mono text-slate-500">Order #{t.order_number}</p>
                     </div>
                   </div>
 
@@ -208,59 +208,59 @@ export default function KotPage() {
                     <span
                       className={`text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 border ${
                         t.is_delayed
-                          ? "bg-rose-950/80 text-rose-300 border-rose-500/40 animate-pulse"
-                          : "bg-[#0F223D] text-slate-300 border-[#38BDF8]/30"
+                          ? "bg-rose-100 text-rose-800 border-rose-300 animate-pulse"
+                          : "bg-white text-slate-700 border-slate-200 shadow-xs"
                       }`}
                     >
-                      <Timer className="w-3.5 h-3.5 text-[#38BDF8]" />
+                      <Timer className="w-3.5 h-3.5 text-blue-600" />
                       {t.elapsed_minutes}m elapsed
                     </span>
                     {t.is_delayed && (
-                      <span className="text-[9px] uppercase tracking-wider text-rose-400 font-extrabold block mt-1">
+                      <span className="text-[9px] uppercase tracking-wider text-rose-700 font-extrabold block mt-1">
                         PRIORITY RUSH
                       </span>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs pt-1 border-t border-[#38BDF8]/15">
-                  <span className="flex items-center gap-1.5 font-semibold text-slate-300">
-                    <User className="w-3.5 h-3.5 text-[#38BDF8]" /> {t.customer_name}
+                <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-200/60">
+                  <span className="flex items-center gap-1.5 font-semibold text-slate-700">
+                    <User className="w-3.5 h-3.5 text-blue-600" /> {t.customer_name}
                   </span>
-                  <span className="font-bold text-[11px] text-[#38BDF8] px-2 py-0.5 rounded-md bg-[#0F223D] border border-[#38BDF8]/30">
+                  <span className="font-bold text-[10px] text-blue-700 px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200">
                     {t.food_status}
                   </span>
                 </div>
 
                 {t.special_instructions && (
-                  <div className="p-2.5 rounded-xl bg-amber-950/60 border border-amber-500/40 text-xs text-amber-200 leading-snug">
-                    <strong className="font-bold text-[#D4AF37]">Chef Note:</strong> {t.special_instructions}
+                  <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 leading-snug">
+                    <strong className="font-bold text-amber-800">Chef Note:</strong> {t.special_instructions}
                   </div>
                 )}
               </div>
 
               {/* Items List */}
-              <div className="p-5 flex-1 space-y-2.5">
+              <div className="p-5 flex-1 space-y-2">
                 {t.items.map((it: any) => (
                   <div
                     key={it.id}
-                    className="p-3 rounded-2xl bg-[#070E1A] border border-[#38BDF8]/20 flex items-center justify-between text-xs hover:border-[#38BDF8]/50 transition-colors"
+                    className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs hover:border-slate-200 transition-colors"
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-serif font-black text-sm text-[#38BDF8] bg-[#0F223D] px-2 py-0.5 rounded-lg border border-[#38BDF8]/30">
+                        <span className="font-serif font-black text-xs text-blue-700 bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-xs">
                           {it.quantity}x
                         </span>
-                        <span className="font-bold text-white">{it.item_name}</span>
+                        <span className="font-bold text-slate-900">{it.item_name}</span>
                       </div>
                       {it.variant_name && (
-                        <p className="text-[10px] text-slate-400 font-semibold mt-0.5 pl-8">
+                        <p className="text-[10px] text-slate-500 font-medium mt-0.5 pl-8">
                           {it.variant_name}
                         </p>
                       )}
                     </div>
                     {it.special_instructions && (
-                      <span className="text-[10px] text-[#D4AF37] font-bold italic bg-[#0F223D] px-2 py-1 rounded-md border border-[#38BDF8]/20">
+                      <span className="text-[10px] text-amber-800 font-bold italic bg-amber-50 px-2 py-1 rounded-md border border-amber-200">
                         {it.special_instructions}
                       </span>
                     )}
@@ -269,17 +269,17 @@ export default function KotPage() {
               </div>
 
               {/* Action Bump Button */}
-              <div className="p-4 bg-[#070E1A] border-t border-[#38BDF8]/20">
+              <div className="p-4 bg-slate-50/70 border-t border-slate-100">
                 <button
                   onClick={() => handleBump(t.order_id, t.status)}
-                  className={`w-full py-3 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 ${
+                  className={`w-full py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-2 ${
                     isPlaced
-                      ? "bg-gradient-to-r from-[#0284C7] to-[#38BDF8] text-[#070B12]"
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-500/20 hover:shadow-md"
                       : isAccepted
-                      ? "bg-gradient-to-r from-[#D4AF37] to-[#E5C378] text-[#070B12]"
+                      ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-amber-500/20 hover:shadow-md"
                       : isPreparing
-                      ? "bg-[#0F223D] hover:bg-[#38BDF8] text-[#38BDF8] hover:text-[#070B12] border border-[#38BDF8]/40"
-                      : "bg-emerald-600 hover:bg-emerald-500 text-white"
+                      ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-emerald-500/20 hover:shadow-md"
+                      : "bg-slate-800 hover:bg-slate-900 text-white"
                   }`}
                 >
                   {isPlaced && "✓ Accept Ticket & Print KOT"}

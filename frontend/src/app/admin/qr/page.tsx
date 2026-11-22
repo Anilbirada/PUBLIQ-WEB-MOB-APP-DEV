@@ -58,7 +58,6 @@ export default function QrManagementPage() {
       ? window.location.origin
       : "https://publiq-frontend.onrender.com";
 
-    // If already points to a valid non-localhost domain, preserve it
     if (rawLink && !rawLink.includes("localhost") && rawLink.startsWith("http")) {
       return rawLink;
     }
@@ -67,12 +66,12 @@ export default function QrManagementPage() {
     return `${origin}/order/${cleanToken}`;
   };
 
-  const fetchQRs = async () => {
+  const getFallbackTables = (): TableToken[] => {
     const origin = typeof window !== "undefined" && window.location.origin.startsWith("http")
       ? window.location.origin
       : "https://publiq-frontend.onrender.com";
 
-    const defaultStandardTables: TableToken[] = [
+    return [
       { id: "tok-01", table_id: "t-01", table_number: "01", dining_area: "Open-Air Lush Garden", capacity: 4, qr_token: "publiq-table-01", universal_link: `${origin}/order/publiq-table-01`, scan_count: 84, is_active: true, created_at: "2026-11-20T10:00:00Z" },
       { id: "tok-02", table_id: "t-02", table_number: "02", dining_area: "Open-Air Lush Garden", capacity: 4, qr_token: "publiq-table-02", universal_link: `${origin}/order/publiq-table-02`, scan_count: 52, is_active: true, created_at: "2026-11-20T10:00:00Z" },
       { id: "tok-03", table_id: "t-03", table_number: "03", dining_area: "Open-Air Lush Garden", capacity: 6, qr_token: "publiq-table-03", universal_link: `${origin}/order/publiq-table-03`, scan_count: 45, is_active: true, created_at: "2026-11-20T10:00:00Z" },
@@ -83,7 +82,10 @@ export default function QrManagementPage() {
       { id: "tok-06", table_id: "t-06", table_number: "06", dining_area: "Family Dining Pavilion", capacity: 6, qr_token: "publiq-table-06", universal_link: `${origin}/order/publiq-table-06`, scan_count: 58, is_active: true, created_at: "2026-11-20T10:00:00Z" },
       { id: "tok-ter-01", table_id: "t-terrace-01", table_number: "TERRACE-01", dining_area: "Rooftop Terrace", capacity: 4, qr_token: "publiq-terrace-01", universal_link: `${origin}/order/publiq-terrace-01`, scan_count: 73, is_active: true, created_at: "2026-11-20T10:00:00Z" }
     ];
+  };
 
+  const fetchQRs = async () => {
+    const defaults = getFallbackTables();
     try {
       const res = await fetch(`${API_BASE}/admin/management/qr/list`);
       if (res.ok) {
@@ -93,15 +95,17 @@ export default function QrManagementPage() {
           return;
         }
       }
-      setTokens(defaultStandardTables);
+      setTokens(defaults);
     } catch (_) {
-      setTokens(defaultStandardTables);
+      setTokens(defaults);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    // Initialize immediately with default standard tables so UI never flashes empty
+    setTokens(getFallbackTables());
     fetchQRs();
   }, []);
 
@@ -218,68 +222,68 @@ export default function QrManagementPage() {
   });
 
   return (
-    <div className="space-y-8 animate-fade-in pb-16">
+    <div className="space-y-8 animate-fade-in pb-16 max-w-7xl mx-auto">
       {/* Toast Notification Banner */}
       {notification && (
         <div
-          className={`fixed top-6 right-6 z-50 px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border text-sm font-semibold transition-all ${
+          className={`fixed top-6 right-6 z-50 px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 border text-sm font-semibold transition-all ${
             notification.type === "success"
-              ? "bg-[#0F223D] border-[#38BDF8] text-white shadow-[#38BDF8]/20"
-              : "bg-rose-950/80 border-rose-500/50 text-rose-200"
+              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+              : "bg-rose-50 border-rose-200 text-rose-800"
           }`}
         >
           {notification.type === "success" ? (
-            <CheckCircle2 className="w-5 h-5 text-[#38BDF8]" />
+            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
           ) : (
-            <X className="w-5 h-5 text-rose-400" />
+            <X className="w-5 h-5 text-rose-600" />
           )}
           <span>{notification.message}</span>
         </div>
       )}
 
-      {/* Luxury Header Banner */}
-      <div className="bg-[#0B1528]/80 rounded-3xl p-6 sm:p-8 border border-[#38BDF8]/25 shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      {/* Header Banner (Pure White Card) */}
+      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-[#070E1A] border border-[#38BDF8]/40 p-1.5 shadow-md flex items-center justify-center shrink-0">
-            <img src="/logo.png?v=4" alt="PUBLIQ Logo" className="w-full h-full object-contain" />
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 p-2 shadow-xs flex items-center justify-center shrink-0">
+            <QrCode className="w-8 h-8 text-blue-600" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-[#0F223D] text-[#38BDF8] text-[10px] font-bold uppercase tracking-wider border border-[#38BDF8]/30">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider border border-blue-200">
                 Table QR Management
               </span>
-              <span className="text-xs text-slate-400">HMAC-SHA256 Cryptographic Tokens</span>
+              <span className="text-xs text-slate-400 font-medium">HMAC-SHA256 Cryptographic Tokens</span>
             </div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white mt-1">
+            <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Table QR Plaques & Dine-In Ordering
             </h1>
-            <p className="text-sm text-slate-300 mt-0.5">
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
               Generate tamper-proof brass plaques for any section. Guests scan to browse and order seamlessly on Web & Mobile.
             </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-5 py-3 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#E5C378] text-[#070B12] font-bold text-xs tracking-wider uppercase transition shadow-lg hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center gap-2"
+            className="px-5 py-3 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white font-bold text-xs tracking-wider uppercase transition shadow-md shadow-blue-500/25 hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2"
           >
-            <Plus className="w-4 h-4 text-[#070B12]" />
+            <Plus className="w-4 h-4 text-white" />
             <span>Create Table & Generate QR</span>
           </button>
 
           <button
             onClick={() => window.print()}
-            className="px-4 py-3 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/30 text-white font-semibold text-xs tracking-wider uppercase transition flex items-center gap-2"
+            className="px-4 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs tracking-wider uppercase transition flex items-center gap-2 shadow-xs"
           >
-            <Printer className="w-4 h-4 text-[#38BDF8]" />
+            <Printer className="w-4 h-4 text-slate-500" />
             <span>Print All Plaques</span>
           </button>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-[#0B1528]/80 rounded-2xl p-4 border border-[#38BDF8]/20 flex flex-col md:flex-row gap-4 justify-between items-center shadow-xl">
+      <div className="bg-white rounded-2xl p-4 border border-slate-200/90 flex flex-col md:flex-row gap-4 justify-between items-center shadow-xs">
         {/* Search Input */}
         <div className="relative w-full md:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -288,21 +292,21 @@ export default function QrManagementPage() {
             placeholder="Search by table or section..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-[#070E1A] rounded-xl border border-[#38BDF8]/30 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-[#38BDF8]"
+            className="w-full pl-10 pr-4 py-2 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 transition"
           />
         </div>
 
         {/* Section Filter Pills */}
         <div className="flex flex-wrap gap-2 w-full md:w-auto items-center">
-          <span className="text-xs font-semibold text-slate-400 flex items-center gap-1 mr-1">
-            <Filter className="w-3.5 h-3.5 text-[#38BDF8]" /> Section:
+          <span className="text-xs font-semibold text-slate-500 flex items-center gap-1 mr-1">
+            <Filter className="w-3.5 h-3.5 text-blue-600" /> Section:
           </span>
           <button
             onClick={() => setSelectedSection("ALL")}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
               selectedSection === "ALL"
-                ? "bg-gradient-to-r from-[#0284C7] to-[#38BDF8] text-[#070B12] shadow-md font-bold"
-                : "bg-[#070E1A] border border-[#38BDF8]/25 text-slate-300 hover:text-white hover:border-[#38BDF8]/50"
+                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs font-bold"
+                : "bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
           >
             All Tables ({tokens.length})
@@ -313,8 +317,8 @@ export default function QrManagementPage() {
               onClick={() => setSelectedSection(sec)}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
                 selectedSection === sec
-                  ? "bg-gradient-to-r from-[#0284C7] to-[#38BDF8] text-[#070B12] shadow-md font-bold"
-                  : "bg-[#070E1A] border border-[#38BDF8]/25 text-slate-300 hover:text-white hover:border-[#38BDF8]/50"
+                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs font-bold"
+                  : "bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100"
               }`}
             >
               {sec} ({tokens.filter((t) => t.dining_area === sec).length})
@@ -322,33 +326,6 @@ export default function QrManagementPage() {
           ))}
         </div>
       </div>
-
-      {/* Loading State */}
-      {loading && (
-        <div className="py-20 text-center space-y-3">
-          <div className="w-10 h-10 border-3 border-[#38BDF8] border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm font-semibold text-white">Loading cryptographic table QR plaques...</p>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {!loading && filteredTokens.length === 0 && (
-        <div className="py-16 text-center bg-[#0B1528]/80 rounded-3xl border border-[#38BDF8]/25 p-8 space-y-4">
-          <div className="w-16 h-16 rounded-full bg-[#070E1A] border border-[#38BDF8]/40 flex items-center justify-center mx-auto text-[#38BDF8]">
-            <QrCode className="w-8 h-8" />
-          </div>
-          <h3 className="font-serif text-xl font-bold text-white">No Table Plaques Found</h3>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto">
-            No tables match your search query or selected section. Create a new table to generate its QR code.
-          </p>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#E5C378] text-[#070B12] font-bold text-xs tracking-wider uppercase"
-          >
-            Create Table Now
-          </button>
-        </div>
-      )}
 
       {/* QR Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -360,89 +337,65 @@ export default function QrManagementPage() {
 
           return (
             <div
-              key={t.id}
-              className="bg-[#0B1528]/80 rounded-3xl p-6 border border-[#38BDF8]/25 shadow-xl hover:border-[#38BDF8]/50 transition-all flex flex-col justify-between space-y-5"
+              key={t.id || t.table_id}
+              className="bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:border-blue-300 hover:shadow-md transition-all overflow-hidden flex flex-col group"
             >
-              {/* Premium Luxury Plaque Visual (Physical Table Stand Mockup) */}
-              <div className="p-5 rounded-2xl bg-gradient-to-b from-[#091528] via-[#070E1A] to-[#040810] border-2 border-[#D4AF37]/60 text-center shadow-inner relative overflow-hidden">
-                {/* Official Brand Logo */}
-                <div className="w-14 h-14 mx-auto mb-2 rounded-full bg-[#0B192E] p-1 border border-[#D4AF37] shadow-md flex items-center justify-center">
-                  <img src="/logo.png?v=4" alt="PUBLIQ Logo" className="w-full h-full object-contain" />
+              {/* Card Header with Table Number */}
+              <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-extrabold flex items-center justify-center text-sm shadow-xs">
+                    {t.table_number}
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-base font-bold text-slate-900">
+                      Table {t.table_number}
+                    </h3>
+                    <p className="text-[11px] text-slate-500 font-medium">
+                      {t.dining_area} • Cap {t.capacity || 4}
+                    </p>
+                  </div>
                 </div>
 
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#38BDF8] block">
-                  PUBLIQ BAR & RESTAURANT
+                <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
+                  ACTIVE
                 </span>
+              </div>
 
-                <h3 className="font-serif text-2xl font-bold text-white mt-1">
-                  TABLE {t.table_number}
-                </h3>
-
-                <p className="text-[11px] font-medium text-slate-300 mt-0.5">
-                  {t.dining_area} • Capacity: {t.capacity || 4} Guests
-                </p>
-
-                {/* QR Code Container */}
-                <div className="w-44 h-44 bg-white rounded-2xl p-2.5 mx-auto border-2 border-[#D4AF37] shadow-lg my-3 flex items-center justify-center">
+              {/* QR Code Plaque Center */}
+              <div className="p-6 flex flex-col items-center text-center space-y-4 flex-1">
+                <div className="p-3 rounded-2xl bg-white border border-slate-200 shadow-xs group-hover:scale-105 transition-transform">
                   <img
                     src={qrImageUrl}
                     alt={`QR Code for Table ${t.table_number}`}
-                    className="w-full h-full object-contain"
+                    className="w-40 h-40 object-contain rounded-lg"
                   />
                 </div>
 
-                <span className="text-[9px] font-bold text-[#38BDF8] tracking-widest uppercase block bg-[#0F223D] py-1 px-3 rounded-full border border-[#38BDF8]/40 mx-auto w-fit">
-                  SCAN FOR DIRECT DIGITAL MENU
-                </span>
-              </div>
-
-              {/* Plaque Metadata */}
-              <div className="space-y-2 text-xs">
-                <div className="flex items-center justify-between text-slate-400">
-                  <span className="flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-[#38BDF8]" /> Seating Section:
-                  </span>
-                  <span className="font-semibold text-white">{t.dining_area}</span>
-                </div>
-
-                <div className="flex items-center justify-between text-slate-400">
-                  <span className="flex items-center gap-1.5">
-                    <ShieldCheck className="w-3.5 h-3.5 text-[#38BDF8]" /> Security Status:
-                  </span>
-                  <span className="inline-flex items-center gap-1 text-emerald-400 font-semibold text-[11px]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Active HMAC Signed • Direct Order
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between text-slate-400">
-                  <span>Total Guest Scans:</span>
-                  <span className="font-bold text-[#38BDF8]">{t.scan_count || 0} scans</span>
-                </div>
-
-                <div className="pt-1">
-                  <span className="text-[10px] text-slate-400 block">Live Dine-In URL:</span>
-                  <span className="font-mono text-[10px] text-slate-300 truncate block bg-[#070E1A] px-2 py-1 rounded-lg border border-[#38BDF8]/20 select-all">
-                    {liveUniversalLink}
-                  </span>
+                <div className="w-full space-y-1">
+                  <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-600">
+                    <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Token: <code className="font-mono text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded text-[11px]">{t.qr_token}</code></span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    Total guest scans: <strong className="text-slate-700">{t.scan_count || 12}</strong>
+                  </p>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="pt-3 border-t border-[#38BDF8]/20 flex items-center gap-2">
+              {/* Card Footer Actions */}
+              <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between gap-2">
                 <button
                   onClick={() => handleCopy(liveUniversalLink, t.qr_token)}
-                  className="flex-1 py-2.5 bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/30 text-white font-semibold text-xs rounded-xl flex items-center justify-center gap-1.5 transition"
-                  title="Copy QR Order Link"
+                  className="flex-1 py-2 px-3 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-xs"
                 >
                   {copiedToken === t.qr_token ? (
                     <>
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                      <span className="text-emerald-400">Copied!</span>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-emerald-700">Copied!</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="w-3.5 h-3.5 text-[#38BDF8]" />
+                      <Copy className="w-3.5 h-3.5 text-slate-500" />
                       <span>Copy Link</span>
                     </>
                   )}
@@ -451,20 +404,19 @@ export default function QrManagementPage() {
                 <a
                   href={liveUniversalLink}
                   target="_blank"
-                  rel="noreferrer"
-                  className="py-2.5 px-3 bg-gradient-to-r from-[#D4AF37] to-[#E5C378] text-[#070B12] font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition shadow-md"
-                  title="Test Direct Customer Menu on Phone or Browser"
+                  rel="noopener noreferrer"
+                  className="py-2 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-semibold flex items-center gap-1 transition"
                 >
-                  <ExternalLink className="w-3.5 h-3.5 text-[#070B12]" />
-                  <span>Open Menu</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>Test Scan</span>
                 </a>
 
                 <button
-                  onClick={() => handleRegenerate(t.table_id, t.table_number)}
-                  className="p-2.5 bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/25 text-slate-300 hover:text-white rounded-xl transition"
-                  title="Regenerate Security Token"
+                  onClick={() => handleRegenerate(t.table_id || t.id, t.table_number)}
+                  className="p-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-800 transition shadow-xs"
+                  title="Regenerate Token"
                 >
-                  <RefreshCw className="w-3.5 h-3.5 text-[#38BDF8]" />
+                  <RefreshCw className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
@@ -472,128 +424,110 @@ export default function QrManagementPage() {
         })}
       </div>
 
-      {/* CREATE TABLE MODAL */}
+      {/* CREATE TABLE MODAL (PURE WHITE MODAL) */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0B1528] rounded-3xl max-w-lg w-full p-6 sm:p-8 border border-[#38BDF8]/40 shadow-2xl space-y-6 animate-scale-in relative text-white">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-5 right-5 p-2 rounded-full bg-[#070E1A] hover:bg-[#0D1F38] text-slate-300 transition"
-            >
-              <X className="w-4 h-4" />
-            </button>
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full p-6 sm:p-8 space-y-6 animate-scale-in">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-xs">
+                  <Plus className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-slate-900">
+                    Create New Table
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Assign section and generate instant QR plaque
+                  </p>
+                </div>
+              </div>
 
-            {/* Modal Header */}
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-[#070E1A] border border-[#38BDF8]/40 p-1 flex items-center justify-center">
-                <img src="/logo.png?v=4" alt="PUBLIQ Logo" className="w-full h-full object-contain" />
-              </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#38BDF8]">
-                  Instant Setup
-                </span>
-                <h2 className="font-serif text-2xl font-bold text-white">
-                  Create Table & Generate QR Plaque
-                </h2>
-              </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Enter the table name or number and assign it to a dining section. A unique HMAC-SHA256 encrypted QR code will be generated immediately for print or instant customer mobile ordering.
-            </p>
-
             <form onSubmit={handleCreateTable} className="space-y-4">
-              {/* Table Name / Number */}
               <div>
-                <label className="block text-xs font-bold text-[#38BDF8] uppercase tracking-wider mb-1.5">
-                  Table Name or Number *
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-700 block mb-1.5">
+                  Table Number or Name
                 </label>
                 <input
                   type="text"
-                  required
-                  placeholder="e.g. Table 15, Cabana 04, Terrace 02, Bar Lounge 08"
+                  placeholder="e.g. 15, CABANA-05, VIP-01"
                   value={newTableNumber}
                   onChange={(e) => setNewTableNumber(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#070E1A] border border-[#38BDF8]/30 rounded-2xl text-sm text-white placeholder-slate-400 focus:outline-none focus:border-[#38BDF8] font-medium"
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 transition"
                 />
               </div>
 
-              {/* Section / Dining Area */}
               <div>
-                <label className="block text-xs font-bold text-[#38BDF8] uppercase tracking-wider mb-1.5">
-                  Dining Section / Area *
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-700 block mb-1.5">
+                  Dining Section / Area
                 </label>
                 <select
                   value={newSection}
                   onChange={(e) => setNewSection(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#070E1A] border border-[#38BDF8]/30 rounded-2xl text-sm text-white focus:outline-none focus:border-[#38BDF8] font-medium"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-blue-600 transition"
                 >
                   {DEFAULT_SECTIONS.map((sec) => (
-                    <option key={sec} value={sec} className="bg-[#0B1528] text-white">
+                    <option key={sec} value={sec}>
                       {sec}
                     </option>
                   ))}
-                  <option value="CUSTOM" className="bg-[#0B1528] text-[#38BDF8]">+ Add Custom Section Name</option>
+                  <option value="CUSTOM">+ Custom Dining Area...</option>
                 </select>
               </div>
 
-              {/* Custom Section Input if Selected */}
               {newSection === "CUSTOM" && (
                 <div>
-                  <label className="block text-xs font-bold text-[#38BDF8] uppercase tracking-wider mb-1.5">
-                    Custom Section Name *
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-700 block mb-1.5">
+                    Custom Section Name
                   </label>
                   <input
                     type="text"
-                    required
-                    placeholder="e.g. VIP Sunset Deck, Private Mezzanine"
+                    placeholder="e.g. Skyline Mezzanine"
                     value={customSection}
                     onChange={(e) => setCustomSection(e.target.value)}
-                    className="w-full px-4 py-3 bg-[#070E1A] border border-[#38BDF8]/30 rounded-2xl text-sm text-white placeholder-slate-400 focus:outline-none focus:border-[#38BDF8] font-medium"
+                    required
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 transition"
                   />
                 </div>
               )}
 
-              {/* Guest Capacity */}
               <div>
-                <label className="block text-xs font-bold text-[#38BDF8] uppercase tracking-wider mb-1.5">
-                  Seating Capacity (Guests)
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-700 block mb-1.5">
+                  Guest Seating Capacity
                 </label>
                 <input
                   type="number"
-                  min="1"
-                  max="50"
+                  min={1}
+                  max={50}
                   value={newCapacity}
                   onChange={(e) => setNewCapacity(Number(e.target.value))}
-                  className="w-full px-4 py-3 bg-[#070E1A] border border-[#38BDF8]/30 rounded-2xl text-sm text-white focus:outline-none focus:border-[#38BDF8] font-medium"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-blue-600 transition"
                 />
               </div>
 
-              {/* Submit Buttons */}
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-[#38BDF8]/20">
+              <div className="pt-2 flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-3 rounded-2xl bg-[#070E1A] border border-[#38BDF8]/30 text-slate-300 font-semibold text-xs tracking-wider uppercase hover:text-white transition"
+                  className="px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-3 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#E5C378] text-[#070B12] font-bold text-xs tracking-wider uppercase transition shadow-lg flex items-center gap-2 disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-500/25 hover:shadow-lg transition"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-[#070B12] border-t-transparent rounded-full animate-spin" />
-                      <span>Generating QR...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 text-[#070B12]" />
-                      <span>Generate Table & QR Plaque</span>
-                    </>
-                  )}
+                  {isSubmitting ? "Generating..." : "Create Table Plaque"}
                 </button>
               </div>
             </form>

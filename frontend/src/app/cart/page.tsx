@@ -3,7 +3,7 @@
 import React from "react";
 import { 
   ShoppingBag, Trash2, Plus, Minus, ArrowRight, 
-  Sparkles, ShieldCheck, ArrowLeft, UtensilsCrossed 
+  Sparkles, ShieldCheck, ArrowLeft, UtensilsCrossed, Wine
 } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import { useTableSession } from "../../context/TableSessionContext";
@@ -18,24 +18,24 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-[75vh] flex items-center justify-center p-4 bg-[#070B12]">
-        <div className="max-w-md w-full bg-[#0A111F] rounded-3xl p-8 text-center space-y-6 border border-[#D4AF37]/30 shadow-2xl">
-          <div className="w-16 h-16 rounded-full bg-[#0F1626] border border-[#D4AF37]/40 flex items-center justify-center text-[#D4AF37] mx-auto shadow-inner">
+      <div className="min-h-[75vh] flex items-center justify-center p-4 bg-[#F8FAFC]">
+        <div className="max-w-md w-full bg-white rounded-3xl p-8 text-center space-y-6 border border-slate-200/90 shadow-xs">
+          <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 mx-auto shadow-xs">
             <ShoppingBag className="w-8 h-8" />
           </div>
           <div>
-            <h2 className="font-serif text-2xl sm:text-3xl font-normal text-white">
+            <h2 className="font-serif text-2xl sm:text-3xl font-extrabold text-slate-900">
               Your Order is Empty
             </h2>
-            <p className="text-xs text-slate-300 mt-2 leading-relaxed font-medium">
+            <p className="text-xs text-slate-500 mt-2 leading-relaxed font-medium">
               Explore our sizzling tandoori kebabs, rich butter chicken, flavorful biryanis, and refreshing craft cocktails.
             </p>
           </div>
           <a
             href="/menu"
-            className="inline-flex items-center gap-2 py-3.5 px-8 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#B38728] text-[#070B12] font-bold text-xs uppercase tracking-widest hover:opacity-95 transition-all shadow-lg shadow-[#D4AF37]/20"
+            className="inline-flex items-center gap-2 py-3.5 px-8 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white font-bold text-xs uppercase tracking-wider hover:shadow-lg transition-all shadow-md shadow-blue-500/25"
           >
-            <span>Explore Menu &amp; Add Items</span>
+            <span>Explore Menu & Add Items</span>
             <ArrowRight className="w-4 h-4" />
           </a>
         </div>
@@ -44,25 +44,25 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#070B12] text-slate-100 py-10 sm:py-14 bg-cover bg-fixed" style={{ backgroundImage: "linear-gradient(to bottom, rgba(7,11,18,0.97), rgba(7,11,18,0.95)), url('/images/publiq/backgrounds/bg-menu.webp')" }}>
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 py-10 sm:py-14 font-sans">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex items-center justify-between pb-6 border-b border-[#D4AF37]/20 mb-8">
+        <div className="flex items-center justify-between pb-6 border-b border-slate-200 mb-8">
           <div className="flex items-center gap-3">
-            <a href="/menu" className="p-2.5 rounded-full bg-[#0A111F] hover:bg-[#0F1626] border border-[#D4AF37]/30 text-[#D4AF37] transition-colors">
-              <ArrowLeft className="w-5 h-5" />
+            <a href="/menu" className="p-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 transition-colors shadow-xs">
+              <ArrowLeft className="w-5 h-5 text-blue-600" />
             </a>
             <div>
-              <h1 className="font-serif text-2xl sm:text-3xl font-normal text-white">
+              <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-slate-900">
                 Your Order ({itemCount} {itemCount === 1 ? "item" : "items"})
               </h1>
               {isDineInActive && tableNumber ? (
-                <div className="flex items-center gap-1.5 text-xs text-[#D4AF37] font-semibold mt-1">
+                <div className="flex items-center gap-1.5 text-xs text-blue-700 font-semibold mt-1">
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>Dine-In • Table {tableNumber} ({diningArea || "Grand Dining Hall"})</span>
                 </div>
               ) : (
-                <p className="text-xs text-slate-300 mt-1 font-medium">
+                <p className="text-xs text-slate-500 mt-1 font-medium">
                   Review your selected food and drinks, then proceed to checkout.
                 </p>
               )}
@@ -70,7 +70,7 @@ export default function CartPage() {
           </div>
           <button
             onClick={clearCart}
-            className="text-xs text-rose-400 hover:text-rose-300 font-semibold underline transition-colors"
+            className="text-xs text-rose-600 hover:text-rose-700 font-semibold underline transition-colors"
           >
             Clear All
           </button>
@@ -82,10 +82,10 @@ export default function CartPage() {
             {items.map((item) => (
               <div
                 key={item.id}
-                className="bg-[#0A111F] rounded-2xl p-4 sm:p-5 border border-[#D4AF37]/20 shadow-xl flex gap-4"
+                className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs flex gap-4"
               >
                 {/* Thumbnail */}
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-[#070B12] border border-[#D4AF37]/20 shrink-0">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
                   <img
                     src={item.item_image || "/images/publiq/food_signature.webp"}
                     alt={item.item_name}
@@ -102,12 +102,12 @@ export default function CartPage() {
                 <div className="flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-serif text-base font-normal text-white">
+                      <h3 className="font-serif text-base font-bold text-slate-900">
                         {item.item_name}
                       </h3>
                       <button
                         onClick={() => removeItem(item.id)}
-                        className="text-slate-500 hover:text-rose-400 p-1 transition-colors"
+                        className="text-slate-400 hover:text-rose-600 p-1 transition-colors"
                         aria-label="Remove item"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -115,42 +115,42 @@ export default function CartPage() {
                     </div>
 
                     {item.variant_name && (
-                      <span className="text-[11px] font-semibold text-[#D4AF37] block mt-0.5">
+                      <span className="text-[11px] font-semibold text-blue-700 block mt-0.5">
                         Portion: {item.variant_name}
                       </span>
                     )}
 
                     {item.selected_addons && item.selected_addons.length > 0 && (
-                      <div className="text-[11px] text-slate-400 mt-1">
+                      <div className="text-[11px] text-slate-500 mt-1">
                         + {item.selected_addons.map((a) => `${a.name} (₹${a.price})`).join(", ")}
                       </div>
                     )}
 
                     {item.special_request && (
-                      <p className="text-[11px] text-[#D4AF37] bg-[#0F1626] border border-[#D4AF37]/30 rounded-md px-2 py-0.5 mt-1.5 inline-block">
+                      <p className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-md px-2 py-0.5 mt-1.5 inline-block font-medium">
                         Note: {item.special_request}
                       </p>
                     )}
                   </div>
 
                   {/* Quantity and Price */}
-                  <div className="flex items-center justify-between pt-3 mt-2 border-t border-[#D4AF37]/10">
-                    <div className="flex items-center border border-[#D4AF37]/30 rounded-lg bg-[#070B12]">
+                  <div className="flex items-center justify-between pt-3 mt-2 border-t border-slate-100">
+                    <div className="flex items-center border border-slate-200 rounded-xl bg-slate-50">
                       <button
                         onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
-                        className="p-1.5 text-slate-400 hover:text-white"
+                        className="p-1.5 text-slate-500 hover:text-slate-900"
                       >
                         <Minus className="w-3 h-3" />
                       </button>
-                      <span className="px-3 text-xs font-bold text-white">{item.quantity}</span>
+                      <span className="px-3 text-xs font-bold text-slate-900">{item.quantity}</span>
                       <button
                         onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
-                        className="p-1.5 text-slate-400 hover:text-white"
+                        className="p-1.5 text-slate-500 hover:text-slate-900"
                       >
                         <Plus className="w-3 h-3" />
                       </button>
                     </div>
-                    <span className="font-serif text-base font-bold text-[#D4AF37]">
+                    <span className="font-serif text-base font-black text-slate-900">
                       ₹{item.total_price}
                     </span>
                   </div>
@@ -160,7 +160,7 @@ export default function CartPage() {
 
             <a
               href="/menu"
-              className="inline-flex items-center gap-2 text-xs font-bold text-[#D4AF37] hover:underline pt-2 tracking-wide"
+              className="inline-flex items-center gap-2 text-xs font-bold text-blue-700 hover:underline pt-2 tracking-wide"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add more culinary dishes or craft beverages</span>
@@ -169,77 +169,79 @@ export default function CartPage() {
 
           {/* Bill Summary */}
           <div className="lg:col-span-5">
-            <div className="bg-[#0A111F] rounded-3xl p-6 border border-[#D4AF37]/25 shadow-2xl space-y-5 sticky top-28">
-              <h2 className="font-serif text-xl font-normal text-white pb-3 border-b border-[#D4AF37]/15">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-xs space-y-5 sticky top-20">
+              <h2 className="font-serif text-lg font-bold text-slate-900 pb-3 border-b border-slate-100">
                 Financial Summary
               </h2>
 
               <div className="space-y-3 text-xs">
-                <div className="flex justify-between text-slate-300">
+                <div className="flex justify-between text-slate-600">
                   <span>Item Subtotal</span>
-                  <span className="font-serif font-bold text-white">₹{subtotal}</span>
+                  <span className="font-serif font-bold text-slate-900">₹{subtotal}</span>
                 </div>
 
                 {/* Dual-Business Food vs Drinks Subtotals */}
                 {(foodSubtotal > 0 || beverageSubtotal > 0) && (
-                  <div className="p-3 bg-[#070B12] rounded-xl border border-[#D4AF37]/25 space-y-1.5 my-1">
+                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2 my-1">
                     {foodSubtotal > 0 && (
-                      <div className="flex justify-between text-slate-300">
-                        <span className="flex items-center gap-1.5 text-slate-200">
-                          <span>🍲 Food (Proprietor: Anil)</span>
+                      <div className="flex justify-between text-slate-700">
+                        <span className="flex items-center gap-1.5 font-medium">
+                          <UtensilsCrossed className="w-3.5 h-3.5 text-amber-600" />
+                          <span>Food (Proprietor: Ramesh S P)</span>
                         </span>
-                        <span className="font-serif font-bold text-[#D4AF37]">₹{foodSubtotal}</span>
+                        <span className="font-serif font-bold text-amber-800">₹{foodSubtotal}</span>
                       </div>
                     )}
                     {beverageSubtotal > 0 && (
-                      <div className="flex justify-between text-slate-300">
-                        <span className="flex items-center gap-1.5 text-slate-200">
-                          <span>🍸 Drinks (Proprietor: Ramesh)</span>
+                      <div className="flex justify-between text-slate-700">
+                        <span className="flex items-center gap-1.5 font-medium">
+                          <Wine className="w-3.5 h-3.5 text-blue-600" />
+                          <span>Drinks (Proprietor: Anil)</span>
                         </span>
-                        <span className="font-serif font-bold text-[#38BDF8]">₹{beverageSubtotal}</span>
+                        <span className="font-serif font-bold text-blue-700">₹{beverageSubtotal}</span>
                       </div>
                     )}
                   </div>
                 )}
                 
                 {/* Indian GST Breakdown */}
-                <div className="flex justify-between text-slate-400">
+                <div className="flex justify-between text-slate-500">
                   <span>CGST (2.5%)</span>
-                  <span className="font-serif">₹{cgst}</span>
+                  <span className="font-serif font-medium">₹{cgst}</span>
                 </div>
-                <div className="flex justify-between text-slate-400">
+                <div className="flex justify-between text-slate-500">
                   <span>SGST (2.5%)</span>
-                  <span className="font-serif">₹{sgst}</span>
+                  <span className="font-serif font-medium">₹{sgst}</span>
                 </div>
 
                 {packagingFee > 0 && (
-                  <div className="flex justify-between text-slate-400">
+                  <div className="flex justify-between text-slate-500">
                     <span>Eco-friendly Packaging</span>
-                    <span className="font-serif">₹{packagingFee}</span>
+                    <span className="font-serif font-medium">₹{packagingFee}</span>
                   </div>
                 )}
 
                 {deliveryFee > 0 && (
-                  <div className="flex justify-between text-slate-400">
+                  <div className="flex justify-between text-slate-500">
                     <span>Direct Delivery Charge</span>
-                    <span className="font-serif">₹{deliveryFee}</span>
+                    <span className="font-serif font-medium">₹{deliveryFee}</span>
                   </div>
                 )}
 
-                <div className="pt-3 border-t border-[#D4AF37]/20 flex justify-between items-baseline">
-                  <span className="text-sm font-bold text-white uppercase tracking-wider">Final Payable Amount</span>
-                  <span className="font-serif text-2xl font-bold text-[#D4AF37]">₹{finalAmount}</span>
+                <div className="pt-3 border-t border-slate-200 flex justify-between items-baseline">
+                  <span className="text-sm font-bold text-slate-900 uppercase tracking-wider">Final Payable Amount</span>
+                  <span className="font-serif text-2xl font-black text-blue-700">₹{finalAmount}</span>
                 </div>
               </div>
 
               {/* Table details for dine in */}
               {isDineInActive && tableNumber && (
-                <div className="p-3 bg-[#070B12] rounded-xl border border-[#D4AF37]/20 text-xs space-y-1">
-                  <div className="font-semibold text-white flex items-center justify-between">
+                <div className="p-3 bg-blue-50/60 rounded-xl border border-blue-200 text-xs space-y-1">
+                  <div className="font-semibold text-slate-900 flex items-center justify-between">
                     <span>Dine-In Destination:</span>
-                    <span className="text-[#D4AF37] font-bold">Table {tableNumber}</span>
+                    <span className="text-blue-700 font-bold">Table {tableNumber}</span>
                   </div>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-500 font-medium">
                     {outletName || "PUBLIQ HARAGADDE"} • {diningArea || "Grand Dining Hall"}
                   </p>
                 </div>
@@ -248,15 +250,15 @@ export default function CartPage() {
               {/* Proceed Button */}
               <a
                 href="/checkout"
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#B38728] hover:opacity-95 text-[#070B12] font-bold text-xs tracking-widest uppercase transition-all shadow-xl shadow-[#D4AF37]/15 flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-blue-500/25 hover:shadow-lg transition-all"
               >
-                <span>Proceed to Checkout</span>
+                <span>Proceed to Split Checkout</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
 
-              <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span>100% Secure Server-Side GST Calculation</span>
+              <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-400 font-medium">
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                <span>Dual PhonePe QR Settlements (Anil Bar + Ramesh Food)</span>
               </div>
             </div>
           </div>

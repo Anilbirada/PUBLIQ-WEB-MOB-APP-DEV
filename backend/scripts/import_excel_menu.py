@@ -1,21 +1,21 @@
 """
 PUBLIQ Restaurant Management System
-Excel Catalogue Importer
-Imports complete 407-row drinks and food catalogue from Price_Listing_-_Lanes.xlsx
+Excel & JSON Menu Importer
+Imports complete 407-row drinks and food catalogue from Price_Listing_-_Lanes.xlsx or catalogue_data.json
 into SQLite / PostgreSQL with categories, parent products, and size variants.
 """
 
 import os
 import re
+import json
 import uuid
-import openpyxl
 from datetime import datetime
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal, engine
 from app.models import MenuCategory, MenuItem, MenuVariant
 
-EXCEL_PATH = r"C:/Users/anilb/.gemini/antigravity/brain/c57f01cf-ae5d-4819-9f43-db0faaa51c1f/.user_uploaded/media_1795300650054_7170e07d.xlsx"
-FALLBACK_CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "Price_Listing_-_Lanes.xlsx")
+JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "catalogue_data.json")
+EXCEL_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "Price_Listing_-_Lanes.xlsx")
 
 def slugify(text: str) -> str:
     s = text.lower().strip()
@@ -23,13 +23,6 @@ def slugify(text: str) -> str:
     return s.strip('-')
 
 def parse_size_variant(desc: str):
-    """
-    Extracts brand/product name and size variant from descriptions like:
-    - BUDWEISER MAGNUM BEER 330 - CAN -> ('Budweiser Magnum Beer', '330ml Can', 330)
-    - 8 PM SPECIAL WHISKY BLEND 180 - TPACK -> ('8 PM Special Whisky Blend', '180ml Tetra', 180)
-    - AMRUT XXX CLASSIC RUM 750 - PET -> ('Amrut XXX Classic Rum', '750ml Bottle', 750)
-    - COCA COLA 250 ML -> ('Coca Cola', '250ml', 250)
-    """
     desc = desc.strip()
     pattern = r'^(.*?)\s*(\d+)\s*[-/]?\s*(CAN|BTL|PET|TPACK|ML|LTS)?$'
     m = re.match(pattern, desc, re.IGNORECASE)
@@ -38,7 +31,6 @@ def parse_size_variant(desc: str):
         size_num = m.group(2).strip()
         pack_type = (m.group(3) or "").upper().strip()
         
-        # Clean packaging label
         if pack_type == "CAN":
             label = f"{size_num}ml Can"
         elif pack_type == "BTL":
@@ -56,15 +48,50 @@ def parse_size_variant(desc: str):
         
     return desc.title(), "Standard", 0
 
+def load_rows():
+    # Priority 1: JSON (zero external dependencies)
+    if os.path.exists(JSON_PATH):
+        try:
+            with open(JSON_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"JSON load note: {e}")
+
+    # Priority 2: Excel via openpyxl
+    if os.path.exists(EXCEL_PATH):
+        try:
+            import openpyxl
+            wb = openpyxl.load_workbook(EXCEL_PATH)
+            sheet = wb.active
+            rows = []
+            for r in range(2, sheet.max_row + 1):
+                cat = sheet.cell(row=r, column=1).value
+                subcat = sheet.cell(row=r, column=2).value
+                desc = sheet.cell(row=r, column=3).value
+                p1 = sheet.cell(row=r, column=4).value
+                if desc and p1 is not None:
+                    try:
+                        rows.append({
+                            "category": str(cat or "").strip(),
+                            "subcategory": str(subcat or "").strip(),
+                            "description": str(desc).strip(),
+                            "lane1_mrp": float(p1)
+                        })
+                    except:
+                        pass
+            return rows
+        except Exception as e:
+            print(f"Excel load note: {e}")
+
+    return []
+
 def run_import(db: Session):
-    file_to_open = EXCEL_PATH if os.path.exists(EXCEL_PATH) else FALLBACK_CSV_PATH
-    if not os.path.exists(file_to_open):
-        print(f"File not found: {file_to_open}")
+    rows = load_rows()
+    if not rows:
+        print("No catalogue rows could be loaded!")
         return
 
-    print(f"Reading workbook: {file_to_open}")
-    wb = openpyxl.load_workbook(file_to_open)
-    sheet = wb.active
+    print(f"Loaded {len(rows)} catalogue rows.")
 
     # Category mappings: (Category Name, slug, is_alcohol, display_order, description)
     CATEGORIES_CONFIG = {
@@ -96,7 +123,6 @@ def run_import(db: Session):
         "FOOD_BEVERAGES": ("Fresh Beverages", "fresh-beverages", False, 24, "Buttermilk, canned juices and coolers"),
     }
 
-    # Ensure categories exist in DB
     cat_objs = {}
     for key, (cname, cslug, is_alc, d_order, cdesc) in CATEGORIES_CONFIG.items():
         cat = db.query(MenuCategory).filter(MenuCategory.slug == cslug).first()
@@ -113,27 +139,18 @@ def run_import(db: Session):
             db.add(cat)
             db.commit()
             db.refresh(cat)
+        else:
+            cat.is_active = True
+            db.commit()
         cat_objs[key] = cat
 
-    print(f"Ensured {len(cat_objs)} menu categories.")
-
-    # Group items by parent name for drinks with size variants
-    # For food items, each is a distinct product
     products_grouped = {}
 
-    for row in range(2, sheet.max_row + 1):
-        cat_cell = str(sheet.cell(row=row, column=1).value or "").strip().upper()
-        subcat_cell = str(sheet.cell(row=row, column=2).value or "").strip().upper()
-        desc_cell = str(sheet.cell(row=row, column=3).value or "").strip()
-        l1_mrp = sheet.cell(row=row, column=4).value
-
-        if not desc_cell or l1_mrp is None:
-            continue
-
-        try:
-            price = float(l1_mrp)
-        except (ValueError, TypeError):
-            continue
+    for row_dict in rows:
+        cat_cell = row_dict["category"].upper()
+        subcat_cell = row_dict["subcategory"].upper()
+        desc_cell = row_dict["description"]
+        price = float(row_dict["lane1_mrp"])
 
         # Map to category config key
         cat_key = None
@@ -199,7 +216,6 @@ def run_import(db: Session):
         if not category:
             continue
 
-        # If it's a beverage with sizes, group variants
         if category.is_alcohol or cat_cell in ["BEER", "IML", "LAB", "WINE", "BEVERAGES"]:
             parent_name, variant_label, size_num = parse_size_variant(desc_cell)
             group_key = f"{cat_key}::{parent_name.upper()}"
@@ -220,7 +236,6 @@ def run_import(db: Session):
                 "full_desc": desc_cell
             })
         else:
-            # Standalone food item
             is_veg = ("VEG" in subcat_cell or "VEG" in desc_cell.upper() or "PANEER" in desc_cell.upper() or "MUSHROOM" in desc_cell.upper() or "DAL" in desc_cell.upper() or "ALOO" in desc_cell.upper()) and not ("NON VEG" in subcat_cell or "NON VEG" in desc_cell.upper() or "CHICKEN" in desc_cell.upper() or "FISH" in desc_cell.upper() or "PRAWN" in desc_cell.upper() or "MUTTON" in desc_cell.upper())
             
             group_key = f"{cat_key}::{desc_cell.upper()}"
@@ -239,9 +254,6 @@ def run_import(db: Session):
                 }]
             }
 
-    print(f"Grouped into {len(products_grouped)} distinct parent items.")
-
-    # Insert into Database
     items_created = 0
     variants_created = 0
 
@@ -250,11 +262,9 @@ def run_import(db: Session):
         pname = pdata["name"]
         pslug = slugify(pname)
         
-        # Sort variants by price
         variants = sorted(pdata["variants"], key=lambda v: v["price"])
         base_price = variants[0]["price"]
 
-        # Check existing item by name and category
         item = db.query(MenuItem).filter(
             MenuItem.name.ilike(pname),
             MenuItem.category_id == cat.id
@@ -285,13 +295,10 @@ def run_import(db: Session):
             db.refresh(item)
             items_created += 1
         else:
-            # Update base price if needed
             item.base_price = base_price
             item.is_available = True
             db.commit()
 
-        # Add or update variants
-        # Delete old variants for this item to ensure fresh import
         db.query(MenuVariant).filter(MenuVariant.item_id == item.id).delete()
         db.commit()
 

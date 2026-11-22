@@ -10,6 +10,7 @@ import { api } from "../../lib/api";
 import { useTableSession } from "../../context/TableSessionContext";
 import { useCart } from "../../context/CartContext";
 import { ProductDetailModal } from "../../components/ProductDetailModal";
+import { FALLBACK_MENU_CATEGORIES } from "../../lib/fallbackMenu";
 
 export default function MenuPage() {
   const { tableNumber, diningArea, isDineInActive, outletName, setTableSession } = useTableSession();
@@ -17,19 +18,22 @@ export default function MenuPage() {
 
   // Menu Mode: Food vs Drinks
   const [activeMenuTab, setActiveMenuTab] = useState<"FOOD" | "DRINKS">("FOOD");
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>(FALLBACK_MENU_CATEGORIES);
   const [selectedCategorySlug, setSelectedCategorySlug] = useState<string>("all");
   const [vegOnly, setVegOnly] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [addedNotice, setAddedNotice] = useState<string | null>(null);
 
-  // Sync URL ?table= query parameter if present
+  // Sync URL ?table=, ?category=, ?tab= query parameter if present
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const urlTable = params.get("table");
+      const urlCategory = params.get("category");
+      const urlTab = params.get("tab");
+
       if (urlTable && (!tableNumber || tableNumber !== urlTable)) {
         const cleanedNum = urlTable.replace(/^(table-|t-)/i, "").toUpperCase();
         setTableSession({
@@ -40,20 +44,35 @@ export default function MenuPage() {
           isDineInActive: true,
         });
       }
+
+      if (urlCategory) {
+        const catClean = urlCategory.toLowerCase().trim();
+        const drinkKeywords = ["cocktail", "drink", "beer", "whisky", "vodka", "rum", "gin", "wine", "brandy", "beverage", "shooter"];
+        const isDrink = drinkKeywords.some(k => catClean.includes(k));
+        setActiveMenuTab(isDrink ? "DRINKS" : "FOOD");
+        setSelectedCategorySlug(catClean);
+      } else if (urlTab) {
+        if (urlTab.toUpperCase() === "DRINKS") setActiveMenuTab("DRINKS");
+        if (urlTab.toUpperCase() === "FOOD") setActiveMenuTab("FOOD");
+      }
     }
   }, [tableNumber, setTableSession]);
 
   useEffect(() => {
     async function loadMenu() {
-      setIsLoading(true);
       try {
         const data = await api.getMenu({
           veg_only: vegOnly || undefined,
           search: searchQuery || undefined,
         });
-        setCategories(data);
+        if (data && data.length > 0) {
+          setCategories(data);
+        } else {
+          setCategories(FALLBACK_MENU_CATEGORIES);
+        }
       } catch (err) {
-        console.error("Failed to load menu", err);
+        console.warn("Using offline master catalogue fallback", err);
+        setCategories(FALLBACK_MENU_CATEGORIES);
       } finally {
         setIsLoading(false);
       }
@@ -90,7 +109,26 @@ export default function MenuPage() {
       const isDrink = isAlcoholOrDrink(cat);
       if (activeMenuTab === "FOOD" && isDrink) return false;
       if (activeMenuTab === "DRINKS" && !isDrink) return false;
-      if (selectedCategorySlug !== "all" && cat.slug !== selectedCategorySlug) return false;
+      if (selectedCategorySlug !== "all") {
+        const target = selectedCategorySlug.toLowerCase();
+        const matchSlug = cat.slug.toLowerCase() === target;
+        const matchName = cat.name.toLowerCase().includes(target);
+        const matchKeyword = target.includes(cat.slug.toLowerCase());
+        if (!matchSlug && !matchName && !matchKeyword) return false;
+      }
+      return cat.items && cat.items.length > 0;
+    })
+    .map((cat) => ({
+      ...cat,
+      items: cat.items || []
+    }));
+
+  // Fallback to all items in current tab if specific subcategory has no matches
+  const displayedCategories = filteredCategories.length > 0 ? filteredCategories : categories
+    .filter((cat) => {
+      const isDrink = isAlcoholOrDrink(cat);
+      if (activeMenuTab === "FOOD" && isDrink) return false;
+      if (activeMenuTab === "DRINKS" && !isDrink) return false;
       return cat.items && cat.items.length > 0;
     })
     .map((cat) => ({
@@ -284,7 +322,7 @@ export default function MenuPage() {
             <Sparkles className="w-8 h-8 text-[#D4AF37] animate-spin mx-auto" />
             <p className="font-serif text-lg tracking-wide text-slate-300">Curating the finest culinary flavours...</p>
           </div>
-        ) : filteredCategories.length === 0 ? (
+        ) : displayedCategories.length === 0 ? (
           <div className="text-center py-20 bg-[#0A111F] rounded-3xl border border-[#D4AF37]/20 p-8 max-w-md mx-auto space-y-4 shadow-xl">
             <AlertCircle className="w-10 h-10 text-[#D4AF37] mx-auto" />
             <h3 className="font-serif text-xl font-normal text-white">No Items Found</h3>
@@ -301,7 +339,7 @@ export default function MenuPage() {
             </button>
           </div>
         ) : (
-          filteredCategories.map((cat) => (
+          displayedCategories.map((cat) => (
             <div key={cat.id} className="space-y-6">
               {/* Category Section Header */}
               <div className="flex items-center gap-4 border-b border-[#D4AF37]/20 pb-3">

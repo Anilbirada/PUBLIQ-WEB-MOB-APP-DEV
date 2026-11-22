@@ -49,9 +49,9 @@ export const LoginScreen: React.FC = () => {
             style={styles.logoImage} 
             resizeMode="contain" 
           />
-          <Text style={styles.brandTitle}>P U B L I Q   W</Text>
+          <Text style={styles.brandTitle}>PUBLIQ</Text>
           <Text style={styles.brandSubtitle}>SERVICE STEWARD TERMINAL</Text>
-          <Text style={styles.instruction}>Enter your 4-digit Employee PIN</Text>
+          <Text style={styles.instruction}>Enter 4-Digit Employee PIN</Text>
 
           {/* PIN Indicators */}
           <View style={styles.pinRow}>
@@ -107,10 +107,33 @@ export const LoginScreen: React.FC = () => {
           ))}
         </View>
 
-        {/* Demo Waiter Shortcut */}
-        <TouchableOpacity style={styles.demoShortcut} onPress={handleDemoLogin}>
-          <Text style={styles.demoText}>Quick Demo: Steward Raju (PIN: 6666)</Text>
-        </TouchableOpacity>
+        {/* Quick Staff Select Shortcuts */}
+        <View style={styles.shortcutsContainer}>
+          <Text style={styles.shortcutsLabel}>Quick Login Rosters:</Text>
+          <View style={styles.shortcutsRow}>
+            <TouchableOpacity 
+              style={styles.demoShortcut} 
+              onPress={() => {
+                setPin("6666");
+                attemptLogin("6666");
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.demoText}>★ Steward Raju (6666)</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.demoShortcut} 
+              onPress={() => {
+                setPin("1234");
+                attemptLogin("1234");
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.demoText}>★ Captain (1234)</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -206,11 +229,24 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: COLORS.gold
   },
+  shortcutsContainer: {
+    alignItems: "center",
+    gap: 8,
+    marginTop: 10
+  },
+  shortcutsLabel: {
+    fontSize: 11,
+    color: COLORS.textMuted,
+    letterSpacing: 1
+  },
+  shortcutsRow: {
+    flexDirection: "row",
+    gap: 12
+  },
   demoShortcut: {
-    alignSelf: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 18,
     backgroundColor: COLORS.goldMuted,
     borderWidth: 1,
     borderColor: COLORS.gold

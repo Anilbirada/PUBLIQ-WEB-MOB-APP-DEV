@@ -66,7 +66,14 @@ export default function MenuPage() {
           search: searchQuery || undefined,
         });
         if (data && data.length > 0) {
-          setCategories(data);
+          // Verify that fetched categories actually contain items
+          const hasItems = data.some((c: any) => c.items && c.items.length > 0);
+          if (hasItems) {
+            setCategories(data);
+          } else {
+            console.warn("Backend categories had no items, using master catalogue fallback");
+            setCategories(FALLBACK_MENU_CATEGORIES);
+          }
         } else {
           setCategories(FALLBACK_MENU_CATEGORIES);
         }
@@ -101,20 +108,34 @@ export default function MenuPage() {
       "tequila-brandy", "brandy", "wine", "cocktails", "spirits", "beverages",
       "classic-cocktails", "soft-drinks", "mineral-water", "rtd-breezers", "shooters"
     ];
-    return Boolean(cat.is_alcohol || drinkSlugs.includes(cat.slug) || cat.slug?.includes("water") || cat.slug?.includes("drink"));
+    return Boolean(
+      cat.is_alcohol || 
+      drinkSlugs.includes(cat.slug) || 
+      cat.slug?.includes("water") || 
+      cat.slug?.includes("drink") || 
+      cat.name?.toLowerCase().includes("cocktail") ||
+      cat.name?.toLowerCase().includes("beverage")
+    );
   };
 
-  const filteredCategories = categories
+  // Active pool of categories (guaranteed non-empty)
+  const activePool = categories.some((c: any) => c.items && c.items.length > 0)
+    ? categories
+    : FALLBACK_MENU_CATEGORIES;
+
+  const filteredCategories = activePool
     .filter((cat) => {
       const isDrink = isAlcoholOrDrink(cat);
       if (activeMenuTab === "FOOD" && isDrink) return false;
       if (activeMenuTab === "DRINKS" && !isDrink) return false;
       if (selectedCategorySlug !== "all") {
         const target = selectedCategorySlug.toLowerCase();
-        const matchSlug = cat.slug.toLowerCase() === target;
-        const matchName = cat.name.toLowerCase().includes(target);
-        const matchKeyword = target.includes(cat.slug.toLowerCase());
-        if (!matchSlug && !matchName && !matchKeyword) return false;
+        const catSlug = (cat.slug || "").toLowerCase();
+        const catName = (cat.name || "").toLowerCase();
+        const matchSlug = catSlug === target || catSlug.includes(target) || target.includes(catSlug);
+        const matchName = catName.includes(target) || target.includes(catName);
+        const matchCocktail = (target.includes("cocktail") && (catSlug.includes("shooter") || catSlug.includes("cocktail") || catName.includes("cocktail")));
+        if (!matchSlug && !matchName && !matchCocktail) return false;
       }
       return cat.items && cat.items.length > 0;
     })
@@ -124,7 +145,7 @@ export default function MenuPage() {
     }));
 
   // Fallback to all items in current tab if specific subcategory has no matches
-  const displayedCategories = filteredCategories.length > 0 ? filteredCategories : categories
+  const displayedCategories = filteredCategories.length > 0 ? filteredCategories : activePool
     .filter((cat) => {
       const isDrink = isAlcoholOrDrink(cat);
       if (activeMenuTab === "FOOD" && isDrink) return false;
@@ -137,7 +158,7 @@ export default function MenuPage() {
     }));
 
   // Extract subcategories for current tab (only those with available items)
-  const availableSubcategories = categories.filter((cat) => {
+  const availableSubcategories = activePool.filter((cat) => {
     const isDrink = isAlcoholOrDrink(cat);
     if (activeMenuTab === "FOOD" && isDrink) return false;
     if (activeMenuTab === "DRINKS" && !isDrink) return false;

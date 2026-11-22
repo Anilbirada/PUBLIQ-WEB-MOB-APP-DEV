@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Platform, StatusBar as RNStatusBar } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS } from "../theme/colors";
 import { useAuth } from "../context/AuthContext";
@@ -10,12 +10,17 @@ interface HeaderProps {
   onManagerPress?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ title = "PUBLIQ W", subtitle, onManagerPress }) => {
+export const Header: React.FC<HeaderProps> = ({ title, subtitle, onManagerPress }) => {
   const { waiter } = useAuth();
   const insets = useSafeAreaInsets();
 
+  const statusBarOffset = Platform.OS === "android" ? (RNStatusBar.currentHeight || 28) : insets.top;
+  const topPadding = Math.max(statusBarOffset, insets.top || 0, 32) + 12;
+
+  const displayTitle = title && title !== "PUBLIQ W" ? title : "PUBLIQ WAITER";
+
   return (
-    <View style={[styles.container, { paddingTop: Math.max(insets.top, 32) + 10 }]}>
+    <View style={[styles.container, { paddingTop: topPadding }]}>
       <View style={styles.left}>
         <View style={styles.brandRow}>
           <View style={styles.logoContainer}>
@@ -26,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ title = "PUBLIQ W", subtitle, on
             />
           </View>
           <View style={styles.titleWrap}>
-            <Text style={styles.brandTitle}>PUBLIQ WAITER</Text>
+            <Text style={styles.brandTitle} numberOfLines={1}>{displayTitle}</Text>
             <Text style={styles.subtitle} numberOfLines={1}>{subtitle || waiter?.outlet_name || "PUBLIQ HARAGADDE"}</Text>
           </View>
         </View>

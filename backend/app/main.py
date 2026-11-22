@@ -97,8 +97,10 @@ def on_startup():
             import logging
             logging.getLogger(__name__).warning(f"Dual business init note: {dual_err}")
         try:
-            from scripts.import_full_catalogue import run_import
-            run_import()
+            from scripts.import_excel_menu import run_import as run_excel_import
+            from app.core.database import SessionLocal
+            with SessionLocal() as s_db:
+                run_excel_import(s_db)
         except Exception as catalogue_err:
             import logging
             logging.getLogger(__name__).warning(f"Catalogue import note: {catalogue_err}")

@@ -33,6 +33,7 @@ export const TablesScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const filteredTables = tables.filter(t => {
     if (filterStatus === "OCCUPIED") return t.is_occupied;
     if (filterStatus === "AVAILABLE") return !t.is_occupied;
+    if (filterStatus === "BILLING") return t.has_unsettled_order || t.wants_bill;
     return true;
   });
 
@@ -79,10 +80,11 @@ export const TablesScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <Header title="TABLE FLOOR PLAN" subtitle="Live Dining Room & Garden Area" />
 
       {/* Filter Tabs */}
-      <View style={{ flexDirection: "row", paddingHorizontal: 16, paddingTop: 10, paddingBottom: 6, gap: 8 }}>
+      <View style={{ flexDirection: "row", paddingHorizontal: 16, paddingTop: 10, paddingBottom: 6, gap: 8, flexWrap: "wrap" }}>
         {[
           { label: `ALL (${tables.length})`, val: "ALL" },
           { label: `OCCUPIED (${tables.filter(t => t.is_occupied).length})`, val: "OCCUPIED" },
+          { label: `BILLING (${tables.filter(t => t.has_unsettled_order || t.wants_bill).length})`, val: "BILLING" },
           { label: `AVAILABLE (${tables.filter(t => !t.is_occupied).length})`, val: "AVAILABLE" }
         ].map(f => (
           <TouchableOpacity

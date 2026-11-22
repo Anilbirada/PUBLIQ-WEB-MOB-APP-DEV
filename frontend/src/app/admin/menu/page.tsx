@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { 
   UtensilsCrossed, PlusCircle, Search, Filter, 
-  Check, X, AlertTriangle, EyeOff, Sparkles, Clock
+  Check, X, AlertTriangle, EyeOff, Sparkles, Clock, FileSpreadsheet
 } from "lucide-react";
 
 interface MenuItemAdmin {
@@ -181,6 +182,16 @@ export default function MenuManagementPage() {
           <p className="text-xs text-slate-300 mt-0.5">
             Real-time catalog pricing, prep timing, and instant 86&#39;d out-of-stock sync across Mobile Apps and QR Web.
           </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/menu/import"
+            className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#B38728] text-[#070B12] font-black text-xs uppercase tracking-wider transition-all shadow-lg hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] flex items-center gap-2"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-[#070B12]" />
+            <span>+ Import Excel / CSV Menu</span>
+          </Link>
         </div>
       </div>
 

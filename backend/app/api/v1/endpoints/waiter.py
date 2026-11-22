@@ -134,9 +134,9 @@ def get_waiter_tables(outlet_id: Optional[str] = None, db: Session = Depends(get
     for t in tables:
         # Check active order
         active_order = db.query(Order).filter(
-            Order.table_number == t.table_number,
-            Order.order_status.in_(["PLACED", "ACCEPTED", "PREPARING", "READY", "SERVED"]),
-            Order.payment_status == "PENDING"
+            (Order.table_number == t.table_number) | (Order.table_number.ilike(f"%{t.table_number}%")),
+            Order.payment_status != "PAID",
+            Order.order_status.notin_(["CANCELLED", "REJECTED"])
         ).order_by(Order.created_at.desc()).first()
         
         status_label = "AVAILABLE"
@@ -1403,6 +1403,7 @@ def verify_table_qr_token(payload: Dict[str, Any] = Body(...), db: Session = Dep
                     
     # Clean up common prefixes like T-04 or Table 04
     clean_val = raw_input.upper().replace("TABLE", "").replace("TBL", "").replace("T-", "").replace("T", "").strip()
+    clean_token = extracted_token.upper().replace("TABLE", "").replace("TBL", "").replace("T-", "").replace("T", "").strip() if extracted_token else ""
     
     # Try finding TableQrToken first (column is 'token', not 'qr_token')
     token_record = db.query(TableQrToken).filter(
@@ -1414,7 +1415,17 @@ def verify_table_qr_token(payload: Dict[str, Any] = Body(...), db: Session = Dep
         
     # If not found by token, search RestaurantTable directly
     if not table:
-        candidates = [extracted_table_num, clean_val, clean_val.zfill(2) if clean_val.isdigit() else None, raw_input]
+        candidates = [
+            extracted_table_num, 
+            extracted_token, 
+            clean_val, 
+            clean_token,
+            clean_val.zfill(2) if clean_val.isdigit() else None, 
+            clean_token.zfill(2) if clean_token.isdigit() else None,
+            f"T-{clean_val}" if clean_val else None,
+            f"T-{clean_token}" if clean_token else None,
+            raw_input
+        ]
         candidates = [c for c in candidates if c]
         for cand in candidates:
             table = db.query(RestaurantTable).filter(

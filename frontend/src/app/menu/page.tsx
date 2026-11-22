@@ -79,24 +79,23 @@ export default function MenuPage() {
     const drinkSlugs = [
       "mocktails", "fresh-juices", "milkshakes", "soft-drinks-beverages",
       "signature-cocktails", "beer", "whisky", "vodka", "rum", "gin",
-      "tequila-brandy", "wine", "cocktails", "spirits", "beverages",
-      "classic-cocktails", "soft-drinks"
+      "tequila-brandy", "brandy", "wine", "cocktails", "spirits", "beverages",
+      "classic-cocktails", "soft-drinks", "mineral-water", "rtd-breezers", "shooters"
     ];
-    return cat.is_alcohol || drinkSlugs.includes(cat.slug);
+    return Boolean(cat.is_alcohol || drinkSlugs.includes(cat.slug) || cat.slug?.includes("water") || cat.slug?.includes("drink"));
   };
 
   const filteredCategories = categories
     .filter((cat) => {
-      if (activeMenuTab === "FOOD" && isAlcoholOrDrink(cat)) return false;
-      if (activeMenuTab === "DRINKS" && !isAlcoholOrDrink(cat)) return false;
+      const isDrink = isAlcoholOrDrink(cat);
+      if (activeMenuTab === "FOOD" && isDrink) return false;
+      if (activeMenuTab === "DRINKS" && !isDrink) return false;
       if (selectedCategorySlug !== "all" && cat.slug !== selectedCategorySlug) return false;
-      // Only show categories that have items with valid images
-      const validItems = cat.items?.filter((item: any) => item.image_url && item.image_url.trim() !== "");
-      return validItems && validItems.length > 0;
+      return cat.items && cat.items.length > 0;
     })
     .map((cat) => ({
       ...cat,
-      items: cat.items?.filter((item: any) => item.image_url && item.image_url.trim() !== "")
+      items: cat.items || []
     }));
 
   // Extract subcategories for current tab (only those with available items)
@@ -104,8 +103,7 @@ export default function MenuPage() {
     const isDrink = isAlcoholOrDrink(cat);
     if (activeMenuTab === "FOOD" && isDrink) return false;
     if (activeMenuTab === "DRINKS" && !isDrink) return false;
-    const validItems = cat.items?.filter((item: any) => item.image_url && item.image_url.trim() !== "");
-    return validItems && validItems.length > 0;
+    return cat.items && cat.items.length > 0;
   });
 
   return (
@@ -168,36 +166,36 @@ export default function MenuPage() {
             Discover our complete 281-creation gastronomic collection, from charcoal clay oven tikkas and rich dum biryanis to artisan mixology and rare reserve single malts.
           </p>
 
-          {/* DUAL MENU SWITCHER: CULINARY VS ARTISAN BAR */}
+          {/* DUAL MENU SWITCHER: FOOD MENU VS DRINKS MENU */}
           <div className="pt-4 flex justify-center">
-            <div className="inline-flex p-1.5 rounded-full bg-[#0A111F] border border-[#D4AF37]/35 shadow-2xl">
+            <div className="inline-flex p-1.5 rounded-2xl bg-[#0A111F] border-2 border-[#D4AF37]/50 shadow-2xl gap-2">
               <button
                 onClick={() => {
                   setActiveMenuTab("FOOD");
                   setSelectedCategorySlug("all");
                 }}
-                className={`flex items-center gap-2.5 px-7 py-3 rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 ${
+                className={`flex items-center gap-2.5 px-8 py-3.5 rounded-xl text-xs sm:text-sm font-black tracking-widest uppercase transition-all duration-300 ${
                   activeMenuTab === "FOOD"
-                    ? "bg-gradient-to-r from-[#D4AF37] to-[#B38728] text-[#070B12] shadow-xl"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#070B12] shadow-[0_0_25px_rgba(212,175,55,0.4)] scale-105"
+                    : "text-slate-300 hover:text-white bg-[#070B12]/60"
                 }`}
               >
-                <UtensilsCrossed className="w-4 h-4" />
-                <span>CULINARY (Food)</span>
+                <UtensilsCrossed className="w-5 h-5 text-current" />
+                <span>🍲 FOOD MENU</span>
               </button>
               <button
                 onClick={() => {
                   setActiveMenuTab("DRINKS");
                   setSelectedCategorySlug("all");
                 }}
-                className={`flex items-center gap-2.5 px-7 py-3 rounded-full text-xs font-bold tracking-widest uppercase transition-all duration-300 ${
+                className={`flex items-center gap-2.5 px-8 py-3.5 rounded-xl text-xs sm:text-sm font-black tracking-widest uppercase transition-all duration-300 ${
                   activeMenuTab === "DRINKS"
-                    ? "bg-gradient-to-r from-[#D4AF37] to-[#B38728] text-[#070B12] shadow-xl"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#070B12] shadow-[0_0_25px_rgba(212,175,55,0.4)] scale-105"
+                    : "text-slate-300 hover:text-white bg-[#070B12]/60"
                 }`}
               >
-                <Wine className="w-4 h-4" />
-                <span>ARTISAN BAR (Drinks)</span>
+                <Wine className="w-5 h-5 text-current" />
+                <span>🍸 DRINKS MENU</span>
               </button>
             </div>
           </div>
@@ -369,18 +367,24 @@ export default function MenuPage() {
                         <h3 className="font-serif text-lg font-normal text-white group-hover:text-[#D4AF37] transition-colors">
                           {item.name}
                         </h3>
-                        {item.serving_size && (
+                        {item.variants && item.variants.length > 1 ? (
+                          <div className="mt-2 flex items-center gap-1.5 flex-wrap">
+                            {item.variants.map((v: any) => (
+                              <span
+                                key={v.id}
+                                className="text-[10px] text-amber-200 font-semibold bg-[#0F1626] px-2 py-0.5 rounded-md border border-[#D4AF37]/40"
+                              >
+                                {v.name}: ₹{Math.round(item.base_price + v.price_delta)}
+                              </span>
+                            ))}
+                          </div>
+                        ) : item.serving_size ? (
                           <div className="mt-1 flex items-center gap-1.5 flex-wrap">
                             <span className="text-[10px] text-[#D4AF37] font-semibold bg-[#0F1626] px-2 py-0.5 rounded-full border border-[#D4AF37]/30">
                               {item.serving_size}
                             </span>
-                            {item.variants && item.variants.length > 1 && (
-                              <span className="text-[10px] text-slate-400">
-                                (Tap to choose size)
-                              </span>
-                            )}
                           </div>
-                        )}
+                        ) : null}
                         <p className="text-xs text-slate-300 mt-1.5 line-clamp-2 leading-relaxed font-normal">
                           {item.description || "Artisanal preparation with fine spices and luxury ingredients."}
                         </p>

@@ -39,7 +39,12 @@ export const BillPaymentScreen: React.FC<{ route: any; navigation: any }> = ({ r
       if (Array.isArray(tbls)) setTablesList(tbls);
 
       const pends: any = await mobileApiRequest("/waiter/bills/pending-tables", { method: "GET" }, token);
-      if (Array.isArray(pends)) setPendingTables(pends);
+      if (Array.isArray(pends)) {
+        setPendingTables(pends);
+        if (!route.params?.table_number && pends.length > 0) {
+          setTableNumber(pends[0].table_number);
+        }
+      }
     } catch (e) {
       console.warn("Failed loading tables for billing:", e);
     }

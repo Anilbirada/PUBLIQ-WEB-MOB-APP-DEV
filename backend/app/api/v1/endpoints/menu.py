@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from app.core.database import get_db
-from app.models import MenuCategory, MenuItem
+from app.models import MenuCategory, MenuItem, MenuVariant
 from app.schemas import MenuCategorySchema, MenuItemSchema
 
 router = APIRouter()
@@ -52,3 +52,23 @@ def get_full_menu(
             result.append(cat_dict)
             
     return result
+
+@router.post("/import-catalogue")
+def trigger_catalogue_import(db: Session = Depends(get_db)):
+    """
+    Triggers or re-synchronizes the official 407-product drinks and food catalogue
+    from the restaurant owner's spreadsheet.
+    """
+    from scripts.import_excel_menu import run_import
+    try:
+        run_import(db)
+        total_items = db.query(MenuItem).count()
+        total_variants = db.query(MenuVariant).count()
+        return {
+            "success": True,
+            "message": "Full menu catalogue successfully synchronized with official price listing.",
+            "total_items": total_items,
+            "total_variants": total_variants
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Catalogue import error: {str(e)}")

@@ -117,6 +117,14 @@ export const ManualOrderScreen: React.FC<{ route: any; navigation: any }> = ({ r
         `Order ${res.order_number} for Table ${tableNumber} sent to Kitchen & Bar.`,
         [
           {
+            text: "Generate Bill & Settle",
+            onPress: () => {
+              setCartItems([]);
+              refreshData();
+              navigation.navigate("MainTabs", { screen: "BillPayment", params: { table_number: tableNumber } });
+            }
+          },
+          {
             text: "View Tracking",
             onPress: () => {
               refreshData();
@@ -124,7 +132,7 @@ export const ManualOrderScreen: React.FC<{ route: any; navigation: any }> = ({ r
             }
           },
           {
-            text: "OK",
+            text: "Done",
             onPress: () => {
               setCartItems([]);
               refreshData();

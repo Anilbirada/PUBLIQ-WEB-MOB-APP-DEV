@@ -78,14 +78,16 @@ export const QRScannerScreen: React.FC<{ navigation: any }> = ({ navigation }) =
     if (scanned || isVerifying) return;
     setScanned(true);
 
-    let clean = (data || "").trim();
-    if (clean.includes("?table=")) {
-      const m = clean.match(/[?&]table=([^&]+)/);
+    const raw = (data || "").trim();
+    let clean = raw;
+    if (raw.includes("?table=")) {
+      const m = raw.match(/[?&]table=([^&]+)/);
       if (m) clean = m[1];
-    } else if (clean.includes("/order/")) {
-      clean = clean.split("/order/")[1].split("?")[0].split("/")[0];
+    } else if (raw.includes("/order/")) {
+      clean = raw.split("/order/")[1].split("?")[0].split("/")[0];
     }
-    handleVerify(clean);
+    // Pass raw or extracted clean token/table
+    handleVerify(clean || raw);
   };
 
   return (

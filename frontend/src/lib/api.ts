@@ -24,6 +24,14 @@ function resolveApiBase(): string {
 export const API_BASE_URL = resolveApiBase();
 export const API_BASE = API_BASE_URL;
 
+export function resolveWsBase(): string {
+  const base = resolveApiBase();
+  if (base.startsWith("https://")) return base.replace("https://", "wss://");
+  if (base.startsWith("http://")) return base.replace("http://", "ws://");
+  return typeof window !== "undefined" && window.location.protocol === "https:" ? "wss://" : "ws://";
+}
+
+
 export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
   const headers = {

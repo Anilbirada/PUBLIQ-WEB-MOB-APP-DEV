@@ -4,9 +4,9 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { 
   CheckCircle, Clock, Utensils, Wine, Bell, 
-  Sparkles, AlertCircle, ChefHat, CheckCircle2 
+  Sparkles, AlertCircle, ChefHat, CheckCircle2, Star 
 } from "lucide-react";
-import { api } from "../../../lib/api";
+import { api, resolveWsBase, API_BASE } from "../../../lib/api";
 
 const ORDER_STAGES = [
   { key: "PLACED", label: "Order Placed", desc: "Submitted to restaurant central system" },
@@ -24,6 +24,47 @@ export default function OrderTrackingPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [lastUpdated, setLastUpdated] = useState<string>("");
+
+  // Customer Review State
+  const [reviewRating, setReviewRating] = useState<number>(5);
+  const [foodRating, setFoodRating] = useState<number>(5);
+  const [drinksRating, setDrinksRating] = useState<number>(5);
+  const [reviewComment, setReviewComment] = useState<string>("");
+  const [reviewSubmitting, setReviewSubmitting] = useState<boolean>(false);
+  const [reviewSubmitted, setReviewSubmitted] = useState<boolean>(false);
+  const [reviewError, setReviewError] = useState<string>("");
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!order?.id) return;
+    setReviewSubmitting(true);
+    setReviewError("");
+    try {
+      const res = await fetch(`${API_BASE}/reviews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          order_id: order.id,
+          customer_name: order.customer_name || "Valued Diner",
+          table_number: order.table_number,
+          overall_rating: reviewRating,
+          food_rating: foodRating,
+          drinks_rating: drinksRating,
+          comment: reviewComment,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setReviewSubmitted(true);
+      } else {
+        setReviewError(data.detail || "Unable to submit review");
+      }
+    } catch (err: any) {
+      setReviewError(err.message || "Failed to submit review");
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
 
   const wsRef = useRef<WebSocket | null>(null);
 
@@ -57,7 +98,7 @@ export default function OrderTrackingPage() {
     if (!order?.id) return;
 
     try {
-      const wsUrl = `ws://localhost:8001/api/v1/order-tracking/ws/${order.id}`;
+      const wsUrl = `${resolveWsBase()}/order-tracking/ws/${order.id}`;
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
 
@@ -261,6 +302,121 @@ export default function OrderTrackingPage() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Customer Dining Experience Review Card */}
+        <div className="bg-[#0A111F] rounded-3xl p-6 border border-[#D4AF37]/30 shadow-2xl space-y-5 bg-gradient-to-br from-[#0A111F] to-[#121927]">
+          <div className="border-b border-[#D4AF37]/15 pb-4">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] block">
+              GUEST SATISFACTION &amp; FEEDBACK
+            </span>
+            <h3 className="font-serif text-xl font-normal text-white mt-1">
+              Rate Your PUBLIQ Dining Experience
+            </h3>
+            <p className="text-xs text-slate-400 mt-1">
+              Your feedback is shared directly with Executive Chef and Mixology team.
+            </p>
+          </div>
+
+          {reviewSubmitted ? (
+            <div className="p-6 bg-emerald-950/50 rounded-2xl border border-emerald-500/40 text-center space-y-2">
+              <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+              <h4 className="font-serif text-base text-white">Review Received!</h4>
+              <p className="text-xs text-emerald-300">
+                Thank you for reviewing your dining experience with us at PUBLIQ Bar &amp; Restaurant.
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleReviewSubmit} className="space-y-5">
+              {reviewError && (
+                <div className="p-3 bg-rose-950/50 border border-rose-500/40 rounded-xl text-xs text-rose-300 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                  <span>{reviewError}</span>
+                </div>
+              )}
+
+              {/* Overall Rating Star Selector */}
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-2">Overall Dining Rating</label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setReviewRating(star)}
+                      className="p-1 text-[#D4AF37] hover:scale-110 transition-transform focus:outline-none"
+                    >
+                      <Star className={`w-7 h-7 ${star <= reviewRating ? "fill-[#D4AF37]" : "text-slate-600"}`} />
+                    </button>
+                  ))}
+                  <span className="text-xs font-bold text-[#D4AF37] ml-2">
+                    {reviewRating === 5 ? "Exceptional (5/5)" : reviewRating === 4 ? "Very Good (4/5)" : reviewRating === 3 ? "Good (3/5)" : `${reviewRating}/5`}
+                  </span>
+                </div>
+              </div>
+
+              {/* Departmental Sub-Ratings */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div>
+                  <label className="text-[11px] font-semibold text-slate-400 block mb-1">
+                    Food &amp; Kitchen Flavours ({foodRating}/5)
+                  </label>
+                  <div className="flex items-center gap-1.5 text-amber-400">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setFoodRating(s)}
+                        className="focus:outline-none hover:scale-105"
+                      >
+                        <Star className={`w-4 h-4 ${s <= foodRating ? "fill-amber-400" : "text-slate-700"}`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-semibold text-slate-400 block mb-1">
+                    Cocktails &amp; Bar Experience ({drinksRating}/5)
+                  </label>
+                  <div className="flex items-center gap-1.5 text-sky-400">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setDrinksRating(s)}
+                        className="focus:outline-none hover:scale-105"
+                      >
+                        <Star className={`w-4 h-4 ${s <= drinksRating ? "fill-sky-400" : "text-slate-700"}`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Written Feedback Textarea */}
+              <div>
+                <label className="text-xs font-semibold text-slate-300 block mb-1.5">
+                  Your Compliments or Suggestions (Optional)
+                </label>
+                <textarea
+                  rows={3}
+                  value={reviewComment}
+                  onChange={(e) => setReviewComment(e.target.value)}
+                  placeholder="Tell us what you loved about our dishes, cocktails, or service..."
+                  className="w-full bg-[#070B12] border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#D4AF37]"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={reviewSubmitting}
+                className="w-full py-3 rounded-full bg-[#D4AF37] hover:bg-[#E5C378] text-[#070B12] text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-[#D4AF37]/20 disabled:opacity-50"
+              >
+                {reviewSubmitting ? "Submitting Your Review..." : "Submit Verified Dining Review"}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>

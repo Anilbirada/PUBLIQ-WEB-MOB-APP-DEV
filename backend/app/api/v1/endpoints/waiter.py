@@ -11,6 +11,7 @@ from typing import List, Optional, Dict, Any
 import uuid
 
 from app.core.database import get_db
+from app.core.outlet_helper import get_or_create_primary_outlet
 from app.models import (
     Employee, Outlet, RestaurantTable, Order, OrderItem,
     PosBill, CashierShift, TableQrToken, AuditLog, MenuItem,
@@ -62,25 +63,7 @@ def waiter_login(payload: Dict[str, Any] = Body(...), db: Session = Depends(get_
     # Ensures no staff member or demo user is ever locked out with "Invalid credentials"
     if not employee and pin_code:
         # Retrieve or create default outlet
-        outlet = db.query(Outlet).first()
-        if not outlet:
-            outlet = Outlet(
-                id=str(uuid.uuid4()),
-                name="PUBLIQ HARAGADDE",
-                code="PUB-HARAGADDE",
-                address="Survey No. 42/1, Haragadde Village, Jigani Hobli, Anekal Taluk",
-                city="Bengaluru",
-                state="Karnataka",
-                pincode="560105",
-                phone="+91 98000 12345",
-                email="contact@publiqrestaurant.com",
-                gst_number="29AABCP1234F1Z5",
-                fssai_license="11223344556677",
-                is_active=True
-            )
-            db.add(outlet)
-            db.commit()
-            db.refresh(outlet)
+        outlet = get_or_create_primary_outlet(db)
         outlet_id = outlet.id
 
         # Profile definition based on standard PIN roster
@@ -850,15 +833,15 @@ def preview_department_bills(table_number: str, discount_pct: float = 0.0, db: S
     food_owner = db.query(BusinessOwner).filter(BusinessOwner.department == "FOOD").first()
     bev_owner = db.query(BusinessOwner).filter(BusinessOwner.department == "BEVERAGE").first()
     
-    food_owner_name = food_owner.owner_name if food_owner else "ANIL"
-    food_upi = food_owner.upi_id if food_owner else "8431712924-3@ybl"
-    food_qr = food_owner.qr_image_url if food_owner else "/payments/food_upi_qr.jpg"
-    food_biz = food_owner.business_name if food_owner else "PUBLIQ Food & Kitchen"
+    food_owner_name = food_owner.owner_name if food_owner else "RAMESH S P"
+    food_upi = food_owner.upi_id if food_owner else "ramesh776059@ybl"
+    food_qr = food_owner.qr_image_url if food_owner else "/images/publiq/upi/ramesh_food_phonepe_qr.jpg"
+    food_biz = food_owner.business_name if food_owner else "PUBLIQ Kitchen & Food (Ramesh S P)"
     
-    bev_owner_name = bev_owner.owner_name if bev_owner else "RAMESH S P"
-    bev_upi = bev_owner.upi_id if bev_owner else "ramesh776059@ybl"
-    bev_qr = bev_owner.qr_image_url if bev_owner else "/payments/beverage_upi_qr.jpg"
-    bev_biz = bev_owner.business_name if bev_owner else "PUBLIQ Bar & Beverages"
+    bev_owner_name = bev_owner.owner_name if bev_owner else "ANIL"
+    bev_upi = bev_owner.upi_id if bev_owner else "8431712924-3@ybl"
+    bev_qr = bev_owner.qr_image_url if bev_owner else "/images/publiq/upi/anil_bar_phonepe_qr.jpg"
+    bev_biz = bev_owner.business_name if bev_owner else "PUBLIQ Bar & Beverages (Anil)"
     
     # Separate items
     food_items = [it for it in items if (it.department == "FOOD" or (not it.department and ("BAR" not in (it.kitchen_station or ""))))]
@@ -1013,15 +996,15 @@ def generate_department_invoice(payload: Dict[str, Any] = Body(...), db: Session
     # Fetch owner settings
     owner = db.query(BusinessOwner).filter(BusinessOwner.department == dept).first()
     if dept == "FOOD":
-        owner_name = owner.owner_name if owner else "ANIL"
-        upi_id = owner.upi_id if owner else "8431712924-3@ybl"
-        qr_image = owner.qr_image_url if owner else "/payments/food_upi_qr.jpg"
-        biz_name = owner.business_name if owner else "PUBLIQ Food & Kitchen"
-    else:
         owner_name = owner.owner_name if owner else "RAMESH S P"
         upi_id = owner.upi_id if owner else "ramesh776059@ybl"
-        qr_image = owner.qr_image_url if owner else "/payments/beverage_upi_qr.jpg"
-        biz_name = owner.business_name if owner else "PUBLIQ Bar & Beverages"
+        qr_image = owner.qr_image_url if owner else "/images/publiq/upi/ramesh_food_phonepe_qr.jpg"
+        biz_name = owner.business_name if owner else "PUBLIQ Kitchen & Food (Ramesh S P)"
+    else:
+        owner_name = owner.owner_name if owner else "ANIL"
+        upi_id = owner.upi_id if owner else "8431712924-3@ybl"
+        qr_image = owner.qr_image_url if owner else "/images/publiq/upi/anil_bar_phonepe_qr.jpg"
+        biz_name = owner.business_name if owner else "PUBLIQ Bar & Beverages (Anil)"
         
     subtotal = round(sum(it.total_price for it in dept_items), 2)
     discount_amount = round(subtotal * (discount_pct / 100.0), 2)
@@ -1296,9 +1279,26 @@ def generate_dynamic_upi_payment_qr(payload: Dict[str, Any] = Body(...), db: Ses
     order_num = order.order_number if order else f"PUB-TBL-{table_number}"
     txn_ref = f"PUB-{datetime.now().strftime('%Y%m%d%H%M%S')}-{str(uuid.uuid4())[:4].upper()}"
     
-    # Official Merchant VPA & Configuration
-    vpa = "publiqbarresto@okhdfcbank"
-    merchant_name = "PUBLIQ BAR RESTAURANT"
+    # Official Merchant VPA & Dynamic Dual-Business Owner Lookup
+    department = (payload.get("department") or "").strip().upper()
+    vpa = "8431712924-3@ybl"
+    merchant_name = "ANIL (PUBLIQ BAR)"
+
+    if department == "FOOD":
+        food_owner = db.query(BusinessOwner).filter(BusinessOwner.department == "FOOD").first()
+        vpa = food_owner.upi_id if food_owner else "ramesh776059@ybl"
+        merchant_name = food_owner.owner_name if food_owner else "RAMESH S P (FOOD)"
+    elif department == "BEVERAGE":
+        bev_owner = db.query(BusinessOwner).filter(BusinessOwner.department == "BEVERAGE").first()
+        vpa = bev_owner.upi_id if bev_owner else "8431712924-3@ybl"
+        merchant_name = bev_owner.owner_name if bev_owner else "ANIL (BAR)"
+    else:
+        # Default fallback to verified merchant VPA
+        bev_owner = db.query(BusinessOwner).filter(BusinessOwner.department == "BEVERAGE").first()
+        if bev_owner and bev_owner.upi_id:
+            vpa = bev_owner.upi_id
+            merchant_name = f"{bev_owner.owner_name} (PUBLIQ)"
+
     formatted_amount = f"{amount:.2f}"
     transaction_note = f"Table {table_number} Bill {order_num}"
     

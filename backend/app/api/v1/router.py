@@ -5,7 +5,7 @@ from app.api.v1.endpoints import (
     products, cart, orders, order_tracking, payments,
     auth, customers, reservations, notifications, pos_integration,
     admin_pos, admin_operations, admin_inventory, admin_reports,
-    experience, waiter, admin_owners
+    experience, waiter, admin_owners, reviews
 )
 
 api_router = APIRouter()
@@ -26,6 +26,7 @@ api_router.include_router(customers.router, prefix="/customers", tags=["Customer
 api_router.include_router(reservations.router, prefix="/reservations", tags=["Reservations"])
 api_router.include_router(notifications.router, prefix="/notifications", tags=["Notifications"])
 api_router.include_router(pos_integration.router, prefix="/pos", tags=["POS & Kitchen Integration"])
+api_router.include_router(reviews.router, prefix="/reviews", tags=["Customer Reviews"])
 
 # Cinematic Experience, Events & AI Concierge APIs
 api_router.include_router(experience.router, prefix="/experience", tags=["Experience Videos, Events & AI"])

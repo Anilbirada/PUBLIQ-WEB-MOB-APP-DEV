@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import uuid
 
 from app.core.database import get_db
+from app.core.outlet_helper import get_or_create_primary_outlet
 from app.models import (
     RestaurantTable, TableQrToken, DiningArea, Outlet, Employee, StaffAttendance,
     Expense, PosBill, Order, OrderItem, LiquorItem, RawMaterial
@@ -28,10 +29,10 @@ def get_tables_management(outlet_id: str = None, db: Session = Depends(get_db)):
             "id": t.id,
             "table_number": t.table_number,
             "capacity": t.capacity,
-            "dining_area": t.dining_area.name if t.dining_area else "Main Dining",
-            "status": t.status, # "AVAILABLE", "OCCUPIED", "BILLING", "RESERVED", "CLEANING"
-            "is_active": t.is_active,
-            "qr_token": t.qr_token.qr_token if t.qr_token else None
+            "dining_area": t.area.name if t.area else "Main Dining",
+            "status": "OCCUPIED" if t.is_occupied else "AVAILABLE",
+            "is_active": True,
+            "qr_token": t.qr_tokens[0].token if (t.qr_tokens and len(t.qr_tokens) > 0) else None
         }
         for t in tables
     ]
@@ -46,9 +47,9 @@ def update_table_status(payload: dict, db: Session = Depends(get_db)):
     if not table:
         raise HTTPException(status_code=404, detail="Table not found")
 
-    table.status = status
+    table.is_occupied = (status == "OCCUPIED")
     db.commit()
-    return {"success": True, "table_number": table.table_number, "status": table.status}
+    return {"success": True, "table_number": table.table_number, "status": "OCCUPIED" if table.is_occupied else "AVAILABLE"}
 
 # --- 2. QR CODE MANAGEMENT ---
 @router.get("/qr/list")
@@ -62,25 +63,7 @@ def get_qr_management_list(outlet_id: str = None, db: Session = Depends(get_db))
     if outlet_id:
         outlet = db.query(Outlet).filter(Outlet.id == outlet_id).first()
     if not outlet:
-        outlet = db.query(Outlet).first()
-    if not outlet:
-        outlet = Outlet(
-            id=str(uuid.uuid4()),
-            name="PUBLIQ HARAGADDE",
-            code="PUB-HARAGADDE",
-            address="Survey No. 42/1, Haragadde Village, Jigani Hobli, Anekal Taluk",
-            city="Bengaluru",
-            state="Karnataka",
-            pincode="560105",
-            phone="+91 98000 12345",
-            email="contact@publiqrestaurant.com",
-            gst_number="29AABCP1234F1Z5",
-            fssai_license="11223344556677",
-            is_active=True
-        )
-        db.add(outlet)
-        db.commit()
-        db.refresh(outlet)
+        outlet = get_or_create_primary_outlet(db)
 
     tables_q = db.query(RestaurantTable)
     if outlet_id:
@@ -155,7 +138,7 @@ def get_qr_management_list(outlet_id: str = None, db: Session = Depends(get_db))
             "id": active_tok.id if active_tok else f"tok-{tbl.id}",
             "table_id": tbl.id,
             "table_number": tbl.table_number,
-            "dining_area": tbl.dining_area.name if tbl.dining_area else "Main Dining",
+            "dining_area": tbl.area.name if tbl.area else "Main Dining",
             "capacity": tbl.capacity,
             "qr_token": token_val,
             "universal_link": qr_link,
@@ -186,25 +169,7 @@ def create_table_with_qr(payload: dict, db: Session = Depends(get_db)):
     if outlet_id:
         outlet = db.query(Outlet).filter(Outlet.id == outlet_id).first()
     if not outlet:
-        outlet = db.query(Outlet).first()
-    if not outlet:
-        outlet = Outlet(
-            id=str(uuid.uuid4()),
-            name="PUBLIQ HARAGADDE",
-            code="PUB-HARAGADDE",
-            address="Survey No. 42/1, Haragadde Village, Jigani Hobli, Anekal Taluk",
-            city="Bengaluru",
-            state="Karnataka",
-            pincode="560105",
-            phone="+91 98000 12345",
-            email="contact@publiqrestaurant.com",
-            gst_number="29AABCP1234F1Z5",
-            fssai_license="11223344556677",
-            is_active=True
-        )
-        db.add(outlet)
-        db.commit()
-        db.refresh(outlet)
+        outlet = get_or_create_primary_outlet(db)
 
     # Find or create DiningArea for this section
     area = db.query(DiningArea).filter(
@@ -383,6 +348,8 @@ def record_expense(payload: dict, db: Session = Depends(get_db)):
 
 # --- 5. EXECUTIVE ANALYTICS DASHBOARD ---
 @router.get("/reports/dashboard")
+@router.get("/reports/sales/summary")
+@router.get("/reports/summary")
 def get_executive_dashboard(outlet_id: str = None, db: Session = Depends(get_db)):
     """Real-time executive performance dashboard."""
     # Revenue today
@@ -494,3 +461,79 @@ def export_sales_csv(report_type: str = "daily_sales", db: Session = Depends(get
         media_type="text/csv",
         headers={"Content-Disposition": f"attachment; filename=publiq_{report_type}_{datetime.now().strftime('%Y%m%d')}.csv"}
     )
+
+# --- 7. COMPLETE ORDER HISTORY WITH MULTI-DEPARTMENT FILTERS ---
+@router.get("/reports/orders/history")
+def get_order_history(
+    start_date: str = None,
+    end_date: str = None,
+    table_number: str = None,
+    customer_name: str = None,
+    department: str = None, # FOOD, BEVERAGE, ALL
+    order_status: str = None,
+    payment_status: str = None,
+    limit: int = 100,
+    db: Session = Depends(get_db)
+):
+    """
+    Complete searchable order history with multi-criteria filtering across all departments.
+    Permanent records with immutable prices and items breakdown.
+    """
+    q = db.query(Order)
+    
+    if table_number:
+        q = q.filter(Order.table_number.ilike(f"%{table_number}%"))
+    if customer_name:
+        q = q.filter(Order.customer_name.ilike(f"%{customer_name}%"))
+    if order_status:
+        q = q.filter(Order.order_status == order_status.upper())
+    if payment_status:
+        q = q.filter(Order.payment_status == payment_status.upper())
+        
+    orders = q.order_by(Order.created_at.desc()).limit(limit).all()
+    
+    results = []
+    for o in orders:
+        items = db.query(OrderItem).filter(OrderItem.order_id == o.id).all()
+        
+        # Department filtering if requested
+        if department and department.upper() in ["FOOD", "BEVERAGE"]:
+            dept_target = department.upper()
+            items = [it for it in items if it.department == dept_target or (dept_target == "BEVERAGE" and "BAR" in (it.kitchen_station or ""))]
+            if not items:
+                continue
+
+        results.append({
+            "order_id": o.id,
+            "order_number": o.order_number,
+            "table_number": o.table_number,
+            "customer_name": o.customer_name or "Walk-in Guest",
+            "customer_phone": o.customer_phone,
+            "dining_channel": o.dining_channel.value if hasattr(o.dining_channel, "value") else str(o.dining_channel),
+            "order_status": o.order_status,
+            "payment_status": o.payment_status.value if hasattr(o.payment_status, "value") else str(o.payment_status),
+            "subtotal": o.subtotal,
+            "cgst": o.cgst,
+            "sgst": o.sgst,
+            "final_amount": o.final_amount,
+            "created_at": o.created_at.isoformat() if o.created_at else None,
+            "approved_by": getattr(o, "approved_by_waiter", None) or "Floor Captain",
+            "items_count": len(items),
+            "items": [
+                {
+                    "item_name": it.item_name,
+                    "department": it.department,
+                    "quantity": it.quantity,
+                    "unit_price": it.unit_price,
+                    "total_price": it.total_price,
+                    "item_status": getattr(it, "item_status", "SERVED")
+                }
+                for it in items
+            ]
+        })
+        
+    return {
+        "total_records": len(results),
+        "orders": results
+    }
+

@@ -8,6 +8,7 @@ from app.models import Order, OrderItem, LiquorItem, LiquorTransaction, AuditLog
 router = APIRouter()
 
 @router.get("/kot/tickets")
+@router.get("/kds/orders")
 def get_kot_tickets(outlet_id: str = None, station: str = None, db: Session = Depends(get_db)):
     """Fetch live kitchen tickets filtered by preparation status and station (strictly FOOD items, non-rejected)."""
     q = db.query(Order).filter(

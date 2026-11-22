@@ -395,7 +395,7 @@ class Order(Base):
     
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
-    
+
     customer = relationship("Customer", back_populates="orders")
     outlet = relationship("Outlet", back_populates="orders")
     qr_session = relationship("QrSession", back_populates="orders")
@@ -811,4 +811,22 @@ class DepartmentInvoice(Base):
     
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+class CustomerReview(Base):
+    __tablename__ = "customer_reviews"
+    
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    order_id = Column(String(36), ForeignKey("orders.id"), nullable=True, unique=True, index=True)
+    table_number = Column(String(20), nullable=True)
+    customer_name = Column(String(100), nullable=False)
+    customer_phone = Column(String(30), nullable=True)
+    overall_rating = Column(Integer, nullable=False, default=5)
+    food_rating = Column(Integer, nullable=False, default=5)
+    drinks_rating = Column(Integer, nullable=False, default=5)
+    service_rating = Column(Integer, nullable=False, default=5)
+    comment = Column(Text, nullable=True)
+    is_moderated = Column(Boolean, default=False)
+    is_published = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+
 

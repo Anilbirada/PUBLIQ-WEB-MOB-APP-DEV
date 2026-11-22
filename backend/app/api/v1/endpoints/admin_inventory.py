@@ -79,6 +79,7 @@ def log_liquor_transaction(payload: dict, db: Session = Depends(get_db)):
 
 # --- 2. RESTAURANT RAW MATERIALS ---
 @router.get("/raw-materials")
+@router.get("/kitchen-stock")
 def get_raw_materials(outlet_id: str = None, db: Session = Depends(get_db)):
     """Fetch raw materials, current stocks, unit costs, and reorder alerts."""
     q = db.query(RawMaterial)

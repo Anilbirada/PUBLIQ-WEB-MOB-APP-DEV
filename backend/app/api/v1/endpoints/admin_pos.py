@@ -12,6 +12,7 @@ from app.models import (
 router = APIRouter()
 
 @router.get("/active-tables")
+@router.get("/tables")
 def get_active_tables(outlet_id: str = None, db: Session = Depends(get_db)):
     """Fetch all tables with active orders for the POS screen."""
     q = db.query(RestaurantTable)

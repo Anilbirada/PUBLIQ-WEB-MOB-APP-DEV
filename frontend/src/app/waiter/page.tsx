@@ -1688,7 +1688,7 @@ export default function WaiterMobileApp() {
                           disabled={isGeneratingInvoice}
                           className="p-2.5 rounded-lg bg-[#151F33] border border-[#D4AF37]/50 text-[#D4AF37] text-[11px] font-bold hover:bg-[#1E2B45] text-left"
                         >
-                          <span className="block text-[9px] text-slate-400">ANIL (FOOD)</span>
+                          <span className="block text-[9px] text-slate-400">RAMESH S P (FOOD)</span>
                           <span className="font-serif">₹{(deptBillPreview.food_bill?.grand_total || 0).toFixed(2)}</span>
                           <span className="block text-[8px] text-emerald-400 mt-0.5">PUB-FOOD Invoice →</span>
                         </button>
@@ -1698,7 +1698,7 @@ export default function WaiterMobileApp() {
                           disabled={isGeneratingInvoice}
                           className="p-2.5 rounded-lg bg-[#151F33] border border-[#38BDF8]/50 text-[#38BDF8] text-[11px] font-bold hover:bg-[#1E2B45] text-left"
                         >
-                          <span className="block text-[9px] text-slate-400">RAMESH (DRINKS)</span>
+                          <span className="block text-[9px] text-slate-400">ANIL (BAR &amp; DRINKS)</span>
                           <span className="font-serif">₹{(deptBillPreview.beverage_bill?.grand_total || 0).toFixed(2)}</span>
                           <span className="block text-[8px] text-sky-400 mt-0.5">PUB-BEV Invoice →</span>
                         </button>

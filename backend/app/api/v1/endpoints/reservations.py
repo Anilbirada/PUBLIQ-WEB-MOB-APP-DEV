@@ -114,6 +114,24 @@ def update_reservation_status(
     db.refresh(res)
     return {"success": True, "reservation_id": res.id, "status": res.status}
 
+@router.get("/slots")
+def get_available_slots(date: str = None, outlet_id: str = None):
+    """Return available seating slots for lunch and luxury dinner service."""
+    return [
+        {"slot": "12:00", "label": "12:00 PM (Lunch Opening)"},
+        {"slot": "12:30", "label": "12:30 PM (Lunch)"},
+        {"slot": "13:00", "label": "01:00 PM (Peak Lunch)"},
+        {"slot": "13:30", "label": "01:30 PM (Lunch)"},
+        {"slot": "14:00", "label": "02:00 PM (Late Lunch)"},
+        {"slot": "19:00", "label": "07:00 PM (Dinner Opening)"},
+        {"slot": "19:30", "label": "07:30 PM (Sunset Dining)"},
+        {"slot": "20:00", "label": "08:00 PM (Peak Dinner)"},
+        {"slot": "20:30", "label": "08:30 PM (Prime Hour)"},
+        {"slot": "21:00", "label": "09:00 PM (Late Dinner)"},
+        {"slot": "21:30", "label": "09:30 PM (Late Dinner)"},
+        {"slot": "22:00", "label": "10:00 PM (Cocktail Hours)"}
+    ]
+
 @router.get("/{reservation_ref}", response_model=ReservationResponse)
 def get_reservation(reservation_ref: str, db: Session = Depends(get_db)):
     res = db.query(Reservation).filter(Reservation.reservation_ref == reservation_ref).first()

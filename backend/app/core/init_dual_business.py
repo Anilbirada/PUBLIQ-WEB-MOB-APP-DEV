@@ -53,86 +53,96 @@ def init_dual_business_system():
                     print(f"Column {col_name} alter notice: {e}")
                     db.rollback()
 
-        # 2. Seed / Update Business Owners
+        # 2. Seed / Update Business Owners according to exact assignment:
+        # RAMESH S P -> FOOD ADMIN / KITCHEN
+        # ANIL -> BAR ADMIN / BEVERAGE
         food_owner = db.query(BusinessOwner).filter(BusinessOwner.department == "FOOD").first()
         if not food_owner:
             food_owner = BusinessOwner(
                 department="FOOD",
-                owner_name="ANIL",
-                business_name="PUBLIQ Food & Kitchen",
-                upi_id="8431712924-3@ybl",
-                qr_image_url="/payments/food_upi_qr.jpg",
-                gstin="29AABCP1234F1Z9",
-                sac_code="996331",
-                tax_rate=0.05,
-                contact_phone="+91 84317 12924",
-                is_active=True
-            )
-            db.add(food_owner)
-            print("Created BusinessOwner: FOOD -> ANIL (8431712924-3@ybl)")
-        else:
-            food_owner.owner_name = "ANIL"
-            food_owner.upi_id = "8431712924-3@ybl"
-            food_owner.qr_image_url = "/payments/food_upi_qr.jpg"
-            print("Updated BusinessOwner: FOOD -> ANIL")
-
-        bev_owner = db.query(BusinessOwner).filter(BusinessOwner.department == "BEVERAGE").first()
-        if not bev_owner:
-            bev_owner = BusinessOwner(
-                department="BEVERAGE",
                 owner_name="RAMESH S P",
-                business_name="PUBLIQ Bar & Beverages",
+                business_name="PUBLIQ Kitchen & Food (Ramesh S P)",
                 upi_id="ramesh776059@ybl",
-                qr_image_url="/payments/beverage_upi_qr.jpg",
+                qr_image_url="/images/publiq/upi/ramesh_food_phonepe_qr.jpg",
                 gstin="29AABCP1234F1Z9",
                 sac_code="996331",
                 tax_rate=0.05,
                 contact_phone="+91 77605 90000",
                 is_active=True
             )
-            db.add(bev_owner)
-            print("Created BusinessOwner: BEVERAGE -> RAMESH S P (ramesh776059@ybl)")
+            db.add(food_owner)
+            print("Created BusinessOwner: FOOD -> RAMESH S P (ramesh776059@ybl)")
         else:
-            bev_owner.owner_name = "RAMESH S P"
-            bev_owner.upi_id = "ramesh776059@ybl"
-            bev_owner.qr_image_url = "/payments/beverage_upi_qr.jpg"
-            print("Updated BusinessOwner: BEVERAGE -> RAMESH S P")
+            food_owner.owner_name = "RAMESH S P"
+            food_owner.business_name = "PUBLIQ Kitchen & Food (Ramesh S P)"
+            food_owner.upi_id = "ramesh776059@ybl"
+            food_owner.qr_image_url = "/images/publiq/upi/ramesh_food_phonepe_qr.jpg"
+            print("Updated BusinessOwner: FOOD -> RAMESH S P")
+
+        bev_owner = db.query(BusinessOwner).filter(BusinessOwner.department == "BEVERAGE").first()
+        if not bev_owner:
+            bev_owner = BusinessOwner(
+                department="BEVERAGE",
+                owner_name="ANIL",
+                business_name="PUBLIQ Bar & Beverages (Anil)",
+                upi_id="8431712924-3@ybl",
+                qr_image_url="/images/publiq/upi/anil_bar_phonepe_qr.jpg",
+                gstin="29AABCP1234F1Z9",
+                sac_code="996331",
+                tax_rate=0.05,
+                contact_phone="+91 84317 12924",
+                is_active=True
+            )
+            db.add(bev_owner)
+            print("Created BusinessOwner: BEVERAGE -> ANIL (8431712924-3@ybl)")
+        else:
+            bev_owner.owner_name = "ANIL"
+            bev_owner.business_name = "PUBLIQ Bar & Beverages (Anil)"
+            bev_owner.upi_id = "8431712924-3@ybl"
+            bev_owner.qr_image_url = "/images/publiq/upi/anil_bar_phonepe_qr.jpg"
+            print("Updated BusinessOwner: BEVERAGE -> ANIL")
 
         # 3. Seed / Update Employees for Portal Login
         outlet = db.query(Outlet).first()
         outlet_id = outlet.id if outlet else "out-haragadde"
 
-        emp_anil = db.query(Employee).filter(Employee.role == "FOOD_OWNER").first()
-        if not emp_anil:
-            emp_anil = Employee(
-                outlet_id=outlet_id,
-                name="Anil (Food Business Owner)",
-                email="anil@publiq.in",
-                phone="8431712924",
-                role="FOOD_OWNER",
-                pin_code="8888",
-                salary=0.0,
-                is_active=True,
-                joined_date="2026-01-01"
-            )
-            db.add(emp_anil)
-            print("Created Employee: Anil (FOOD_OWNER) with PIN 8888")
-
-        emp_ramesh = db.query(Employee).filter(Employee.role == "BEVERAGE_OWNER").first()
+        emp_ramesh = db.query(Employee).filter(Employee.role == "FOOD_OWNER").first()
         if not emp_ramesh:
             emp_ramesh = Employee(
                 outlet_id=outlet_id,
-                name="Ramesh S P (Beverage Owner)",
+                name="Ramesh S P (Food Admin)",
                 email="ramesh@publiq.in",
                 phone="7760590000",
-                role="BEVERAGE_OWNER",
+                role="FOOD_OWNER",
                 pin_code="7778",
                 salary=0.0,
                 is_active=True,
                 joined_date="2026-01-01"
             )
             db.add(emp_ramesh)
-            print("Created Employee: Ramesh S P (BEVERAGE_OWNER) with PIN 7778")
+            print("Created Employee: Ramesh S P (FOOD_OWNER) with PIN 7778")
+        else:
+            emp_ramesh.name = "Ramesh S P (Food Admin)"
+            emp_ramesh.pin_code = "7778"
+
+        emp_anil = db.query(Employee).filter(Employee.role == "BEVERAGE_OWNER").first()
+        if not emp_anil:
+            emp_anil = Employee(
+                outlet_id=outlet_id,
+                name="Anil (Bar Admin)",
+                email="anil@publiq.in",
+                phone="8431712924",
+                role="BEVERAGE_OWNER",
+                pin_code="8888",
+                salary=0.0,
+                is_active=True,
+                joined_date="2026-01-01"
+            )
+            db.add(emp_anil)
+            print("Created Employee: Anil (BEVERAGE_OWNER) with PIN 8888")
+        else:
+            emp_anil.name = "Anil (Bar Admin)"
+            emp_anil.pin_code = "8888"
 
         # 4. Backfill existing OrderItems with department tag
         order_items = db.query(OrderItem).all()
@@ -152,3 +162,7 @@ def init_dual_business_system():
 
 if __name__ == "__main__":
     init_dual_business_system()
+
+# Alias for backwards compatibility
+init_dual_business = init_dual_business_system
+

@@ -85,28 +85,47 @@ def health_check():
 
 @app.on_event("startup")
 def on_startup():
+    import logging
+    startup_logger = logging.getLogger("startup")
+
+    # 1. Primary Restaurant & Outlet Provisioning
+    try:
+        from app.core.database import SessionLocal
+        from app.core.outlet_helper import get_or_create_primary_outlet
+        with SessionLocal() as s_db:
+            get_or_create_primary_outlet(s_db)
+    except Exception as e:
+        startup_logger.warning(f"Outlet provisioning note: {e}")
+
+    # 2. Base Database Seed
     try:
         from app.seed_data import seed_database
-        from app.seed_enterprise_data import seed_enterprise
-        from app.core.init_dual_business import init_dual_business
         seed_database()
-        seed_enterprise()
-        try:
-            init_dual_business()
-        except Exception as dual_err:
-            import logging
-            logging.getLogger(__name__).warning(f"Dual business init note: {dual_err}")
-        try:
-            from scripts.import_excel_menu import run_import as run_excel_import
-            from app.core.database import SessionLocal
-            with SessionLocal() as s_db:
-                run_excel_import(s_db)
-        except Exception as catalogue_err:
-            import logging
-            logging.getLogger(__name__).warning(f"Catalogue import note: {catalogue_err}")
     except Exception as e:
-        import logging
-        logging.getLogger(__name__).warning(f"Database seed note: {e}")
+        startup_logger.warning(f"Database seed note: {e}")
+
+    # 3. Enterprise Operations Seed
+    try:
+        from app.seed_enterprise_data import seed_enterprise
+        seed_enterprise()
+    except Exception as e:
+        startup_logger.warning(f"Enterprise seed note: {e}")
+
+    # 4. Dual-Business Owner System (Anil Food / Ramesh Drinks)
+    try:
+        from app.core.init_dual_business import init_dual_business_system
+        init_dual_business_system()
+    except Exception as e:
+        startup_logger.warning(f"Dual business init note: {e}")
+
+    # 5. Master Menu Catalogue Import (293 items, 407 variants)
+    try:
+        from scripts.import_excel_menu import run_import as run_excel_import
+        from app.core.database import SessionLocal
+        with SessionLocal() as s_db:
+            run_excel_import(s_db)
+    except Exception as e:
+        startup_logger.warning(f"Catalogue import note: {e}")
 
 if __name__ == "__main__":
     import uvicorn

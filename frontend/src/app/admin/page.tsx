@@ -158,9 +158,45 @@ export default function AdminDashboardPage() {
       <div className="bg-[#0B1528]/80 rounded-3xl p-6 border border-[#38BDF8]/25 shadow-xl space-y-4">
         <h3 className="font-serif text-lg font-bold text-white flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-[#D4AF37]" />
-          Hospitality Experience & AI Control Modules
+          Executive Operations &amp; Governance Portals
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <Link
+            href="/admin/owner/beverage"
+            className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/30 hover:border-[#38BDF8]/60 text-center transition group"
+          >
+            <Wine className="w-6 h-6 text-[#38BDF8] mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <span className="text-xs font-bold text-white block">Bar Admin (Anil)</span>
+            <span className="text-[10px] text-[#38BDF8]">PhonePe 8431712924-3@ybl</span>
+          </Link>
+
+          <Link
+            href="/admin/owner/food"
+            className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#D4AF37]/30 hover:border-[#D4AF37]/60 text-center transition group"
+          >
+            <UtensilsCrossed className="w-6 h-6 text-[#D4AF37] mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <span className="text-xs font-bold text-white block">Food Admin (Ramesh S P)</span>
+            <span className="text-[10px] text-[#D4AF37]">PhonePe ramesh776059@ybl</span>
+          </Link>
+
+          <Link
+            href="/admin/reviews"
+            className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-amber-500/20 hover:border-amber-500/50 text-center transition group"
+          >
+            <PartyPopper className="w-6 h-6 text-amber-400 mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <span className="text-xs font-bold text-white block">Customer Reviews</span>
+            <span className="text-[10px] text-slate-300">5-Star Dining Ratings</span>
+          </Link>
+
+          <Link
+            href="/admin/qr"
+            className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/20 hover:border-[#38BDF8]/50 text-center transition group"
+          >
+            <QrCode className="w-6 h-6 text-[#38BDF8] mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <span className="text-xs font-bold text-white block">Table QR Plaques</span>
+            <span className="text-[10px] text-slate-300">HMAC-SHA256 Tokens</span>
+          </Link>
+
           <Link
             href="/admin/videos"
             className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/20 hover:border-[#38BDF8]/50 text-center transition group"
@@ -176,25 +212,25 @@ export default function AdminDashboardPage() {
           >
             <Bot className="w-6 h-6 text-[#D4AF37] mx-auto mb-2 group-hover:scale-110 transition-transform" />
             <span className="text-xs font-bold text-white block">AI Promo Studio</span>
-            <span className="text-[10px] text-slate-300">Review & Approve</span>
+            <span className="text-[10px] text-slate-300">Review &amp; Approve</span>
           </Link>
 
           <Link
             href="/admin/events"
             className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/20 hover:border-[#38BDF8]/50 text-center transition group"
           >
-            <PartyPopper className="w-6 h-6 text-[#38BDF8] mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <Calendar className="w-6 h-6 text-[#38BDF8] mx-auto mb-2 group-hover:scale-110 transition-transform" />
             <span className="text-xs font-bold text-white block">Event Enquiries</span>
-            <span className="text-[10px] text-slate-300">Cabanas & DJ Nights</span>
+            <span className="text-[10px] text-slate-300">Cabanas &amp; DJ Nights</span>
           </Link>
 
           <Link
             href="/admin/reservations"
             className="p-4 rounded-2xl bg-[#070E1A] hover:bg-[#0D1F38] border border-[#38BDF8]/20 hover:border-[#38BDF8]/50 text-center transition group"
           >
-            <Calendar className="w-6 h-6 text-[#D4AF37] mx-auto mb-2 group-hover:scale-110 transition-transform" />
+            <Users className="w-6 h-6 text-[#D4AF37] mx-auto mb-2 group-hover:scale-110 transition-transform" />
             <span className="text-xs font-bold text-white block">Guest Reservations</span>
-            <span className="text-[10px] text-slate-300">Seating & Conflicts</span>
+            <span className="text-[10px] text-slate-300">Seating &amp; Conflicts</span>
           </Link>
         </div>
       </div>

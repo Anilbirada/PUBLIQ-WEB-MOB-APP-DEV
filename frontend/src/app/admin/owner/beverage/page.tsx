@@ -51,10 +51,10 @@ export default function BeverageOwnerDashboardPage() {
                 <span>BEVERAGE BUSINESS OWNER FINANCIALS • SAC 996331</span>
               </div>
               <h1 className="font-serif text-3xl sm:text-4xl font-normal text-white mt-1">
-                {data?.owner_name || "RAMESH S P"} — Bar &amp; Drinks Revenue Portal
+                {data?.owner_name || "ANIL"} — Bar &amp; Drinks Revenue Portal
               </h1>
               <p className="text-xs text-slate-400 mt-1">
-                Settlement UPI: <span className="font-mono text-[#38BDF8] font-bold">{data?.upi_id || "ramesh776059@ybl"}</span> • 5% Indian Bar &amp; Restaurant GST Composition Scheme
+                Settlement UPI: <span className="font-mono text-[#38BDF8] font-bold">{data?.upi_id || "8431712924-3@ybl"}</span> • 5% Indian Bar &amp; Restaurant GST Composition Scheme
               </p>
             </div>
           </div>
@@ -71,7 +71,7 @@ export default function BeverageOwnerDashboardPage() {
         {loading ? (
           <div className="py-24 text-center space-y-4">
             <div className="w-10 h-10 border-2 border-[#38BDF8] border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-xs text-slate-400">Loading beverage financials for Ramesh S P...</p>
+            <p className="text-xs text-slate-400">Loading beverage financials for Anil...</p>
           </div>
         ) : error ? (
           <div className="p-6 bg-rose-950/40 border border-rose-500/40 rounded-3xl text-rose-300 text-sm">
@@ -79,6 +79,28 @@ export default function BeverageOwnerDashboardPage() {
           </div>
         ) : data && (
           <div className="space-y-8">
+            {/* PhonePe UPI QR Card for Bar Admin */}
+            <div className="bg-[#0A111F] rounded-3xl p-6 border border-[#38BDF8]/30 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl bg-gradient-to-r from-[#0A111F] via-[#0E1A2E] to-[#0A111F]">
+              <div className="space-y-2 text-center md:text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#38BDF8]/10 border border-[#38BDF8]/30 text-[#38BDF8] text-xs font-bold uppercase tracking-wider">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Official PhonePe Settlement QR
+                </div>
+                <h3 className="font-serif text-2xl font-bold text-white">Anil — Bar &amp; Liquor Direct Payee</h3>
+                <p className="text-xs text-slate-400 max-w-lg">
+                  Every drinks order scanned at restaurant tables generates a separate bar invoice routed directly to Anil&apos;s PhonePe VPA <span className="text-[#38BDF8] font-mono font-bold">8431712924-3@ybl</span>.
+                </p>
+              </div>
+              <div className="flex flex-col items-center bg-black/60 p-4 rounded-2xl border border-[#38BDF8]/20">
+                <img
+                  src="/images/publiq/upi/anil_bar_phonepe_qr.jpg"
+                  alt="Anil PhonePe Bar UPI QR"
+                  className="w-36 h-36 object-contain rounded-xl shadow-lg border border-white/10"
+                />
+                <span className="text-[11px] font-mono font-bold text-[#38BDF8] mt-2">8431712924-3@ybl</span>
+                <span className="text-[10px] text-slate-400">PhonePe Verified Merchant</span>
+              </div>
+            </div>
+
             {/* Revenue Highlights */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-[#0A111F] rounded-2xl p-5 border border-[#38BDF8]/25 shadow-xl">

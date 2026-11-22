@@ -7,7 +7,8 @@ import {
   LayoutDashboard, ShoppingCart, Flame, Wine, Grid3X3, QrCode,
   Package, Beer, BookOpen, UtensilsCrossed, Users, Truck,
   Receipt, TrendingUp, Store, ChevronRight, LogOut, ArrowLeft,
-  Bell, CheckCircle2, Film, Bot, Calendar, PartyPopper, Image as ImageIcon
+  Bell, CheckCircle2, Film, Bot, Calendar, PartyPopper, Image as ImageIcon,
+  ShieldCheck, Star
 } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -47,7 +48,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     {
       title: "MANAGEMENT & GOVERNANCE",
       items: [
+        { name: "Dual Business Owners", href: "/admin/owners", icon: ShieldCheck, badge: "DUAL" },
+        { name: "Bar Admin (Anil)", href: "/admin/owner/beverage", icon: Wine },
+        { name: "Food Admin (Ramesh)", href: "/admin/owner/food", icon: UtensilsCrossed },
         { name: "Staff & Attendance", href: "/admin/employees", icon: Users },
+        { name: "Customer Reviews", href: "/admin/reviews", icon: Star, badge: "NEW" },
         { name: "Suppliers & Purchases", href: "/admin/suppliers", icon: Truck },
         { name: "Operating Expenses", href: "/admin/expenses", icon: Receipt },
         { name: "Financial & 5% GST Reports", href: "/admin/reports", icon: TrendingUp },

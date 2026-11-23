@@ -14,7 +14,17 @@ interface RestaurantTableItem {
   table_number: string;
   capacity: number;
   dining_area: string;
-  status: "AVAILABLE" | "OCCUPIED" | "RESERVED" | "CLEANING" | "BILLING";
+  status: "AVAILABLE" | "OCCUPIED" | "ORDER_PENDING" | "FOOD_PREPARING" | "DRINKS_PREPARING" | "ORDER_READY" | "PAYMENT_PENDING" | string;
+  occupancy_status?: string;
+  assigned_waiter?: string;
+  assigned_waiter_id?: string;
+  customer_name?: string;
+  customer_phone?: string;
+  active_order_id?: string;
+  order_number?: string;
+  current_order_status?: string;
+  order_creation_time?: string;
+  payment_status?: string;
   is_active: boolean;
   qr_token?: string;
 }
@@ -238,21 +248,30 @@ export default function TableManagementPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         {filteredTables.map((t) => {
           const isAvailable = t.status === "AVAILABLE";
-          const isOccupied = t.status === "OCCUPIED" || t.status === "BILLING";
+          const isOrderPending = t.status === "ORDER_PENDING";
+          const isFoodPrep = t.status === "FOOD_PREPARING";
+          const isDrinksPrep = t.status === "DRINKS_PREPARING";
+          const isOrderReady = t.status === "ORDER_READY";
+          const isPaymentPending = t.status === "PAYMENT_PENDING";
           const isReserved = t.status === "RESERVED";
           const isCleaning = t.status === "CLEANING";
+          const isOccupied = t.status === "OCCUPIED" || (!isAvailable && !isReserved && !isCleaning);
 
           return (
             <div
               key={t.id}
               className={`p-5 rounded-2xl border transition-all flex flex-col justify-between space-y-4 shadow-xs hover:shadow-md bg-white ${
-                isOccupied
-                  ? "border-amber-300"
-                  : isReserved
-                  ? "border-purple-300"
-                  : isCleaning
+                isPaymentPending
+                  ? "border-rose-300 ring-1 ring-rose-200"
+                  : isOrderReady
+                  ? "border-indigo-400 ring-1 ring-indigo-200"
+                  : isOrderPending
+                  ? "border-amber-400 ring-1 ring-amber-200 animate-pulse"
+                  : isFoodPrep || isDrinksPrep
                   ? "border-sky-300"
-                  : "border-slate-200 hover:border-blue-300"
+                  : isOccupied
+                  ? "border-amber-200"
+                  : "border-slate-200 hover:border-emerald-300"
               }`}
             >
               {/* Card Header */}
@@ -269,30 +288,59 @@ export default function TableManagementPage() {
 
                   {/* Status Badge */}
                   <span
-                    className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider border shadow-xs ${
-                      isOccupied
-                        ? "bg-amber-50 text-amber-800 border-amber-200"
-                        : isReserved
-                        ? "bg-purple-50 text-purple-800 border-purple-200"
-                        : isCleaning
+                    className={`text-[9px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider border shadow-xs ${
+                      isPaymentPending
+                        ? "bg-rose-50 text-rose-800 border-rose-200"
+                        : isOrderReady
+                        ? "bg-indigo-50 text-indigo-800 border-indigo-200"
+                        : isOrderPending
+                        ? "bg-amber-100 text-amber-900 border-amber-300 animate-pulse"
+                        : isFoodPrep
+                        ? "bg-orange-50 text-orange-800 border-orange-200"
+                        : isDrinksPrep
                         ? "bg-sky-50 text-sky-800 border-sky-200"
-                        : "bg-emerald-50 text-emerald-800 border-emerald-200"
+                        : isAvailable
+                        ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                        : "bg-slate-100 text-slate-800 border-slate-200"
                     }`}
                   >
-                    {t.status}
+                    {t.status.replace("_", " ")}
                   </span>
                 </div>
 
-                {/* Section & Capacity */}
-                <div className="space-y-1 mt-3 text-xs">
+                {/* Section, Waiter, and Order Metadata */}
+                <div className="space-y-1.5 mt-3 text-xs">
                   <div className="flex items-center gap-1.5 text-slate-700 font-semibold">
                     <span className="w-2 h-2 rounded-full bg-blue-600" />
                     <span>{t.dining_area}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-slate-400">
-                    <Users className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Capacity: {t.capacity || 4} Guests</span>
+                  <div className="flex items-center justify-between text-slate-500 text-[11px]">
+                    <span className="flex items-center gap-1">
+                      <Users className="w-3.5 h-3.5 text-slate-400" /> {t.capacity || 4} Guests
+                    </span>
+                    <span className="font-medium text-slate-700">
+                      Waiter: <strong className="text-blue-700">{t.assigned_waiter || "Unassigned"}</strong>
+                    </span>
                   </div>
+
+                  {/* Active Order Details */}
+                  {t.customer_name && (
+                    <div className="p-2 rounded-xl bg-slate-50 border border-slate-100 text-[11px] space-y-0.5 mt-1">
+                      <div className="flex items-center justify-between font-bold text-slate-800">
+                        <span>Guest: {t.customer_name}</span>
+                        {t.payment_status && (
+                          <span className={`text-[9px] px-1.5 py-0.2 rounded font-mono ${
+                            t.payment_status === "PAID" ? "text-emerald-700" : "text-amber-700"
+                          }`}>
+                            {t.payment_status}
+                          </span>
+                        )}
+                      </div>
+                      {t.order_number && (
+                        <p className="text-[10px] font-mono text-slate-500">Order #{t.order_number}</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 

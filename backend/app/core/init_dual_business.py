@@ -26,12 +26,32 @@ def init_dual_business_system():
             ('food_rejection_reason', 'VARCHAR(300)'),
             ('beverage_rejection_reason', 'VARCHAR(300)'),
             ('approved_by_waiter', 'VARCHAR(100)'),
-            ('approved_at', 'DATETIME')
+            ('approved_at', 'DATETIME'),
+            ('waiter_id', 'VARCHAR(36)'),
+            ('waiter_name', 'VARCHAR(100)'),
+            ('closed_by_waiter', 'VARCHAR(100)'),
+            ('closed_at', 'DATETIME')
         ]:
             if col_name not in order_cols:
                 print(f"Adding column '{col_name}' to orders...")
                 try:
                     db.execute(text(f"ALTER TABLE orders ADD COLUMN {col_name} {col_type}"))
+                    db.commit()
+                except Exception as e:
+                    print(f"Column {col_name} alter notice: {e}")
+                    db.rollback()
+
+        # Check restaurant_tables columns
+        tbl_cols = [c['name'] for c in insp.get_columns('restaurant_tables')]
+        for col_name, col_type in [
+            ('assigned_waiter_id', 'VARCHAR(36)'),
+            ('assigned_waiter_name', 'VARCHAR(100)'),
+            ('current_order_id', 'VARCHAR(36)')
+        ]:
+            if col_name not in tbl_cols:
+                print(f"Adding column '{col_name}' to restaurant_tables...")
+                try:
+                    db.execute(text(f"ALTER TABLE restaurant_tables ADD COLUMN {col_name} {col_type}"))
                     db.commit()
                 except Exception as e:
                     print(f"Column {col_name} alter notice: {e}")

@@ -24,6 +24,7 @@ class OrderStatusEnum(str, enum.Enum):
     PREPARING = "PREPARING"
     READY = "READY"
     SERVED = "SERVED"
+    COMPLETED = "COMPLETED"
     CANCELLED = "CANCELLED"
 
 class PaymentStatusEnum(str, enum.Enum):
@@ -137,6 +138,9 @@ class RestaurantTable(Base):
     capacity = Column(Integer, default=4)
     is_occupied = Column(Boolean, default=False)
     active_session_id = Column(String(36), nullable=True)
+    assigned_waiter_id = Column(String(36), nullable=True)
+    assigned_waiter_name = Column(String(100), nullable=True)
+    current_order_id = Column(String(36), nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     
     outlet = relationship("Outlet", back_populates="tables")
@@ -387,6 +391,10 @@ class Order(Base):
     beverage_rejection_reason = Column(String(300), nullable=True)
     approved_by_waiter = Column(String(100), nullable=True)
     approved_at = Column(DateTime, nullable=True)
+    waiter_id = Column(String(36), nullable=True)
+    waiter_name = Column(String(100), nullable=True)
+    closed_by_waiter = Column(String(100), nullable=True)
+    closed_at = Column(DateTime, nullable=True)
     
     special_instructions = Column(String(300), nullable=True)
     customer_name = Column(String(100), nullable=True)

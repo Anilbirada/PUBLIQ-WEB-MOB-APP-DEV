@@ -102,6 +102,31 @@ export default function KotPage() {
     }
   };
 
+  const handleRejectItem = async (itemId: string, itemName: string) => {
+    const reason = prompt(`Enter mandatory rejection reason for ${itemName} (e.g., Out of ingredients):`);
+    if (!reason || !reason.trim()) {
+      alert("A rejection reason is mandatory.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/admin/operations/items/${itemId}/reject`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: reason.trim(), rejected_by: "Kitchen Chef" })
+      });
+      if (res.ok) {
+        alert(`Item '${itemName}' marked unavailable and excluded from billing.`);
+        await fetchTickets();
+      } else {
+        const err = await res.json();
+        alert(err.detail || "Failed to reject item.");
+      }
+    } catch (_) {
+      alert("Network error rejecting item.");
+    }
+  };
+
   const activeCount = tickets.filter(t => t.status !== "READY").length;
   const delayedCount = tickets.filter(t => t.is_delayed).length;
 
@@ -223,13 +248,21 @@ export default function KotPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-200/60">
-                  <span className="flex items-center gap-1.5 font-semibold text-slate-700">
-                    <User className="w-3.5 h-3.5 text-blue-600" /> {t.customer_name}
-                  </span>
-                  <span className="font-bold text-[10px] text-blue-700 px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200">
-                    {t.food_status}
-                  </span>
+                <div className="flex flex-col gap-1 text-xs pt-1.5 border-t border-slate-200/60">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 font-semibold text-slate-700">
+                      <User className="w-3.5 h-3.5 text-blue-600" /> {t.customer_name}
+                    </span>
+                    <span className="font-bold text-[10px] text-blue-700 px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200">
+                      {t.food_status}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono">
+                    <span>Waiter: <strong className="text-slate-800">{t.waiter_name || "Steward"}</strong></span>
+                    {t.order_time && (
+                      <span>Time: {new Date(t.order_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    )}
+                  </div>
                 </div>
 
                 {t.special_instructions && (
@@ -259,11 +292,20 @@ export default function KotPage() {
                         </p>
                       )}
                     </div>
-                    {it.special_instructions && (
-                      <span className="text-[10px] text-amber-800 font-bold italic bg-amber-50 px-2 py-1 rounded-md border border-amber-200">
-                        {it.special_instructions}
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {it.special_instructions && (
+                        <span className="text-[10px] text-amber-800 font-bold italic bg-amber-50 px-2 py-1 rounded-md border border-amber-200">
+                          {it.special_instructions}
+                        </span>
+                      )}
+                      <button
+                        onClick={() => handleRejectItem(it.id, it.item_name)}
+                        className="text-[10px] text-rose-700 hover:text-rose-900 hover:bg-rose-50 px-2 py-1 rounded-md border border-rose-200 font-bold transition-all"
+                        title="Mark Item Out of Stock"
+                      >
+                        Reject
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

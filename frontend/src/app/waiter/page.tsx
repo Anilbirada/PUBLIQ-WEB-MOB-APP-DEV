@@ -556,6 +556,88 @@ export default function WaiterMobileApp() {
     }
   };
 
+  // Close Order & Release Table (Defect 5)
+  const handleCloseOrder = async () => {
+    if (!billPreview) return;
+    try {
+      const res = await fetch(`${API_BASE}/waiter/orders/${billPreview.order_id}/close`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          role: "WAITER",
+          waiter_name: waiter?.name || "Service Steward",
+          waiter_id: waiter?.id
+        })
+      });
+      const d = await res.json();
+      if (res.ok) {
+        alert(d.message || `Order closed successfully! Table ${billTableNum} is now released.`);
+        fetchData();
+        setBillPreview(null);
+        setActiveTab("tables");
+      } else {
+        alert(d.detail || "Cannot close order yet. Ensure invoices are generated, full payment received, and all items served.");
+      }
+    } catch (e) {
+      alert("Error closing order.");
+    }
+  };
+
+  // Reject Item with Mandatory Reason (Defect 2)
+  const handleRejectOrderItem = async (orderId: string, itemId: string, itemName: string) => {
+    const reason = prompt(`Enter mandatory rejection reason for ${itemName} (e.g. Kitchen/Bar stock exhausted):`);
+    if (!reason || !reason.trim()) {
+      alert("A rejection reason is mandatory.");
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/waiter/orders/${orderId}/items/${itemId}/reject`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          reason: reason.trim(),
+          waiter_name: waiter?.name || "Service Steward"
+        })
+      });
+      if (res.ok) {
+        alert(`Item '${itemName}' rejected and excluded from order billing.`);
+        fetchData();
+      } else {
+        const err = await res.json();
+        alert(err.detail || "Failed to reject item.");
+      }
+    } catch (_) {
+      alert("Error rejecting item.");
+    }
+  };
+
+  // Claim unassigned order (Defect 2.B & 3.C)
+  const handleClaimOrder = async (orderId: string) => {
+    try {
+      const res = await fetch(`${API_BASE}/waiter/orders/${orderId}/claim`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          waiter_name: waiter?.name || "Service Steward",
+          waiter_id: waiter?.id
+        })
+      });
+      if (res.ok) {
+        alert("Order assigned to your queue successfully!");
+        fetchData();
+      }
+    } catch (_) {}
+  };
+
   // Settle Bill
   const handleSettle = async (mode: string) => {
     if (!billPreview) return;
@@ -1236,9 +1318,25 @@ export default function WaiterMobileApp() {
                           )}
                         </div>
                         {order.food_items.map((fi: any) => (
-                          <div key={fi.id} className="flex justify-between text-xs py-0.5">
-                            <span className="text-slate-200"><span className="text-[#D4AF37] font-bold">{fi.quantity}x</span> {fi.item_name}</span>
-                            <span className="text-slate-400">₹{fi.total_price.toFixed(2)}</span>
+                          <div key={fi.id} className="flex justify-between items-center text-xs py-1 border-b border-slate-800/40">
+                            <span className="text-slate-200">
+                              <span className="text-[#D4AF37] font-bold">{fi.quantity}x</span> {fi.item_name}
+                              {fi.item_status === "REJECTED" && (
+                                <span className="ml-2 text-[10px] text-rose-400 font-bold">(REJECTED)</span>
+                              )}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-slate-400">₹{fi.total_price.toFixed(2)}</span>
+                              {fi.item_status !== "REJECTED" && (
+                                <button
+                                  onClick={() => handleRejectOrderItem(order.order_id, fi.id, fi.item_name)}
+                                  className="text-[9px] font-bold text-rose-400 hover:text-rose-200 px-1.5 py-0.5 rounded border border-rose-800/60 hover:bg-rose-950"
+                                  title="Reject Item with Reason"
+                                >
+                                  Reject Item
+                                </button>
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -1271,9 +1369,25 @@ export default function WaiterMobileApp() {
                           )}
                         </div>
                         {order.drink_items.map((di: any) => (
-                          <div key={di.id} className="flex justify-between text-xs py-0.5">
-                            <span className="text-slate-200"><span className="text-[#38BDF8] font-bold">{di.quantity}x</span> {di.item_name} ({di.variant_name || "Standard"})</span>
-                            <span className="text-slate-400">₹{di.total_price.toFixed(2)}</span>
+                          <div key={di.id} className="flex justify-between items-center text-xs py-1 border-b border-slate-800/40">
+                            <span className="text-slate-200">
+                              <span className="text-[#38BDF8] font-bold">{di.quantity}x</span> {di.item_name} ({di.variant_name || "Standard"})
+                              {di.item_status === "REJECTED" && (
+                                <span className="ml-2 text-[10px] text-rose-400 font-bold">(REJECTED)</span>
+                              )}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-slate-400">₹{di.total_price.toFixed(2)}</span>
+                              {di.item_status !== "REJECTED" && (
+                                <button
+                                  onClick={() => handleRejectOrderItem(order.order_id, di.id, di.item_name)}
+                                  className="text-[9px] font-bold text-rose-400 hover:text-rose-200 px-1.5 py-0.5 rounded border border-rose-800/60 hover:bg-rose-950"
+                                  title="Reject Drink Item with Reason"
+                                >
+                                  Reject Item
+                                </button>
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -1746,6 +1860,15 @@ export default function WaiterMobileApp() {
                       </button>
                     </div>
 
+                    {/* Defect 5: Controlled Order Closure & Table Release */}
+                    <button
+                      onClick={handleCloseOrder}
+                      className="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-700 hover:to-amber-700 text-white text-xs font-black tracking-wider flex items-center justify-center gap-2 shadow-lg transition"
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      CLOSE ORDER &amp; RELEASE TABLE
+                    </button>
+
                     <button
                       onClick={() => setShowSplitModal(true)}
                       className="w-full py-2 text-center text-xs text-[#D4AF37] hover:underline font-semibold"
@@ -1847,40 +1970,117 @@ export default function WaiterMobileApp() {
           </button>
         </div>
 
-        {/* Dynamic UPI Payment QR Modal */}
+        {/* Dynamic UPI Payment QR Modal (Dual-Business Support: Food & Bar) */}
         {showQRModal && qrPayload && (
-          <div className="fixed inset-0 bg-black/85 flex items-center justify-center p-4 z-50">
-            <div className="w-full max-w-sm bg-[#0D131F] border border-[#D4AF37] rounded-3xl p-6 shadow-2xl space-y-4 text-center">
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-black text-[#D4AF37] tracking-wider uppercase">GUEST PAYMENT UPI QR</span>
-                <button onClick={() => setShowQRModal(false)} className="text-slate-400 hover:text-white">✕</button>
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
+            <div className="w-full max-w-2xl bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-center max-h-[92vh] overflow-y-auto">
+              <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse" />
+                  <span className="text-xs font-black text-slate-900 tracking-wider uppercase">
+                    INDEPENDENT DEPARTMENT UPI PAYMENTS
+                  </span>
+                </div>
+                <button onClick={() => setShowQRModal(false)} className="text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
               </div>
 
               <div>
-                <p className="text-2xl font-black text-white">{qrPayload.formatted_amount}</p>
-                <p className="text-xs text-slate-400 mt-1">Table {qrPayload.table_number} • {qrPayload.order_number}</p>
+                <p className="text-2xl font-black text-slate-900">{qrPayload.formatted_amount}</p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Table {qrPayload.table_number} • {qrPayload.order_number}
+                </p>
               </div>
 
-              {/* High Contrast QR Code Representation */}
-              <div className="bg-white p-4 rounded-2xl mx-auto inline-block shadow-lg">
-                <img 
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrPayload.upi_string)}`}
-                  alt="UPI QR Code"
-                  className="w-48 h-48 mx-auto"
-                />
-              </div>
+              {/* DUAL QR SIDE-BY-SIDE DISPLAY IF BOTH DEPARTMENTS PRESENT */}
+              {qrPayload.food_qr && qrPayload.beverage_qr && qrPayload.food_qr.amount > 0 && qrPayload.beverage_qr.amount > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-left">
+                  {/* FOOD PAYMENT QR (RAMESH S P) */}
+                  <div className="p-5 rounded-2xl border-2 border-emerald-400/80 bg-emerald-50/30 space-y-3 flex flex-col justify-between shadow-xs">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md">
+                          FOOD PAYMENT
+                        </span>
+                        <span className="font-serif font-black text-emerald-800 text-lg">
+                          ₹{qrPayload.food_qr.amount?.toFixed(2)}
+                        </span>
+                      </div>
+                      <p className="text-xs font-bold text-slate-900 mt-1.5">{qrPayload.food_qr.owner_name} (Kitchen)</p>
+                      <p className="text-[11px] font-mono text-slate-600">UPI: {qrPayload.food_qr.vpa}</p>
+                    </div>
 
-              <div className="text-[11px] text-slate-400 font-mono">
-                <p>VPA: {qrPayload.vpa}</p>
-                <p className="text-emerald-400 mt-1 font-semibold">{qrPayload.qr_instructions}</p>
-              </div>
+                    <div className="bg-white p-3 rounded-2xl mx-auto shadow-sm border border-slate-200">
+                      <img 
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrPayload.food_qr.upi_string)}`}
+                        alt="Food Payment UPI QR"
+                        className="w-40 h-40 mx-auto"
+                      />
+                    </div>
 
-              <button
-                onClick={() => handleSettle("UPI")}
-                className="w-full py-3 rounded-xl bg-emerald-500 text-black text-xs font-black tracking-wider hover:bg-emerald-400 shadow-lg"
-              >
-                ✓ CONFIRM PAYMENT RECEIVED
-              </button>
+                    <p className="text-[10px] text-emerald-800 text-center font-medium">
+                      Scan with PhonePe, GPay or Paytm for Food settlement
+                    </p>
+                  </div>
+
+                  {/* BAR PAYMENT QR (ANIL) */}
+                  <div className="p-5 rounded-2xl border-2 border-sky-400/80 bg-sky-50/30 space-y-3 flex flex-col justify-between shadow-xs">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-sky-800 bg-sky-100 px-2 py-0.5 rounded-md">
+                          BAR PAYMENT
+                        </span>
+                        <span className="font-serif font-black text-sky-800 text-lg">
+                          ₹{qrPayload.beverage_qr.amount?.toFixed(2)}
+                        </span>
+                      </div>
+                      <p className="text-xs font-bold text-slate-900 mt-1.5">{qrPayload.beverage_qr.owner_name} (Bar & Drinks)</p>
+                      <p className="text-[11px] font-mono text-slate-600">UPI: {qrPayload.beverage_qr.vpa}</p>
+                    </div>
+
+                    <div className="bg-white p-3 rounded-2xl mx-auto shadow-sm border border-slate-200">
+                      <img 
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrPayload.beverage_qr.upi_string)}`}
+                        alt="Bar Payment UPI QR"
+                        className="w-40 h-40 mx-auto"
+                      />
+                    </div>
+
+                    <p className="text-[10px] text-sky-800 text-center font-medium">
+                      Scan with PhonePe, GPay or Paytm for Drinks settlement
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                /* SINGLE QR FALLBACK */
+                <div className="space-y-3">
+                  <div className="bg-white p-4 rounded-2xl mx-auto inline-block shadow-md border border-slate-200">
+                    <img 
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrPayload.upi_string)}`}
+                      alt="UPI QR Code"
+                      className="w-44 h-44 mx-auto"
+                    />
+                  </div>
+                  <div className="text-xs text-slate-600 font-mono space-y-0.5">
+                    <p>Payee: <strong>{qrPayload.merchant_name}</strong></p>
+                    <p>VPA: {qrPayload.vpa}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="pt-2 border-t border-slate-100 flex gap-3">
+                <button
+                  onClick={() => setShowQRModal(false)}
+                  className="py-3 px-5 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleSettle("UPI")}
+                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-black tracking-wider shadow-lg transition"
+                >
+                  ✓ CONFIRM FULL PAYMENT SETTLED
+                </button>
+              </div>
             </div>
           </div>
         )}

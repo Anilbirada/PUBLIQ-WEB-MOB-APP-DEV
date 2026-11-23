@@ -10,14 +10,18 @@ router = APIRouter()
 @router.get("/kot/tickets")
 @router.get("/kds/orders")
 def get_kot_tickets(outlet_id: str = None, station: str = None, db: Session = Depends(get_db)):
-    """Fetch live kitchen tickets filtered by preparation status and station (strictly FOOD items, non-rejected)."""
+    """
+    Fetch live kitchen tickets filtered strictly by approved FOOD items.
+    FIFO ORDERING: Oldest orders first (created_at ASC, id ASC).
+    MANDATORY RULE: Unapproved orders (approved_by_waiter is None) MUST NOT be received by Kitchen.
+    """
     q = db.query(Order).filter(
-        Order.order_status.in_(["PLACED", "ACCEPTED", "PREPARING"]),
-        Order.food_status.notin_(["REJECTED", "NOT_ORDERED"])
+        Order.approved_by_waiter.isnot(None),
+        Order.food_status.in_(["ACCEPTED", "PREPARING", "READY"])
     )
     if outlet_id:
         q = q.filter(Order.outlet_id == outlet_id)
-    orders = q.order_by(Order.created_at.asc()).all()
+    orders = q.order_by(Order.created_at.asc(), Order.id.asc()).all()
 
     tickets = []
     for ord in orders:
@@ -35,14 +39,17 @@ def get_kot_tickets(outlet_id: str = None, station: str = None, db: Session = De
                 "order_id": ord.id,
                 "order_number": ord.order_number,
                 "table_number": ord.table_number or "Takeaway",
-                "customer_name": ord.customer_name,
+                "customer_name": ord.customer_name or "Dine-in Guest",
                 "customer_phone": ord.customer_phone,
+                "waiter_name": ord.approved_by_waiter or ord.waiter_name or "Service Steward",
                 "status": ord.order_status.value if hasattr(ord.order_status, "value") else ord.order_status,
                 "food_status": ord.food_status or "Queued",
                 "special_instructions": ord.special_instructions,
                 "elapsed_minutes": elapsed_minutes,
                 "is_delayed": is_delayed,
                 "created_at": ord.created_at.isoformat() if ord.created_at else None,
+                "order_time": ord.created_at.isoformat() if ord.created_at else None,
+                "waiter_approval_time": ord.approved_at.isoformat() if ord.approved_at else None,
                 "items": [
                     {
                         "id": it.id,
@@ -50,6 +57,9 @@ def get_kot_tickets(outlet_id: str = None, station: str = None, db: Session = De
                         "quantity": it.quantity,
                         "variant_name": it.variant_name,
                         "special_instructions": getattr(it, "special_instructions", None) or it.special_request,
+                        "item_status": it.item_status or "ACCEPTED",
+                        "unit_price": it.unit_price,
+                        "total_price": it.total_price
                     }
                     for it in items
                 ]
@@ -89,14 +99,18 @@ def bump_kot_status(payload: dict, db: Session = Depends(get_db)):
 
 @router.get("/bar/tickets")
 def get_bar_tickets(outlet_id: str = None, db: Session = Depends(get_db)):
-    """Fetch live drink and cocktail tickets for bartender station (strictly BEVERAGE items, non-rejected)."""
+    """
+    Fetch live drink and cocktail tickets for bartender station (strictly approved BEVERAGE items).
+    FIFO ORDERING: Oldest orders first (created_at ASC, id ASC).
+    MANDATORY RULE: Unapproved orders (approved_by_waiter is None) MUST NOT be received by Bar.
+    """
     q = db.query(Order).filter(
-        Order.order_status.in_(["PLACED", "ACCEPTED", "PREPARING"]),
-        Order.beverage_status.notin_(["REJECTED", "NOT_ORDERED"])
+        Order.approved_by_waiter.isnot(None),
+        Order.beverage_status.in_(["ACCEPTED", "PREPARING", "READY"])
     )
     if outlet_id:
         q = q.filter(Order.outlet_id == outlet_id)
-    orders = q.order_by(Order.created_at.asc()).all()
+    orders = q.order_by(Order.created_at.asc(), Order.id.asc()).all()
 
     bar_tickets = []
     for ord in orders:
@@ -112,9 +126,15 @@ def get_bar_tickets(outlet_id: str = None, db: Session = Depends(get_db)):
                 "order_id": ord.id,
                 "order_number": ord.order_number,
                 "table_number": ord.table_number or "Bar Counter",
-                "customer_name": ord.customer_name,
+                "customer_name": ord.customer_name or "Dine-in Guest",
+                "customer_phone": ord.customer_phone,
+                "waiter_name": ord.approved_by_waiter or ord.waiter_name or "Head Mixologist",
+                "status": ord.order_status.value if hasattr(ord.order_status, "value") else ord.order_status,
                 "beverage_status": ord.beverage_status or "Bar Ticket Active",
                 "elapsed_minutes": elapsed_minutes,
+                "created_at": ord.created_at.isoformat() if ord.created_at else None,
+                "order_time": ord.created_at.isoformat() if ord.created_at else None,
+                "waiter_approval_time": ord.approved_at.isoformat() if ord.approved_at else None,
                 "items": [
                     {
                         "id": it.id,
@@ -122,6 +142,9 @@ def get_bar_tickets(outlet_id: str = None, db: Session = Depends(get_db)):
                         "quantity": it.quantity,
                         "serving_size": it.variant_name or "Standard Serving",
                         "special_instructions": getattr(it, "special_instructions", None) or it.special_request,
+                        "item_status": it.item_status or "ACCEPTED",
+                        "unit_price": it.unit_price,
+                        "total_price": it.total_price
                     }
                     for it in bar_items
                 ]
@@ -206,4 +229,80 @@ def dispense_drink(payload: dict, db: Session = Depends(get_db)):
         "beverage_status": "Dispensed",
         "remaining_open_ml": liquor.open_bottle_remaining_ml if liquor else None,
         "sealed_bottles": liquor.total_sealed_bottles if liquor else None
+    }
+
+@router.post("/items/{item_id}/reject")
+def reject_order_item(item_id: str, payload: dict, db: Session = Depends(get_db)):
+    """
+    Department Admin or Staff rejects an individual unavailable item with mandatory reason.
+    Item is excluded from invoice subtotals; remaining items proceed normally.
+    """
+    reason = str(payload.get("reason", "")).strip()
+    if not reason:
+        raise HTTPException(status_code=400, detail="Rejection reason is mandatory.")
+
+    rejected_by = str(payload.get("rejected_by", "Department Staff")).strip()
+
+    item = db.query(OrderItem).filter(OrderItem.id == item_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Order item not found.")
+
+    order = db.query(Order).filter(Order.id == item.order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Associated order not found.")
+
+    item.item_status = "REJECTED"
+    item.rejection_reason = reason
+
+    # Recalculate order billables excluding rejected items
+    all_items = db.query(OrderItem).filter(OrderItem.order_id == order.id).all()
+    active_food = [it for it in all_items if (it.department == "FOOD" or (not it.department and ("BAR" not in (it.kitchen_station or "")))) and it.item_status != "REJECTED"]
+    active_bev = [it for it in all_items if (it.department == "BEVERAGE" or (not it.department and ("BAR" in (it.kitchen_station or "")))) and it.item_status != "REJECTED"]
+
+    order.food_subtotal = round(sum(it.total_price for it in active_food), 2)
+    order.beverage_subtotal = round(sum(it.total_price for it in active_bev), 2)
+    order.subtotal = round(order.food_subtotal + order.beverage_subtotal, 2)
+    order.cgst = round(order.subtotal * 0.025, 2)
+    order.sgst = round(order.subtotal * 0.025, 2)
+    order.final_amount = round(order.subtotal + order.cgst + order.sgst, 2)
+    order.updated_at = datetime.now(timezone.utc)
+
+    # Department-level status updates if all items in that department rejected
+    all_dept_items = [it for it in all_items if it.department == item.department]
+    if all(it.item_status == "REJECTED" for it in all_dept_items):
+        if item.department == "BEVERAGE":
+            order.beverage_status = "REJECTED"
+            order.beverage_rejection_reason = f"All beverage items rejected: {reason}"
+        else:
+            order.food_status = "REJECTED"
+            order.food_rejection_reason = f"All food items rejected: {reason}"
+
+    if all(it.item_status == "REJECTED" for it in all_items):
+        order.order_status = "CANCELLED"
+
+    audit = AuditLog(
+        entity_type="ORDER_ITEM",
+        entity_id=item.id,
+        action="ITEM_REJECTED",
+        details={
+            "order_id": order.id,
+            "order_number": order.order_number,
+            "item_name": item.item_name,
+            "department": item.department,
+            "reason": reason,
+            "rejected_by": rejected_by
+        }
+    )
+    db.add(audit)
+    db.commit()
+
+    return {
+        "success": True,
+        "message": f"Item '{item.item_name}' rejected ({reason}).",
+        "item_id": item.id,
+        "order_id": order.id,
+        "item_status": "REJECTED",
+        "rejection_reason": reason,
+        "new_subtotal": order.subtotal,
+        "new_final_amount": order.final_amount
     }

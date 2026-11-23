@@ -6,7 +6,8 @@ from typing import Dict, Any, Optional
 
 from app.models import (
     Order, OrderItem, OrderStatusHistory, Cart, CartItem, MenuItem,
-    Outlet, PosOutboxEvent, OrderStatusEnum, PaymentStatusEnum, DiningChannelEnum
+    Outlet, PosOutboxEvent, OrderStatusEnum, PaymentStatusEnum, DiningChannelEnum,
+    Customer, RestaurantTable
 )
 from app.schemas import OrderCreateRequest
 from app.services.cart_service import CartService
@@ -65,11 +66,48 @@ class OrderService:
         initial_food_status = "PENDING_APPROVAL" if food_subtotal > 0 else "NOT_ORDERED"
         initial_bev_status = "PENDING_APPROVAL" if beverage_subtotal > 0 else "NOT_ORDERED"
 
+        # Check assigned waiter on table if table specified
+        assigned_waiter_id = None
+        assigned_waiter_name = None
+        target_table_number = req.table_number or cart.table_number
+        if target_table_number:
+            cands = [target_table_number, target_table_number.replace("T-", "").replace("T", "").strip()]
+            tbl = db.query(RestaurantTable).filter(RestaurantTable.table_number.in_(cands)).first()
+            if tbl:
+                assigned_waiter_id = tbl.assigned_waiter_id
+                assigned_waiter_name = tbl.assigned_waiter_name
+
+        # Customer association for order history
+        cust_id = None
+        if req.customer_phone:
+            clean_phone = req.customer_phone.strip()
+            stripped_phone = clean_phone.replace("+91", "").replace(" ", "").strip()
+            cust = db.query(Customer).filter(
+                (Customer.phone == clean_phone) |
+                (Customer.phone == stripped_phone) |
+                (Customer.phone == f"+91{stripped_phone}")
+            ).first()
+            if cust:
+                cust_id = cust.id
+                if req.customer_name and (not cust.full_name or cust.full_name == "Guest Diner"):
+                    cust.full_name = req.customer_name
+            else:
+                cust = Customer(
+                    phone=clean_phone,
+                    full_name=req.customer_name or "Valued Guest",
+                    is_guest=False,
+                    loyalty_points=10
+                )
+                db.add(cust)
+                db.flush()
+                cust_id = cust.id
+
         order = Order(
             order_number=order_number,
+            customer_id=cust_id,
             outlet_id=outlet.id,
             dining_channel=req.dining_channel,
-            table_number=req.table_number or cart.table_number,
+            table_number=target_table_number,
             qr_session_id=req.qr_session_id or cart.qr_session_id,
             order_status=OrderStatusEnum.PLACED,
             payment_status=initial_payment_status,
@@ -86,6 +124,8 @@ class OrderService:
             estimated_prep_time_minutes=25 if has_alcohol else 20,
             food_status=initial_food_status,
             beverage_status=initial_bev_status,
+            waiter_id=assigned_waiter_id,
+            waiter_name=assigned_waiter_name,
             special_instructions=req.special_instructions,
             customer_name=req.customer_name,
             customer_phone=req.customer_phone,
@@ -93,6 +133,14 @@ class OrderService:
         )
         db.add(order)
         db.flush()  # populate order.id
+
+        # Mark table occupied with this active order
+        if target_table_number:
+            cands = [target_table_number, target_table_number.replace("T-", "").replace("T", "").strip()]
+            tbl = db.query(RestaurantTable).filter(RestaurantTable.table_number.in_(cands)).first()
+            if tbl:
+                tbl.is_occupied = True
+                tbl.current_order_id = order.id
         
         # 4. Copy line items with dual-business department tagging
         for ci in cart.items:

@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 import uuid
 
 from app.core.database import get_db
-from app.core.outlet_helper import get_or_create_primary_outlet
+from app.core.outlet_helper import get_or_create_primary_outlet, calculate_table_operational_status
 from app.models import (
     RestaurantTable, TableQrToken, DiningArea, Outlet, Employee, StaffAttendance,
     Expense, PosBill, Order, OrderItem, LiquorItem, RawMaterial
@@ -18,24 +18,55 @@ router = APIRouter()
 # --- 1. TABLE FLOOR MANAGEMENT ---
 @router.get("/tables")
 def get_tables_management(outlet_id: str = None, db: Session = Depends(get_db)):
-    """Fetch visual floor layout with real-time status."""
+    """
+    Fetch visual floor layout with real-time status according to the 7 customer operational states:
+    1. AVAILABLE
+    2. OCCUPIED
+    3. ORDER_PENDING
+    4. FOOD_PREPARING
+    5. DRINKS_PREPARING
+    6. ORDER_READY
+    7. PAYMENT_PENDING
+    """
     q = db.query(RestaurantTable)
     if outlet_id:
         q = q.filter(RestaurantTable.outlet_id == outlet_id)
     tables = q.order_by(RestaurantTable.table_number).all()
 
-    return [
-        {
+    results = []
+    for t in tables:
+        # Check latest active unpaid / unclosed order on table
+        cands = [t.table_number, t.table_number.replace("T-", "").replace("T", "").strip()]
+        active_order = db.query(Order).filter(
+            Order.table_number.in_(cands),
+            Order.payment_status != "PAID",
+            Order.order_status.notin_(["CANCELLED", "REJECTED", "COMPLETED"])
+        ).order_by(Order.created_at.desc()).first()
+
+        op = calculate_table_operational_status(t, active_order)
+
+        results.append({
             "id": t.id,
             "table_number": t.table_number,
             "capacity": t.capacity,
             "dining_area": t.area.name if t.area else "Main Dining",
-            "status": "OCCUPIED" if t.is_occupied else "AVAILABLE",
+            "status": op["status"],
+            "occupancy_status": op["occupancy_status"],
+            "is_occupied": op["is_occupied"],
+            "assigned_waiter": op["assigned_waiter"] or "Unassigned",
+            "assigned_waiter_id": op["assigned_waiter_id"],
+            "customer_name": op["customer_name"],
+            "customer_phone": op["customer_phone"],
+            "active_order_id": op["active_order_id"],
+            "order_number": op["order_number"],
+            "current_order_status": op["order_status"],
+            "order_creation_time": op["order_creation_time"],
+            "payment_status": op["payment_status"],
             "is_active": True,
             "qr_token": t.qr_tokens[0].token if (t.qr_tokens and len(t.qr_tokens) > 0) else None
-        }
-        for t in tables
-    ]
+        })
+
+    return results
 
 @router.post("/tables/status")
 def update_table_status(payload: dict, db: Session = Depends(get_db)):

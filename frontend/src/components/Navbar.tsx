@@ -51,7 +51,8 @@ export const Navbar: React.FC = () => {
     { number: "07", label: "Private Dining", href: "/events#private-dining", desc: "Host birthdays, family celebrations & corporate dinners" },
     { number: "08", label: "Book a Table", href: "/reservations", desc: "Reserve your table in seconds with instant confirmation" },
     { number: "09", label: "Contact Us", href: "/#contact", desc: "Our address, phone number & daily opening hours" },
-    { number: "10", label: "Staff & Role Login", href: "/login", desc: "Super Admin, Bar Admin, Kitchen Admin, Waiter & Guest Portals" },
+    { number: "10", label: "My Orders & History", href: "/account", desc: "View your current active table order & order history" },
+    { number: "11", label: "Staff & Role Login", href: "/login", desc: "Super Admin, Bar Admin, Kitchen Admin, Waiter & Guest Portals" },
   ];
 
   return (
@@ -130,6 +131,14 @@ export const Navbar: React.FC = () => {
                 className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-700 hover:text-blue-700 px-3 py-2 transition-colors uppercase"
               >
                 ORDER ONLINE
+              </a>
+
+              <a
+                href="/account"
+                className="hidden md:inline-flex items-center gap-1 text-xs font-bold tracking-wider text-slate-700 hover:text-blue-700 px-2.5 py-2 transition-colors uppercase"
+                title="Customer Order History"
+              >
+                MY ORDERS
               </a>
 
               <a

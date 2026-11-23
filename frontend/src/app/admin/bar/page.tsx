@@ -77,6 +77,31 @@ export default function BarOrderPage() {
     }
   };
 
+  const handleRejectItem = async (itemId: string, itemName: string) => {
+    const reason = prompt(`Enter mandatory rejection reason for ${itemName} (e.g. Bottle depleted / Out of stock):`);
+    if (!reason || !reason.trim()) {
+      alert("A rejection reason is mandatory.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/admin/operations/items/${itemId}/reject`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: reason.trim(), rejected_by: "Head Mixologist" })
+      });
+      if (res.ok) {
+        showToast(`Item '${itemName}' marked unavailable and excluded from billing.`);
+        await fetchBarTickets();
+      } else {
+        const err = await res.json();
+        alert(err.detail || "Failed to reject item.");
+      }
+    } catch (_) {
+      alert("Network error rejecting item.");
+    }
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Toast Notice */}
@@ -145,11 +170,19 @@ export default function BarOrderPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-xs text-slate-500">
-                <span className="font-semibold text-slate-700">Guest: {t.customer_name}</span>
-                <span className="text-cyan-700 font-bold text-[10px] bg-cyan-50 px-2 py-0.5 rounded-md border border-cyan-200">
-                  {t.beverage_status}
-                </span>
+              <div className="flex flex-col gap-1 text-xs text-slate-500">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-slate-700">Guest: {t.customer_name}</span>
+                  <span className="text-cyan-700 font-bold text-[10px] bg-cyan-50 px-2 py-0.5 rounded-md border border-cyan-200">
+                    {t.beverage_status}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] font-mono text-slate-500">
+                  <span>Waiter: <strong className="text-slate-800">{t.waiter_name || "Mixologist"}</strong></span>
+                  {t.order_time && (
+                    <span>Time: {new Date(t.order_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-2.5">
@@ -165,9 +198,18 @@ export default function BarOrderPage() {
                         </span>
                         <span className="font-bold text-slate-900 text-sm">{it.item_name}</span>
                       </div>
-                      <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
-                        {it.serving_size}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
+                          {it.serving_size}
+                        </span>
+                        <button
+                          onClick={() => handleRejectItem(it.id, it.item_name)}
+                          className="text-[10px] font-bold text-rose-700 hover:text-rose-900 hover:bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200 transition-all"
+                          title="Reject Unavailable Item"
+                        >
+                          Reject
+                        </button>
+                      </div>
                     </div>
                     {it.special_instructions && (
                       <p className="text-[11px] text-cyan-700 font-medium italic pl-8">

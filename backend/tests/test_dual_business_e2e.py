@@ -115,8 +115,8 @@ def test_scenario_1_food_only_order(setup_db):
     
     # Check preview
     prev = client.get("/api/v1/waiter/bills/department-preview/T-11").json()
-    assert prev["food_bill"]["owner_name"] == "ANIL"
-    assert prev["food_bill"]["upi_id"] == "8431712924-3@ybl"
+    assert prev["food_bill"]["owner_name"] == "RAMESH S P"
+    assert prev["food_bill"]["upi_id"] == "ramesh776059@ybl"
     assert prev["food_bill"]["subtotal"] == 900.0
     assert prev["beverage_bill"]["subtotal"] == 0.0
     
@@ -128,14 +128,14 @@ def test_scenario_1_food_only_order(setup_db):
     assert inv_res.status_code == 200
     inv = inv_res.json()
     assert inv["department"] == "FOOD"
-    assert inv["owner_name"] == "ANIL"
-    assert inv["upi_id"] == "8431712924-3@ybl"
+    assert inv["owner_name"] == "RAMESH S P"
+    assert inv["upi_id"] == "ramesh776059@ybl"
     assert inv["invoice_number"].startswith("PUB-FOOD-")
     assert inv["grand_total"] == 945.0 # 900 + 5% GST (45)
 
 
 def test_scenario_2_beverage_only_order(setup_db):
-    """Scenario 2: Customer Beverage Only Order -> routes to Ramesh, Beverage invoice, zero food."""
+    """Scenario 2: Customer Beverage Only Order -> routes to Anil, Beverage invoice, zero food."""
     res = client.post("/api/v1/waiter/orders/manual", json={
         "table_number": "T-12",
         "waiter_name": "Steward Raju",
@@ -148,8 +148,8 @@ def test_scenario_2_beverage_only_order(setup_db):
     
     # Check preview
     prev = client.get("/api/v1/waiter/bills/department-preview/T-12").json()
-    assert prev["beverage_bill"]["owner_name"] == "RAMESH S P"
-    assert prev["beverage_bill"]["upi_id"] == "ramesh776059@ybl"
+    assert prev["beverage_bill"]["owner_name"] == "ANIL"
+    assert prev["beverage_bill"]["upi_id"] == "8431712924-3@ybl"
     assert prev["beverage_bill"]["subtotal"] == 1100.0
     assert prev["food_bill"]["subtotal"] == 0.0
     
@@ -161,8 +161,8 @@ def test_scenario_2_beverage_only_order(setup_db):
     assert inv_res.status_code == 200
     inv = inv_res.json()
     assert inv["department"] == "BEVERAGE"
-    assert inv["owner_name"] == "RAMESH S P"
-    assert inv["upi_id"] == "ramesh776059@ybl"
+    assert inv["owner_name"] == "ANIL"
+    assert inv["upi_id"] == "8431712924-3@ybl"
     assert inv["invoice_number"].startswith("PUB-BEV-")
     assert inv["grand_total"] == 1155.0 # 1100 + 5% GST (55)
 
@@ -191,9 +191,9 @@ def test_scenario_3_mixed_order_and_independent_approval(setup_db):
     bev_inv = client.post("/api/v1/waiter/bills/generate-department-invoice", json={"table_number": "T-14", "department": "BEVERAGE"}).json()
     
     assert food_inv["invoice_number"].startswith("PUB-FOOD-")
-    assert food_inv["owner_name"] == "ANIL"
+    assert food_inv["owner_name"] == "RAMESH S P"
     assert bev_inv["invoice_number"].startswith("PUB-BEV-")
-    assert bev_inv["owner_name"] == "RAMESH S P"
+    assert bev_inv["owner_name"] == "ANIL"
 
 
 def test_scenario_4_partial_rejection(setup_db):
@@ -301,12 +301,12 @@ def test_scenario_11_financial_isolation(setup_db):
     bev_dash = client.get("/api/v1/admin/owners/dashboard/BEVERAGE").json()
     
     assert food_dash["department"] == "FOOD"
-    assert food_dash["owner_name"] == "ANIL"
-    assert food_dash["upi_id"] == "8431712924-3@ybl"
+    assert food_dash["owner_name"] == "RAMESH S P"
+    assert food_dash["upi_id"] == "ramesh776059@ybl"
     
     assert bev_dash["department"] == "BEVERAGE"
-    assert bev_dash["owner_name"] == "RAMESH S P"
-    assert bev_dash["upi_id"] == "ramesh776059@ybl"
+    assert bev_dash["owner_name"] == "ANIL"
+    assert bev_dash["upi_id"] == "8431712924-3@ybl"
     
     # Check top selling items in food dashboard contain no alcohol
     for it in food_dash["top_selling_items"]:

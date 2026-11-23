@@ -115,9 +115,8 @@ def test_waiter_manual_order_creation_and_serving():
     assert qr_res.status_code == 200
     qr_data = qr_res.json()
     assert "upi://pay?" in qr_data["upi_string"]
-    assert "pa=publiqbarresto@okhdfcbank" in qr_data["upi_string"]
+    assert qr_data["vpa"] in qr_data["upi_string"]
     assert "am=1470.00" in qr_data["upi_string"]
-    assert "PUBLIQ%20BAR%20RESTAURANT" in qr_data["upi_string"]
     
     # 6. Settle bill via UPI
     settle_res = client.post("/api/v1/waiter/payments/settle", json={

@@ -410,23 +410,14 @@ export default function MenuPage() {
                         }}
                       />
 
-                      {/* Dietary Indicator */}
-                      <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                        {item.is_veg ? (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white/95 text-emerald-700 border border-emerald-300 shadow-xs backdrop-blur-sm">
-                            VEG
+                      {/* Signature Indicator (Veg/Non-Veg badges removed as requested) */}
+                      {item.is_signature && (
+                        <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-xs">
+                            ★ SIGNATURE
                           </span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-white/95 text-rose-700 border border-rose-300 shadow-xs backdrop-blur-sm">
-                            NON-VEG
-                          </span>
-                        )}
-                        {item.is_signature && (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-xs">
-                            SIGNATURE
-                          </span>
-                        )}
-                      </div>
+                        </div>
+                      )}
 
                       {/* Price Badge */}
                       <span className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-black bg-white/95 text-slate-900 border border-slate-200 shadow-xs backdrop-blur-md">

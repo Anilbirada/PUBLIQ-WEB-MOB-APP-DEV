@@ -8,7 +8,7 @@ from app.core.database import get_db
 from app.core.outlet_helper import get_or_create_primary_outlet, calculate_table_operational_status
 from app.models import (
     RestaurantTable, TableQrToken, DiningArea, Outlet, Employee, StaffAttendance,
-    Expense, PosBill, Order, OrderItem, LiquorItem, RawMaterial
+    Expense, PosBill, Order, OrderItem, LiquorItem, RawMaterial, DepartmentInvoice
 )
 from app.services.qr_service import QrService
 from app.core.config import settings
@@ -567,4 +567,220 @@ def get_order_history(
         "total_records": len(results),
         "orders": results
     }
+
+# --- 4. SUPER ADMIN BILLING & INVOICE MANAGEMENT ---
+
+@router.get("/invoices")
+def get_all_invoices(
+    department: str = None, # FOOD, BEVERAGE, ALL
+    payment_status: str = None, # PAID, PENDING, ALL
+    table_number: str = None,
+    search: str = None,
+    limit: int = 100,
+    db: Session = Depends(get_db)
+):
+    """
+    Super Admin Billing & Invoice Management Directory.
+    Queries all official department GST invoices (PUB-FOOD and PUB-BEV) and POS bills.
+    """
+    q = db.query(DepartmentInvoice)
+
+    if department and department.upper() in ["FOOD", "BEVERAGE"]:
+        q = q.filter(DepartmentInvoice.department == department.upper())
+    if payment_status and payment_status.upper() in ["PAID", "PENDING"]:
+        q = q.filter(DepartmentInvoice.payment_status == payment_status.upper())
+    if table_number:
+        q = q.filter(DepartmentInvoice.table_number.ilike(f"%{table_number}%"))
+    if search:
+        s = f"%{search.strip()}%"
+        q = q.filter(
+            (DepartmentInvoice.invoice_number.ilike(s)) |
+            (DepartmentInvoice.customer_name.ilike(s)) |
+            (DepartmentInvoice.customer_phone.ilike(s))
+        )
+
+    invoices = q.order_by(DepartmentInvoice.created_at.desc()).limit(limit).all()
+
+    results = []
+    for inv in invoices:
+        results.append({
+            "id": inv.id,
+            "invoice_number": inv.invoice_number,
+            "order_id": inv.order_id,
+            "department": inv.department,
+            "owner_name": inv.owner_name,
+            "business_name": inv.business_name,
+            "upi_id": inv.upi_id,
+            "table_number": inv.table_number,
+            "customer_name": inv.customer_name,
+            "customer_phone": inv.customer_phone,
+            "waiter_name": inv.waiter_name or "Service Steward",
+            "subtotal": inv.subtotal,
+            "discount_pct": inv.discount_pct,
+            "discount_amount": inv.discount_amount,
+            "taxable_amount": inv.taxable_amount,
+            "cgst": inv.cgst,
+            "sgst": inv.sgst,
+            "grand_total": inv.grand_total,
+            "payment_status": inv.payment_status,
+            "payment_method": inv.payment_method,
+            "items_count": len(inv.items_json) if isinstance(inv.items_json, list) else 0,
+            "items": inv.items_json or [],
+            "created_at": inv.created_at.strftime("%d-%b-%Y %I:%M %p") if inv.created_at else None,
+            "raw_created_at": inv.created_at.isoformat() if inv.created_at else None
+        })
+
+    return {
+        "status": "success",
+        "total": len(results),
+        "invoices": results
+    }
+
+@router.get("/invoices/{invoice_number}/download")
+def download_invoice_data(invoice_number: str, db: Session = Depends(get_db)):
+    """
+    Download official Department GST Invoice document data.
+    Provides printable HTML document template and structured transactional metadata.
+    """
+    inv = db.query(DepartmentInvoice).filter(DepartmentInvoice.invoice_number == invoice_number).first()
+    if not inv:
+        # Check by id
+        inv = db.query(DepartmentInvoice).filter(DepartmentInvoice.id == invoice_number).first()
+    if not inv:
+        raise HTTPException(status_code=404, detail="Invoice not found.")
+
+    items = inv.items_json if isinstance(inv.items_json, list) else []
+
+    item_rows = "".join(f"""
+        <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #E2E8F0;">{it.get('item_name', 'Item')}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #E2E8F0; text-align: center;">{it.get('quantity', 1)}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #E2E8F0; text-align: right;">₹{float(it.get('unit_price', 0)):.2f}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #E2E8F0; text-align: right; font-weight: bold;">₹{float(it.get('total_price', 0)):.2f}</td>
+        </tr>
+    """ for it in items)
+
+    html_template = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Tax Invoice #{inv.invoice_number}</title>
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fff; color: #1E293B; margin: 0; padding: 20px; }}
+        .invoice-box {{ max-width: 600px; margin: auto; padding: 24px; border: 1px solid #E2E8F0; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }}
+        .header {{ text-align: center; border-bottom: 2px solid #E2E8F0; padding-bottom: 12px; margin-bottom: 16px; }}
+        .header h1 {{ margin: 0; font-size: 20px; color: #0F172A; text-transform: uppercase; letter-spacing: 1px; }}
+        .header p {{ margin: 3px 0; font-size: 11px; color: #64748B; }}
+        .meta-table {{ width: 100%; font-size: 11px; margin-bottom: 16px; }}
+        .meta-table td {{ padding: 3px 0; }}
+        .items-table {{ width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; }}
+        .items-table th {{ background: #F8FAFC; padding: 8px; text-align: left; border-bottom: 2px solid #CBD5E1; color: #475569; }}
+        .totals-table {{ width: 100%; font-size: 12px; margin-top: 10px; }}
+        .totals-table td {{ padding: 4px 0; }}
+        .grand-total {{ font-size: 16px; font-weight: bold; color: #0F172A; border-top: 2px solid #0F172A; border-bottom: 2px solid #0F172A; padding: 8px 0; }}
+        .footer {{ text-align: center; margin-top: 20px; font-size: 10px; color: #94A3B8; border-top: 1px solid #E2E8F0; padding-top: 12px; }}
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <div class="header">
+            <h1>{inv.business_name}</h1>
+            <p><strong>Proprietor:</strong> {inv.owner_name} &bull; <strong>Department:</strong> {inv.department}</p>
+            <p>PUBLIQ Haragadde, Bengaluru, Karnataka &bull; <strong>GSTIN:</strong> 29AABCP1234F1Z9 &bull; <strong>SAC:</strong> 996331</p>
+            <p><strong>Tax Invoice:</strong> {inv.invoice_number} &bull; <strong>Date:</strong> {inv.created_at.strftime('%d-%b-%Y %I:%M %p') if inv.created_at else ''}</p>
+        </div>
+
+        <table class="meta-table">
+            <tr>
+                <td><strong>Table:</strong> {inv.table_number}</td>
+                <td style="text-align: right;"><strong>Guest:</strong> {inv.customer_name or 'Dine-In Guest'}</td>
+            </tr>
+            <tr>
+                <td><strong>Steward:</strong> {inv.waiter_name or 'Staff'}</td>
+                <td style="text-align: right;"><strong>Status:</strong> <span style="color: {'#16A34A' if inv.payment_status == 'PAID' else '#D97706'}; font-weight: bold;">{inv.payment_status}</span></td>
+            </tr>
+        </table>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Item Description</th>
+                    <th style="text-align: center;">Qty</th>
+                    <th style="text-align: right;">Rate</th>
+                    <th style="text-align: right;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {item_rows}
+            </tbody>
+        </table>
+
+        <table class="totals-table">
+            <tr>
+                <td>Subtotal</td>
+                <td style="text-align: right;">₹{inv.subtotal:.2f}</td>
+            </tr>
+            <tr>
+                <td>CGST (2.5%)</td>
+                <td style="text-align: right;">₹{inv.cgst:.2f}</td>
+            </tr>
+            <tr>
+                <td>SGST (2.5%)</td>
+                <td style="text-align: right;">₹{inv.sgst:.2f}</td>
+            </tr>
+            <tr class="grand-total">
+                <td>GRAND TOTAL</td>
+                <td style="text-align: right;">₹{inv.grand_total:.2f}</td>
+            </tr>
+        </table>
+
+        <div class="footer">
+            <p>Settlement UPI VPA: <strong>{inv.upi_id}</strong> &bull; Non-ITC Composition Mode (SAC 996331)</p>
+            <p>Thank you for dining at PUBLIQ. Have a wonderful evening!</p>
+        </div>
+    </div>
+</body>
+</html>"""
+
+    return {
+        "status": "success",
+        "invoice_number": inv.invoice_number,
+        "department": inv.department,
+        "owner_name": inv.owner_name,
+        "grand_total": inv.grand_total,
+        "payment_status": inv.payment_status,
+        "html_content": html_template
+    }
+
+@router.get("/orders/{order_id}/invoices/download-both")
+def download_both_order_invoices(order_id: str, db: Session = Depends(get_db)):
+    """
+    Super Admin endpoint to fetch both Food and Bar invoice documents for a dining order.
+    """
+    food_inv = db.query(DepartmentInvoice).filter(DepartmentInvoice.order_id == order_id, DepartmentInvoice.department == "FOOD").first()
+    bev_inv = db.query(DepartmentInvoice).filter(DepartmentInvoice.order_id == order_id, DepartmentInvoice.department == "BEVERAGE").first()
+
+    if not food_inv and not bev_inv:
+        raise HTTPException(status_code=404, detail="No department invoices found for this order ID.")
+
+    return {
+        "status": "success",
+        "order_id": order_id,
+        "food_invoice": {
+            "invoice_number": food_inv.invoice_number,
+            "owner": food_inv.owner_name,
+            "grand_total": food_inv.grand_total,
+            "payment_status": food_inv.payment_status,
+            "download_url": f"/api/v1/admin/management/invoices/{food_inv.invoice_number}/download"
+        } if food_inv else None,
+        "beverage_invoice": {
+            "invoice_number": bev_inv.invoice_number,
+            "owner": bev_inv.owner_name,
+            "grand_total": bev_inv.grand_total,
+            "payment_status": bev_inv.payment_status,
+            "download_url": f"/api/v1/admin/management/invoices/{bev_inv.invoice_number}/download"
+        } if bev_inv else None,
+        "combined_total": round((food_inv.grand_total if food_inv else 0.0) + (bev_inv.grand_total if bev_inv else 0.0), 2)
+    }
+
 

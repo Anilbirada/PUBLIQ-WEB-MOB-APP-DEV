@@ -515,6 +515,20 @@ class AuditLog(Base):
 # ==============================================================================
 
 # --- 9. EMPLOYEES & SHIFTS ---
+class Role(Base):
+    __tablename__ = "roles"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    name = Column(String(100), nullable=False)
+    code = Column(String(50), unique=True, nullable=False)
+    department = Column(String(50), default="ALL")
+    description = Column(Text, nullable=True)
+    permissions = Column(JSON, default=list)
+    is_system = Column(Boolean, default=False)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
 class Employee(Base):
     __tablename__ = "employees"
     
@@ -523,9 +537,22 @@ class Employee(Base):
     name = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
     phone = Column(String(20), nullable=False)
-    role = Column(String(50), nullable=False) # "GENERAL_MANAGER", "OUTLET_MANAGER", "CASHIER", "CAPTAIN", "CHEF", "BARTENDER", "INVENTORY_MGR"
+    username = Column(String(50), unique=True, nullable=True)
+    hashed_password = Column(String(255), nullable=True)
+    must_change_password = Column(Boolean, default=False)
+    employee_code = Column(String(50), unique=True, nullable=True)
+    department = Column(String(50), default="ALL")
+    position = Column(String(100), nullable=True)
+    role_id = Column(String(36), ForeignKey("roles.id"), nullable=True)
+    role = Column(String(50), nullable=False) # "SUPER_ADMIN", "BAR_ADMIN", "FOOD_ADMIN", "WAITER", "GENERAL_MANAGER", etc.
     pin_code = Column(String(10), default="1234") # Quick POS PIN login
+    salary_type = Column(String(20), default="MONTHLY") # MONTHLY, DAILY, HOURLY
     salary = Column(Float, default=25000.0)
+    daily_wage = Column(Float, default=0.0)
+    hourly_wage = Column(Float, default=0.0)
+    allowances = Column(Float, default=0.0)
+    deductions = Column(Float, default=0.0)
+    custom_permissions = Column(JSON, nullable=True)
     is_active = Column(Boolean, default=True)
     joined_date = Column(String(20), default="2026-01-01")
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
@@ -539,8 +566,34 @@ class StaffAttendance(Base):
     date = Column(String(20), nullable=False) # "2026-11-16"
     check_in = Column(String(10), nullable=True) # "10:45 AM"
     check_out = Column(String(10), nullable=True)
-    status = Column(String(20), default="PRESENT") # "PRESENT", "LATE", "ABSENT", "HALF_DAY"
+    status = Column(String(20), default="PRESENT") # "PRESENT", "LATE", "ABSENT", "HALF_DAY", "WEEKLY_OFF", "LEAVE"
+    working_hours = Column(Float, default=0.0)
+    late_minutes = Column(Integer, default=0)
+    marked_by = Column(String(100), nullable=True)
+    audit_trail = Column(JSON, nullable=True)
     notes = Column(String(200), nullable=True)
+
+class PayrollRecord(Base):
+    __tablename__ = "payroll_records"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    employee_id = Column(String(36), ForeignKey("employees.id"), nullable=False)
+    outlet_id = Column(String(36), ForeignKey("outlets.id"), nullable=True)
+    month_period = Column(String(20), nullable=False) # e.g. "2026-11"
+    salary_type = Column(String(20), default="MONTHLY")
+    base_salary = Column(Float, default=0.0)
+    present_days = Column(Integer, default=0)
+    absent_days = Column(Integer, default=0)
+    leave_days = Column(Integer, default=0)
+    hours_worked = Column(Float, default=0.0)
+    allowances = Column(Float, default=0.0)
+    deductions = Column(Float, default=0.0)
+    calculated_payable = Column(Float, default=0.0)
+    payment_status = Column(String(20), default="PENDING") # "PENDING", "PAID"
+    payment_date = Column(DateTime, nullable=True)
+    payment_method = Column(String(50), default="BANK_TRANSFER")
+    notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 class CashierShift(Base):
     __tablename__ = "cashier_shifts"

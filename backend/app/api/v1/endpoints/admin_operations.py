@@ -17,7 +17,7 @@ def get_kot_tickets(outlet_id: str = None, station: str = None, db: Session = De
     """
     q = db.query(Order).filter(
         Order.approved_by_waiter.isnot(None),
-        Order.food_status.in_(["ACCEPTED", "PREPARING", "READY"])
+        Order.food_status.in_(["PENDING", "ACCEPTED", "PREPARING", "READY"])
     )
     if outlet_id:
         q = q.filter(Order.outlet_id == outlet_id)
@@ -106,7 +106,7 @@ def get_bar_tickets(outlet_id: str = None, db: Session = Depends(get_db)):
     """
     q = db.query(Order).filter(
         Order.approved_by_waiter.isnot(None),
-        Order.beverage_status.in_(["ACCEPTED", "PREPARING", "READY"])
+        Order.beverage_status.in_(["PENDING", "ACCEPTED", "PREPARING", "READY"])
     )
     if outlet_id:
         q = q.filter(Order.outlet_id == outlet_id)

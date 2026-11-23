@@ -5,7 +5,7 @@ from app.api.v1.endpoints import (
     products, cart, orders, order_tracking, payments,
     auth, customers, reservations, notifications, pos_integration,
     admin_pos, admin_operations, admin_inventory, admin_reports,
-    experience, waiter, admin_owners, reviews
+    experience, waiter, admin_owners, reviews, admin_staff_management
 )
 
 api_router = APIRouter()
@@ -36,6 +36,8 @@ api_router.include_router(admin_pos.router, prefix="/admin/pos", tags=["Enterpri
 api_router.include_router(admin_operations.router, prefix="/admin/operations", tags=["Enterprise KOT & Bar KDS"])
 api_router.include_router(admin_inventory.router, prefix="/admin/inventory", tags=["Enterprise Liquor & Kitchen Inventory"])
 api_router.include_router(admin_reports.router, prefix="/admin/management", tags=["Enterprise Reports, Tables & Staff"])
+api_router.include_router(admin_staff_management.router, prefix="/admin/management", tags=["Staff, Dynamic Roles, Attendance & Payroll"])
+api_router.include_router(admin_staff_management.router, prefix="/admin/staff", tags=["Staff, Dynamic Roles, Attendance & Payroll"])
 api_router.include_router(admin_owners.router, prefix="/admin/owners", tags=["Dual Business Owners"])
 
 # Dedicated Waiter Mobile Operations API

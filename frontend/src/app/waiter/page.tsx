@@ -706,10 +706,10 @@ export default function WaiterMobileApp() {
   // If Not Authenticated -> Show Steward PIN Login Screen
   if (!token) {
     return (
-      <div className="min-h-screen bg-[#070B12] flex items-center justify-center p-4">
-        <div className="w-full max-w-sm bg-[#0D131F] border border-[#D4AF37]/40 rounded-3xl p-6 shadow-2xl flex flex-col items-center">
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+        <div className="w-full max-w-sm bg-white border border-slate-200 rounded-3xl p-6 shadow-xl flex flex-col items-center">
           {/* Official PUBLIQ Luxury Crest Logo */}
-          <div className="w-20 h-20 rounded-2xl bg-[#090E17] p-2 border border-[#D4AF37]/60 shadow-[0_0_20px_rgba(212,175,55,0.35)] flex items-center justify-center mb-3">
+          <div className="w-20 h-20 rounded-2xl bg-slate-50 p-2 border border-slate-200 shadow-sm flex items-center justify-center mb-3">
             <img 
               src="/logo.png?v=4" 
               alt="PUBLIQ" 
@@ -748,7 +748,7 @@ export default function WaiterMobileApp() {
                 key={k}
                 onClick={() => handleNumpad(k)}
                 disabled={isLoggingIn}
-                className="h-14 rounded-2xl bg-[#151F33] hover:bg-[#1E2B45] active:scale-95 text-lg font-bold text-white border border-slate-800 transition-all flex items-center justify-center shadow-md"
+                className="h-14 rounded-2xl bg-slate-50 hover:bg-[#1E2B45] active:scale-95 text-lg font-bold text-white border border-slate-200 transition-all flex items-center justify-center shadow-md"
               >
                 {k}
               </button>
@@ -777,7 +777,7 @@ export default function WaiterMobileApp() {
           <a
             href="/publiq-w.apk"
             download="publiq-w.apk"
-            className="w-full py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-700 text-[10px] font-semibold text-slate-300 tracking-wider transition-all flex items-center justify-center gap-1.5"
+            className="w-full py-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-200 text-[10px] font-semibold text-slate-300 tracking-wider transition-all flex items-center justify-center gap-1.5"
           >
             Direct Mirror Download (Server Direct)
           </a>
@@ -788,20 +788,20 @@ export default function WaiterMobileApp() {
 
   // Authenticated Steward Viewport
   return (
-    <div className="min-h-screen bg-[#070B12] text-slate-100 flex justify-center">
+    <div className="min-h-screen bg-slate-100 text-slate-800 flex justify-center">
       {/* Mobile Frame Container */}
-      <div className="w-full max-w-md bg-[#090E17] min-h-screen flex flex-col border-x border-slate-800 shadow-2xl relative pb-24">
+      <div className="w-full max-w-md bg-white min-h-screen flex flex-col border-x border-slate-200 shadow-xl relative pb-24">
         
         {/* Top Operational Bar */}
-        <div className="bg-[#0D131F] border-b border-slate-800 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-md">
+        <div className="bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#070B12] p-1 border border-[#D4AF37]/50 flex items-center justify-center shadow-inner">
+            <div className="w-8 h-8 rounded-lg bg-slate-50 p-1 border border-slate-200 flex items-center justify-center shadow-xs">
               <img src="/logo.png?v=4" alt="PUBLIQ" className="w-full h-full object-contain" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-black tracking-widest text-[#D4AF37]">PUBLIQ W</span>
-                <span className="text-[9px] bg-[#151F33] text-emerald-400 px-1.5 py-0.2 rounded border border-emerald-600/40 font-bold">ONLINE</span>
+                <span className="text-[9px] bg-emerald-50 text-emerald-700 px-1.5 py-0.2 rounded border border-emerald-200 font-bold">ONLINE</span>
               </div>
               <p className="text-[10px] text-slate-400 tracking-wider truncate max-w-[150px]">
                 {waiter?.name || "Steward"} • Floor Active
@@ -815,7 +815,7 @@ export default function WaiterMobileApp() {
               className={`p-2 rounded-lg border text-xs font-bold flex items-center gap-1 shadow-sm transition-all ${
                 activeTab === "scan" 
                   ? "bg-[#D4AF37] text-black border-[#D4AF37]" 
-                  : "bg-[#151F33] text-[#D4AF37] border-[#D4AF37]/40 hover:bg-[#1E2B45]"
+                  : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
               }`}
               title="Scan Table QR"
             >
@@ -844,7 +844,7 @@ export default function WaiterMobileApp() {
           {activeTab === "dashboard" && (
             <div className="space-y-4">
               {/* Shift Banner */}
-              <div className="bg-gradient-to-r from-[#111927] to-[#0B1528] p-4 rounded-2xl border border-[#D4AF37]/35 shadow-lg flex items-center justify-between">
+              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 rounded-2xl shadow-md flex items-center justify-between text-white">
                 <div>
                   <span className="text-[10px] text-[#D4AF37] font-bold tracking-widest uppercase block">PUBLIQ HARAGADDE</span>
                   <h2 className="text-base font-bold text-white mt-0.5">Floor Operational Command</h2>
@@ -863,7 +863,7 @@ export default function WaiterMobileApp() {
                     setTableFilter("ALL");
                     setActiveTab("tables");
                   }} 
-                  className="bg-[#111927] border border-slate-800 p-3.5 rounded-2xl cursor-pointer hover:border-slate-700 shadow-sm"
+                  className="bg-[#111927] border border-slate-200 p-3.5 rounded-2xl cursor-pointer hover:border-slate-200 shadow-sm"
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">AVAILABLE TABLES</span>
                   <span className="text-2xl font-black text-emerald-400 mt-1 block">{metrics.available_tables}</span>
@@ -873,7 +873,7 @@ export default function WaiterMobileApp() {
                 <div 
                   onClick={() => setActiveTab("qr_orders")} 
                   className={`bg-[#111927] border p-3.5 rounded-2xl cursor-pointer shadow-sm ${
-                    pendingOrders.length > 0 ? "border-amber-500/70 bg-amber-950/25" : "border-slate-800"
+                    pendingOrders.length > 0 ? "border-amber-500/70 bg-amber-950/25" : "border-slate-200"
                   }`}
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">QR DINER ORDERS</span>
@@ -883,7 +883,7 @@ export default function WaiterMobileApp() {
 
                 <div 
                   onClick={() => setActiveTab("tracking")} 
-                  className="bg-[#111927] border border-slate-800 p-3.5 rounded-2xl cursor-pointer hover:border-slate-700 shadow-sm"
+                  className="bg-[#111927] border border-slate-200 p-3.5 rounded-2xl cursor-pointer hover:border-slate-200 shadow-sm"
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">KDS / BAR PREP</span>
                   <span className="text-2xl font-black text-blue-400 mt-1 block">{livePrepOrders.length}</span>
@@ -893,7 +893,7 @@ export default function WaiterMobileApp() {
                 <div 
                   onClick={() => setActiveTab("billing")} 
                   className={`bg-[#111927] border p-3.5 rounded-2xl cursor-pointer shadow-sm ${
-                    pendingBillingTables.length > 0 ? "border-[#D4AF37] bg-[#D4AF37]/10" : "border-slate-800"
+                    pendingBillingTables.length > 0 ? "border-[#D4AF37] bg-[#D4AF37]/10" : "border-slate-200"
                   }`}
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">BILLING & INVOICES</span>
@@ -913,7 +913,7 @@ export default function WaiterMobileApp() {
                 </button>
                 <button
                   onClick={() => setActiveTab("menu")}
-                  className="p-3 rounded-xl bg-[#151F33] border border-[#D4AF37]/50 text-[#D4AF37] font-bold text-xs tracking-wider flex items-center justify-center gap-2 hover:bg-[#1E2B45]"
+                  className="p-3 rounded-xl bg-slate-50 border border-[#D4AF37]/50 text-[#D4AF37] font-bold text-xs tracking-wider flex items-center justify-center gap-2 hover:bg-[#1E2B45]"
                 >
                   <Plus className="w-4 h-4" />
                   CREATE ORDER (+POS)
@@ -945,7 +945,7 @@ export default function WaiterMobileApp() {
                           setBillTableNum(pt.table_number);
                           setActiveTab("billing");
                         }}
-                        className="p-2.5 rounded-xl bg-[#0B111D] border border-slate-800 flex items-center justify-between cursor-pointer hover:border-[#D4AF37]/50 transition-all"
+                        className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between cursor-pointer hover:border-[#D4AF37]/50 transition-all"
                       >
                         <div>
                           <div className="flex items-center gap-2">
@@ -999,7 +999,7 @@ export default function WaiterMobileApp() {
                     className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider whitespace-nowrap transition-all ${
                       tableFilter === f.key 
                         ? "bg-[#D4AF37] text-black shadow-md" 
-                        : "bg-[#151F33] text-slate-400 hover:text-slate-200 border border-slate-800"
+                        : "bg-slate-50 text-slate-400 hover:text-slate-200 border border-slate-200"
                     }`}
                   >
                     {f.label}
@@ -1020,7 +1020,7 @@ export default function WaiterMobileApp() {
                           ? "bg-[#131B2A] border-[#D4AF37]/60 shadow-md"
                           : t.is_occupied
                           ? "bg-slate-900 border-amber-600/40"
-                          : "bg-[#0D131F] border-slate-800 hover:border-slate-700"
+                          : "bg-white border-slate-200 hover:border-slate-200"
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -1041,7 +1041,7 @@ export default function WaiterMobileApp() {
                       </div>
 
                       {hasOrder ? (
-                        <div className="border-t border-slate-800/80 pt-1.5 flex items-center justify-between">
+                        <div className="border-t border-slate-200/80 pt-1.5 flex items-center justify-between">
                           <span className="text-xs font-bold text-[#D4AF37]">₹{t.active_order.final_amount.toFixed(0)}</span>
                           <span className="text-[10px] text-slate-400">{t.active_order.items_count} items</span>
                         </div>
@@ -1071,7 +1071,7 @@ export default function WaiterMobileApp() {
               </div>
 
               {/* Camera Scanner Viewport */}
-              <div className="bg-[#0D131F] border border-slate-800 rounded-3xl p-4 shadow-xl text-center space-y-3">
+              <div className="bg-white border border-slate-200 rounded-3xl p-4 shadow-xl text-center space-y-3">
                 <div className="relative w-full aspect-square max-w-[280px] mx-auto bg-black rounded-2xl overflow-hidden border-2 border-dashed border-[#D4AF37]/60 flex items-center justify-center">
                   {cameraActive ? (
                     <video 
@@ -1118,7 +1118,7 @@ export default function WaiterMobileApp() {
                   {/* Photo QR Upload Fallback */}
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="px-3 py-2.5 rounded-xl bg-[#151F33] border border-slate-700 text-slate-300 font-bold text-xs flex items-center gap-1.5 hover:bg-[#1E2B45]"
+                    className="px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-300 font-bold text-xs flex items-center gap-1.5 hover:bg-[#1E2B45]"
                   >
                     <Download className="w-4 h-4" />
                     PHOTO QR
@@ -1135,7 +1135,7 @@ export default function WaiterMobileApp() {
               </div>
 
               {/* Direct Table Keypad Verification (Works on every phone instantly) */}
-              <div className="bg-[#0D131F] border border-slate-800 rounded-2xl p-4 space-y-3">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                   FAST PHYSICAL TABLE SELECTOR:
                 </span>
@@ -1144,7 +1144,7 @@ export default function WaiterMobileApp() {
                     <button
                       key={t.table_number}
                       onClick={() => handleVerifyQR(t.table_number)}
-                      className="py-2.5 rounded-xl bg-[#151F33] border border-slate-800 hover:border-[#D4AF37] text-xs font-bold text-white flex flex-col items-center justify-center transition-all active:scale-95"
+                      className="py-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#D4AF37] text-xs font-bold text-white flex flex-col items-center justify-center transition-all active:scale-95"
                     >
                       <span>T-{t.table_number}</span>
                       <span className="text-[9px] text-slate-400">👥 {t.capacity}</span>
@@ -1158,7 +1158,7 @@ export default function WaiterMobileApp() {
                     value={scanInput}
                     onChange={e => setScanInput(e.target.value)}
                     placeholder="Or enter token / table (e.g. 04, T-04)"
-                    className="flex-1 bg-[#151F33] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 font-medium"
+                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 font-medium"
                     onKeyDown={e => {
                       if (e.key === "Enter") handleVerifyQR(scanInput);
                     }}
@@ -1181,8 +1181,8 @@ export default function WaiterMobileApp() {
 
               {/* Verification Result Card */}
               {scanResult && (
-                <div className="bg-[#101A29] border-2 border-[#D4AF37] rounded-3xl p-5 shadow-2xl space-y-4 animate-in fade-in">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div className="bg-blue-50/50 border-2 border-[#D4AF37] rounded-3xl p-5 shadow-2xl space-y-4 animate-in fade-in">
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                     <div className="flex items-center gap-2.5">
                       <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37] flex items-center justify-center">
                         <CheckCircle2 className="w-6 h-6 text-[#D4AF37]" />
@@ -1200,7 +1200,7 @@ export default function WaiterMobileApp() {
                   </div>
 
                   {scanResult.active_order ? (
-                    <div className="bg-[#151F33] p-3 rounded-xl space-y-1">
+                    <div className="bg-slate-50 p-3 rounded-xl space-y-1">
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-400">Active Order:</span>
                         <span className="text-white font-mono">{scanResult.active_order.order_number}</span>
@@ -1209,7 +1209,7 @@ export default function WaiterMobileApp() {
                         <span className="text-slate-400">Guest:</span>
                         <span className="text-white font-semibold">{scanResult.active_order.customer_name}</span>
                       </div>
-                      <div className="flex justify-between text-sm pt-1 border-t border-slate-800">
+                      <div className="flex justify-between text-sm pt-1 border-t border-slate-200">
                         <span className="text-[#D4AF37] font-bold">Unsettled Total:</span>
                         <span className="text-white font-black">₹{scanResult.active_order.final_amount.toFixed(0)}</span>
                       </div>
@@ -1238,7 +1238,7 @@ export default function WaiterMobileApp() {
                         setBillTableNum(scanResult.table_number);
                         setActiveTab("billing");
                       }}
-                      className="py-3 rounded-xl bg-[#151F33] border border-[#D4AF37]/50 text-[#D4AF37] font-bold text-xs tracking-wider flex items-center justify-center gap-1.5 hover:bg-[#1E2B45]"
+                      className="py-3 rounded-xl bg-slate-50 border border-[#D4AF37]/50 text-[#D4AF37] font-bold text-xs tracking-wider flex items-center justify-center gap-1.5 hover:bg-[#1E2B45]"
                     >
                       <Receipt className="w-4 h-4" />
                       VIEW BILL / SETTLE
@@ -1265,15 +1265,15 @@ export default function WaiterMobileApp() {
               </div>
 
               {pendingOrders.length === 0 ? (
-                <div className="text-center py-16 bg-[#0D131F] rounded-2xl border border-slate-800">
+                <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
                   <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
                   <p className="text-sm font-bold text-white">All Clear</p>
                   <p className="text-xs text-slate-400 mt-1">No customer QR orders currently waiting for approval.</p>
                 </div>
               ) : (
                 pendingOrders.map(order => (
-                  <div key={order.order_id} className="bg-[#0F1626] border border-[#D4AF37] rounded-2xl p-4 shadow-xl space-y-3">
-                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div key={order.order_id} className="bg-white border border-[#D4AF37] rounded-2xl p-4 shadow-xl space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                       <div>
                         <span className="text-base font-black text-[#D4AF37]">TABLE {order.table_number}</span>
                         <p className="text-[10px] font-mono text-slate-400">{order.order_number}</p>
@@ -1318,7 +1318,7 @@ export default function WaiterMobileApp() {
                           )}
                         </div>
                         {order.food_items.map((fi: any) => (
-                          <div key={fi.id} className="flex justify-between items-center text-xs py-1 border-b border-slate-800/40">
+                          <div key={fi.id} className="flex justify-between items-center text-xs py-1 border-b border-slate-200/40">
                             <span className="text-slate-200">
                               <span className="text-[#D4AF37] font-bold">{fi.quantity}x</span> {fi.item_name}
                               {fi.item_status === "REJECTED" && (
@@ -1344,7 +1344,7 @@ export default function WaiterMobileApp() {
 
                     {/* Drink Items */}
                     {order.drink_items && order.drink_items.length > 0 && (
-                      <div className="space-y-1 pt-1 border-t border-slate-800/60">
+                      <div className="space-y-1 pt-1 border-t border-slate-200/60">
                         <div className="flex justify-between items-center">
                           <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wider">🍸 Artisan Bar Drinks ({order.drink_items.length}) • Owner: Anil</p>
                           {order.beverage_status === "ACCEPTED" ? (
@@ -1369,7 +1369,7 @@ export default function WaiterMobileApp() {
                           )}
                         </div>
                         {order.drink_items.map((di: any) => (
-                          <div key={di.id} className="flex justify-between items-center text-xs py-1 border-b border-slate-800/40">
+                          <div key={di.id} className="flex justify-between items-center text-xs py-1 border-b border-slate-200/40">
                             <span className="text-slate-200">
                               <span className="text-[#38BDF8] font-bold">{di.quantity}x</span> {di.item_name} ({di.variant_name || "Standard"})
                               {di.item_status === "REJECTED" && (
@@ -1394,7 +1394,7 @@ export default function WaiterMobileApp() {
                     )}
 
                     {/* Action Buttons */}
-                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800">
+                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
                       <button
                         onClick={() => handleRejectOrder(order.order_id)}
                         className="py-2.5 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 text-xs font-bold hover:bg-rose-900"
@@ -1430,14 +1430,14 @@ export default function WaiterMobileApp() {
               </div>
 
               {livePrepOrders.length === 0 ? (
-                <div className="text-center py-16 bg-[#0D131F] rounded-2xl border border-slate-800">
+                <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
                   <Utensils className="w-10 h-10 text-slate-500 mx-auto mb-2" />
                   <p className="text-sm font-bold text-white">No Orders in Preparation</p>
                   <p className="text-xs text-slate-400 mt-1">All kitchen and bar tickets have been served.</p>
                 </div>
               ) : (
                 livePrepOrders.map(ord => (
-                  <div key={ord.order_id} className={`p-4 rounded-2xl border space-y-3 ${ord.status === "READY" ? "bg-[#101A29] border-emerald-500" : "bg-[#0D131F] border-slate-800"}`}>
+                  <div key={ord.order_id} className={`p-4 rounded-2xl border space-y-3 ${ord.status === "READY" ? "bg-blue-50/50 border-emerald-500" : "bg-white border-slate-200"}`}>
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="text-base font-black text-[#D4AF37]">TABLE {ord.table_number}</span>
@@ -1452,7 +1452,7 @@ export default function WaiterMobileApp() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 bg-[#151F33] p-2.5 rounded-xl text-[11px]">
+                    <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl text-[11px]">
                       <div>
                         <span className="text-[9px] text-slate-400 uppercase block font-bold">Kitchen KDS</span>
                         <span className="text-white font-semibold">{ord.food_status}</span>
@@ -1472,7 +1472,7 @@ export default function WaiterMobileApp() {
                       ))}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800">
+                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-200">
                       <button
                         onClick={() => {
                           setBillTableNum(ord.table_number);
@@ -1485,7 +1485,7 @@ export default function WaiterMobileApp() {
 
                       <button
                         onClick={() => handleMarkServed(ord.order_id)}
-                        className="py-2.5 rounded-xl bg-emerald-500 text-[#070B12] text-xs font-black tracking-wider hover:opacity-95"
+                        className="py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-black tracking-wider hover:bg-emerald-700 shadow-xs"
                       >
                         ✓ MARK SERVED
                       </button>
@@ -1499,13 +1499,13 @@ export default function WaiterMobileApp() {
           {/* TAB 6: MANUAL STEWARD POS ORDERING */}
           {activeTab === "menu" && (
             <div className="space-y-3">
-              <div className="flex items-center justify-between bg-[#111927] p-3 rounded-2xl border border-slate-800">
+              <div className="flex items-center justify-between bg-[#111927] p-3 rounded-2xl border border-slate-200">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-[#D4AF37]">TABLE:</span>
                   <select
                     value={posTableNumber}
                     onChange={e => setPosTableNumber(e.target.value)}
-                    className="bg-[#151F33] border border-[#D4AF37]/50 rounded-lg px-2.5 py-1 text-xs font-bold text-white focus:outline-none"
+                    className="bg-slate-50 border border-[#D4AF37]/50 rounded-lg px-2.5 py-1 text-xs font-bold text-white focus:outline-none"
                   >
                     {tables.map(t => (
                       <option key={t.table_number} value={t.table_number}>
@@ -1525,7 +1525,7 @@ export default function WaiterMobileApp() {
                 <button
                   onClick={() => setSelectedCategory("all")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
-                    selectedCategory === "all" ? "bg-[#D4AF37] text-black" : "bg-[#151F33] text-slate-300"
+                    selectedCategory === "all" ? "bg-[#D4AF37] text-black" : "bg-slate-50 text-slate-300"
                   }`}
                 >
                   All Items
@@ -1535,7 +1535,7 @@ export default function WaiterMobileApp() {
                     key={c.id || c.slug}
                     onClick={() => setSelectedCategory(c.name)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
-                      selectedCategory === c.name ? "bg-[#D4AF37] text-black" : "bg-[#151F33] text-slate-300"
+                      selectedCategory === c.name ? "bg-[#D4AF37] text-black" : "bg-slate-50 text-slate-300"
                     }`}
                   >
                     {c.name}
@@ -1551,7 +1551,7 @@ export default function WaiterMobileApp() {
                   placeholder="Search 281 culinary & bar items..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2.5 bg-[#151F33] rounded-xl border border-slate-700 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-[#D4AF37]"
+                  className="w-full pl-9 pr-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-[#D4AF37]"
                 />
               </div>
 
@@ -1565,7 +1565,7 @@ export default function WaiterMobileApp() {
                   })
                   .slice(0, 40)
                   .map((it: any) => (
-                    <div key={it.id} className="bg-[#0D131F] border border-slate-800 p-3 rounded-xl flex items-center justify-between">
+                    <div key={it.id} className="bg-white border border-slate-200 p-3 rounded-xl flex items-center justify-between">
                       <div className="flex-1 pr-2">
                         <div className="flex items-center gap-1.5">
                           <span className={`w-2 h-2 rounded-full ${it.is_veg ? "bg-emerald-500" : "bg-rose-500"}`} />
@@ -1575,7 +1575,7 @@ export default function WaiterMobileApp() {
                       </div>
 
                       {cart[it.id] ? (
-                        <div className="flex items-center gap-2 bg-[#151F33] px-2 py-1 rounded-lg border border-slate-700">
+                        <div className="flex items-center gap-2 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
                           <button onClick={() => removeFromCart(it.id)} className="text-slate-300 hover:text-white">
                             <Minus className="w-3.5 h-3.5" />
                           </button>
@@ -1599,7 +1599,7 @@ export default function WaiterMobileApp() {
               {/* Cart Drawer */}
               {Object.keys(cart).length > 0 && (
                 <div className="bg-[#111927] border-2 border-[#D4AF37] p-4 rounded-2xl space-y-3 shadow-2xl">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                     <span className="text-xs font-bold text-[#D4AF37] uppercase">ORDER SUMMARY (TABLE {posTableNumber})</span>
                     <button onClick={() => setCart({})} className="text-[10px] text-rose-400 hover:underline">Clear</button>
                   </div>
@@ -1613,7 +1613,7 @@ export default function WaiterMobileApp() {
                     ))}
                   </div>
 
-                  <div className="border-t border-slate-800 pt-2 flex justify-between text-sm font-black text-white">
+                  <div className="border-t border-slate-200 pt-2 flex justify-between text-sm font-black text-white">
                     <span>Grand Total (incl 5% GST):</span>
                     <span className="text-[#D4AF37]">₹{cartGrandTotal.toFixed(2)}</span>
                   </div>
@@ -1664,7 +1664,7 @@ export default function WaiterMobileApp() {
                         className={`p-2.5 rounded-xl border text-left transition-all ${
                           billTableNum === pt.table_number 
                             ? "bg-[#D4AF37] text-black border-[#D4AF37] shadow-lg" 
-                            : "bg-[#090E17] text-white border-amber-800/40 hover:border-[#D4AF37]"
+                            : "bg-white text-white border-amber-800/40 hover:border-[#D4AF37]"
                         }`}
                       >
                         <div className="flex items-center justify-between">
@@ -1701,8 +1701,8 @@ export default function WaiterMobileApp() {
                           isSelected
                             ? "bg-[#D4AF37] text-black border-[#D4AF37] shadow-md"
                             : t.is_occupied
-                            ? "bg-[#151F33] text-amber-300 border-amber-600/40"
-                            : "bg-[#0D131F] text-slate-400 border-slate-800 hover:border-slate-700"
+                            ? "bg-slate-50 text-amber-300 border-amber-600/40"
+                            : "bg-white text-slate-400 border-slate-200 hover:border-slate-200"
                         }`}
                       >
                         <span>T-{t.table_number}</span>
@@ -1714,7 +1714,7 @@ export default function WaiterMobileApp() {
               </div>
 
               {!billPreview ? (
-                <div className="text-center py-12 bg-[#0D131F] rounded-2xl border border-slate-800">
+                <div className="text-center py-12 bg-white rounded-2xl border border-slate-200">
                   <CreditCard className="w-10 h-10 text-slate-500 mx-auto mb-2" />
                   <p className="text-sm font-bold text-white">No Unsettled Order on Table {billTableNum}</p>
                   <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
@@ -1722,9 +1722,9 @@ export default function WaiterMobileApp() {
                   </p>
                 </div>
               ) : (
-                <div className="bg-[#0D131F] border border-slate-800 rounded-2xl p-4 space-y-3 shadow-xl">
+                <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-xl">
                   {/* Bill Header */}
-                  <div className="border-b border-slate-800 pb-2.5 flex items-center justify-between">
+                  <div className="border-b border-slate-200 pb-2.5 flex items-center justify-between">
                     <div>
                       <p className="text-sm font-black text-[#D4AF37]">PUBLIQ BAR &amp; RESTAURANT</p>
                       <p className="text-[10px] text-slate-400 font-mono">5% GST Non-ITC • SAC 996331</p>
@@ -1747,7 +1747,7 @@ export default function WaiterMobileApp() {
                   </div>
 
                   {/* Staff Courtesy Discount */}
-                  <div className="flex items-center justify-between bg-[#151F33] p-2.5 rounded-xl text-xs">
+                  <div className="flex items-center justify-between bg-slate-50 p-2.5 rounded-xl text-xs">
                     <span className="text-slate-300">Staff Courtesy Discount:</span>
                     <div className="flex gap-1.5">
                       {[0, 5, 10, 15, 20].map(d => (
@@ -1765,7 +1765,7 @@ export default function WaiterMobileApp() {
                   </div>
 
                   {/* Calculation Box */}
-                  <div className="bg-[#151F33] p-3 rounded-xl space-y-1 text-xs">
+                  <div className="bg-slate-50 p-3 rounded-xl space-y-1 text-xs">
                     <div className="flex justify-between text-slate-400">
                       <span>Subtotal</span>
                       <span>₹{billPreview.subtotal.toFixed(2)}</span>
@@ -1784,7 +1784,7 @@ export default function WaiterMobileApp() {
                       <span>SGST (2.5%)</span>
                       <span>₹{billPreview.sgst.toFixed(2)}</span>
                     </div>
-                    <div className="flex justify-between text-base font-black text-[#D4AF37] pt-2 border-t border-slate-700">
+                    <div className="flex justify-between text-base font-black text-[#D4AF37] pt-2 border-t border-slate-200">
                       <span>TOTAL PAYABLE</span>
                       <span>₹{billPreview.grand_total.toFixed(2)}</span>
                     </div>
@@ -1792,7 +1792,7 @@ export default function WaiterMobileApp() {
 
                   {/* Dual Business Department Actions */}
                   {deptBillPreview && (
-                    <div className="space-y-2 p-3 bg-[#090E17] rounded-xl border border-slate-800 text-xs">
+                    <div className="space-y-2 p-3 bg-white rounded-xl border border-slate-200 text-xs">
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                         Dual-Business Department Invoicing
                       </span>
@@ -1800,7 +1800,7 @@ export default function WaiterMobileApp() {
                         <button
                           onClick={() => handleGenerateDepartmentInvoice("FOOD")}
                           disabled={isGeneratingInvoice}
-                          className="p-2.5 rounded-lg bg-[#151F33] border border-[#D4AF37]/50 text-[#D4AF37] text-[11px] font-bold hover:bg-[#1E2B45] text-left"
+                          className="p-2.5 rounded-lg bg-slate-50 border border-[#D4AF37]/50 text-[#D4AF37] text-[11px] font-bold hover:bg-[#1E2B45] text-left"
                         >
                           <span className="block text-[9px] text-slate-400">RAMESH S P (FOOD)</span>
                           <span className="font-serif">₹{(deptBillPreview.food_bill?.grand_total || 0).toFixed(2)}</span>
@@ -1810,7 +1810,7 @@ export default function WaiterMobileApp() {
                         <button
                           onClick={() => handleGenerateDepartmentInvoice("BEVERAGE")}
                           disabled={isGeneratingInvoice}
-                          className="p-2.5 rounded-lg bg-[#151F33] border border-[#38BDF8]/50 text-[#38BDF8] text-[11px] font-bold hover:bg-[#1E2B45] text-left"
+                          className="p-2.5 rounded-lg bg-slate-50 border border-[#38BDF8]/50 text-[#38BDF8] text-[11px] font-bold hover:bg-[#1E2B45] text-left"
                         >
                           <span className="block text-[9px] text-slate-400">ANIL (BAR &amp; DRINKS)</span>
                           <span className="font-serif">₹{(deptBillPreview.beverage_bill?.grand_total || 0).toFixed(2)}</span>
@@ -1826,7 +1826,7 @@ export default function WaiterMobileApp() {
                     <button
                       onClick={handleGenerateInvoice}
                       disabled={isGeneratingInvoice}
-                      className="w-full py-3 rounded-xl bg-[#151F33] border border-[#D4AF37] text-[#D4AF37] text-xs font-bold tracking-wider flex items-center justify-center gap-2 hover:bg-[#1E2B45] transition-all shadow-md"
+                      className="w-full py-3 rounded-xl bg-slate-50 border border-[#D4AF37] text-[#D4AF37] text-xs font-bold tracking-wider flex items-center justify-center gap-2 hover:bg-[#1E2B45] transition-all shadow-md"
                     >
                       <Receipt className="w-4 h-4" />
                       {isGeneratingInvoice ? "Creating Invoice..." : "GENERATE OFFICIAL GST INVOICE"}
@@ -1845,7 +1845,7 @@ export default function WaiterMobileApp() {
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         onClick={() => handleSettle("CASH")}
-                        className="py-2.5 rounded-xl bg-[#151F33] border border-slate-700 text-slate-200 text-xs font-bold hover:bg-slate-800 flex items-center justify-center gap-1.5"
+                        className="py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-200 text-xs font-bold hover:bg-slate-800 flex items-center justify-center gap-1.5"
                       >
                         <Banknote className="w-4 h-4 text-emerald-400" />
                         RECORD CASH
@@ -1853,7 +1853,7 @@ export default function WaiterMobileApp() {
 
                       <button
                         onClick={() => handleSettle("CARD")}
-                        className="py-2.5 rounded-xl bg-[#151F33] border border-slate-700 text-slate-200 text-xs font-bold hover:bg-slate-800 flex items-center justify-center gap-1.5"
+                        className="py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-200 text-xs font-bold hover:bg-slate-800 flex items-center justify-center gap-1.5"
                       >
                         <CreditCard className="w-4 h-4 text-blue-400" />
                         RECORD CARD
@@ -1883,7 +1883,7 @@ export default function WaiterMobileApp() {
         </div>
 
         {/* BOTTOM ERGONOMIC MOBILE NAVIGATION (7 TOUCH-FRIENDLY TABS) */}
-        <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#0A0F1A] border-t border-slate-800 flex justify-around py-2 px-1 z-30 shadow-2xl">
+        <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-slate-200 flex justify-around py-2 px-1 z-30 shadow-lg">
           <button 
             onClick={() => setActiveTab("dashboard")} 
             className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg transition-all ${
@@ -2087,15 +2087,15 @@ export default function WaiterMobileApp() {
 
         {/* Printable Tax Invoice Modal */}
         {showInvoiceModal && generatedInvoice && (
-          <div className="fixed inset-0 bg-black/85 flex items-center justify-center p-4 z-50">
-            <div className="w-full max-w-sm bg-[#090E17] border border-[#D4AF37] rounded-3xl p-5 shadow-2xl space-y-3.5 max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+            <div className="w-full max-w-sm bg-white border border-slate-200 rounded-3xl p-5 shadow-2xl space-y-3.5 max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center border-b border-slate-200 pb-2">
                 <span className="text-xs font-black text-[#D4AF37] tracking-wider uppercase">OFFICIAL TAX INVOICE</span>
                 <button onClick={() => setShowInvoiceModal(false)} className="text-slate-400 hover:text-white">✕</button>
               </div>
 
-              <div className="text-center border-b border-slate-800 pb-2.5">
-                <div className="w-12 h-12 mx-auto rounded-xl bg-[#0B1528] p-1 border border-[#D4AF37]/50 mb-1 flex items-center justify-center">
+              <div className="text-center border-b border-slate-200 pb-2.5">
+                <div className="w-12 h-12 mx-auto rounded-xl bg-slate-50 p-1 border border-[#D4AF37]/50 mb-1 flex items-center justify-center">
                   <img src="/logo.png?v=4" alt="PUBLIQ" className="w-full h-full object-contain" />
                 </div>
                 <h3 className="text-sm font-black text-white">{generatedInvoice.outlet_name}</h3>
@@ -2125,7 +2125,7 @@ export default function WaiterMobileApp() {
               {/* Invoice Line Items */}
               <div className="space-y-1 text-xs max-h-36 overflow-y-auto pr-1">
                 {(generatedInvoice.items || billPreview?.items || []).map((it: any) => (
-                  <div key={it.id || it.item_name} className="flex justify-between py-0.5 border-b border-slate-800/40">
+                  <div key={it.id || it.item_name} className="flex justify-between py-0.5 border-b border-slate-200/40">
                     <span className="text-slate-200">{it.quantity}x {it.item_name}</span>
                     <span className="text-white font-medium">₹{(it.total_price || 0).toFixed(2)}</span>
                   </div>
@@ -2152,7 +2152,7 @@ export default function WaiterMobileApp() {
                   <span>SGST (2.5%)</span>
                   <span>₹{generatedInvoice.sgst.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-base font-black text-[#D4AF37] pt-1.5 border-t border-slate-700">
+                <div className="flex justify-between text-base font-black text-[#D4AF37] pt-1.5 border-t border-slate-200">
                   <span>NET PAYABLE</span>
                   <span>₹{generatedInvoice.grand_total.toFixed(2)}</span>
                 </div>
@@ -2183,8 +2183,8 @@ export default function WaiterMobileApp() {
 
         {/* Split Bill Modal */}
         {showSplitModal && billPreview && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-            <div className="w-full max-w-sm bg-[#0D131F] border border-slate-800 rounded-3xl p-6 space-y-4">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+            <div className="w-full max-w-sm bg-white border border-slate-200 rounded-3xl p-6 space-y-4 shadow-xl">
               <div className="flex justify-between items-center">
                 <span className="text-xs font-black text-[#D4AF37] uppercase tracking-wider">SPLIT BILL CALCULATOR</span>
                 <button onClick={() => setShowSplitModal(false)} className="text-slate-400 hover:text-white">✕</button>
@@ -2198,7 +2198,7 @@ export default function WaiterMobileApp() {
                       key={n}
                       onClick={() => setSplitCount(n)}
                       className={`py-2 rounded-xl text-xs font-bold ${
-                        splitCount === n ? "bg-[#D4AF37] text-black" : "bg-[#151F33] text-white"
+                        splitCount === n ? "bg-[#D4AF37] text-black" : "bg-slate-50 text-white"
                       }`}
                     >
                       {n}
@@ -2207,7 +2207,7 @@ export default function WaiterMobileApp() {
                 </div>
               </div>
 
-              <div className="bg-[#151F33] p-4 rounded-xl text-center border border-[#D4AF37]/40">
+              <div className="bg-slate-50 p-4 rounded-xl text-center border border-[#D4AF37]/40">
                 <span className="text-[10px] text-[#D4AF37] font-bold uppercase tracking-wider block">EACH GUEST PAYS:</span>
                 <span className="text-2xl font-black text-white mt-1 block">
                   ₹{(billPreview.grand_total / splitCount).toFixed(2)}
@@ -2226,8 +2226,8 @@ export default function WaiterMobileApp() {
 
         {/* Call Manager Modal */}
         {showManagerModal && (
-          <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-            <div className="w-full max-w-sm bg-[#0D131F] border border-rose-600 rounded-3xl p-6 space-y-4">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+            <div className="w-full max-w-sm bg-white border border-rose-300 rounded-3xl p-6 space-y-4 shadow-xl">
               <div className="flex justify-between items-center">
                 <span className="text-xs font-black text-rose-400 uppercase tracking-wider">CALL DUTY MANAGER</span>
                 <button onClick={() => setShowManagerModal(false)} className="text-slate-400 hover:text-white">✕</button>
@@ -2246,7 +2246,7 @@ export default function WaiterMobileApp() {
                     key={r}
                     onClick={() => setManagerReason(r)}
                     className={`w-full text-left p-2.5 rounded-xl text-xs font-medium transition-all ${
-                      managerReason === r ? "bg-rose-950/80 border border-rose-500 text-rose-200" : "bg-[#151F33] text-slate-300"
+                      managerReason === r ? "bg-rose-950/80 border border-rose-500 text-rose-200" : "bg-slate-50 text-slate-300"
                     }`}
                   >
                     {r}

@@ -1266,7 +1266,7 @@ export default function HomePage() {
       {/* VIDEO CLIP MODAL (Full HD AVC1 Universal Playback)                       */}
       {/* ========================================================================= */}
       {activeModalVideo && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
           <div className="relative max-w-4xl w-full bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-2xl">
             <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
               <button
@@ -1284,7 +1284,7 @@ export default function HomePage() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <div className="relative aspect-video bg-black">
+            <div className="relative aspect-video bg-slate-900">
               <video
                 key={activeModalVideo.id}
                 src={activeModalVideo.video_url}
@@ -1327,7 +1327,7 @@ export default function HomePage() {
       {activeLightboxImg && (
         <div 
           onClick={() => setActiveLightboxImg(null)}
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 cursor-pointer"
         >
           <div className="relative max-w-4xl max-h-[85vh] rounded-2xl overflow-hidden border border-white/20 shadow-2xl">
             <button

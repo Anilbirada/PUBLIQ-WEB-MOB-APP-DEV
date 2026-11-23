@@ -62,6 +62,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: "Bar Admin (Anil)", href: "/admin/owner/beverage", icon: Wine, badge: "8431712924-3@ybl", badgeColor: "from-cyan-500 to-blue-600", roles: ["SUPER_ADMIN", "BAR_ADMIN"] },
         { name: "Food Admin (Ramesh)", href: "/admin/owner/food", icon: UtensilsCrossed, badge: "ramesh776059@ybl", badgeColor: "from-amber-500 to-orange-500", roles: ["SUPER_ADMIN", "FOOD_ADMIN"] },
         { name: "Staff & Attendance", href: "/admin/employees", icon: Users, roles: ["SUPER_ADMIN"] },
+        { name: "Billing & Invoices", href: "/admin/invoices", icon: Receipt, badge: "GST", badgeColor: "from-emerald-500 to-teal-600", roles: ["SUPER_ADMIN"] },
         { name: "Customer Reviews", href: "/admin/reviews", icon: Star, badge: "5★", badgeColor: "from-amber-500 to-orange-500", roles: ["SUPER_ADMIN", "BAR_ADMIN", "FOOD_ADMIN"] },
         { name: "Suppliers & Purchases", href: "/admin/suppliers", icon: Truck, roles: ["SUPER_ADMIN"] },
         { name: "Operating Expenses", href: "/admin/expenses", icon: Receipt, roles: ["SUPER_ADMIN"] },

@@ -31,12 +31,11 @@ export default function CheckoutPage() {
 
   const hasAlcohol = items.some((i) => i.is_alcohol);
 
+  // Requirement: Customer name & mobile fields must initially be empty on new orders (no auto-population or previous suggestions)
   useEffect(() => {
-    if (user) {
-      if (user.fullName && user.fullName !== "Guest Diner") setCustomerName(user.fullName);
-      if (user.phone && !user.phone.startsWith("guest_")) setCustomerPhone(user.phone);
-    }
-  }, [user]);
+    setCustomerName("");
+    setCustomerPhone("");
+  }, []);
 
   if (items.length === 0) {
     return (
@@ -193,9 +192,10 @@ export default function CheckoutPage() {
                 <input
                   type="text"
                   required
+                  autoComplete="off"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="e.g. Rahul Sharma"
+                  placeholder="Enter your Full Name"
                   className="w-full p-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white text-sm"
                 />
               </div>
@@ -210,10 +210,11 @@ export default function CheckoutPage() {
                   <input
                     type="tel"
                     required
+                    autoComplete="off"
                     maxLength={10}
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    placeholder="9876543210"
+                    placeholder="Enter 10-digit Mobile Number"
                     className="w-full p-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white text-sm"
                   />
                 </div>

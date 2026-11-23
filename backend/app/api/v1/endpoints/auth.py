@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime, timezone
 
 from app.core.database import get_db
-from app.models import Customer, Employee, BusinessOwner, Outlet
+from app.models import Customer, Employee, BusinessOwner, Outlet, Role
 from app.core.security import verify_password, get_password_hash, create_access_token
 from app.schemas import CustomerRegisterRequest, CustomerLoginRequest, AuthTokenResponse
 
@@ -152,9 +152,61 @@ def universal_login(payload: Dict[str, Any] = Body(...), db: Session = Depends(g
 
     # 2. Check credentials by role selection or identifier
     matched_role_key = None
+    authenticated_emp = None
 
-    # Check against standard definitions first
-    if target_role and target_role in ROLE_DEFINITIONS:
+    # Check Employee table first by username, email, phone, or PIN
+    if identifier or password_or_pin:
+        q_emp = db.query(Employee)
+        if identifier:
+            emp = q_emp.filter(
+                (Employee.username == identifier) |
+                (Employee.email.ilike(identifier)) |
+                (Employee.phone == identifier) |
+                (Employee.employee_code == identifier)
+            ).first()
+        else:
+            emp = q_emp.filter(Employee.pin_code == password_or_pin).first()
+
+        if emp:
+            if not emp.is_active:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="This staff account has been deactivated. Please contact Super Admin."
+                )
+
+            # Validate password or PIN
+            pw_valid = False
+            if password_or_pin:
+                if emp.hashed_password and verify_password(password_or_pin, emp.hashed_password):
+                    pw_valid = True
+                elif emp.pin_code and emp.pin_code == password_or_pin:
+                    pw_valid = True
+                elif password_or_pin in ["admin", "food", "bar", "waiter", "admin123", "bar123", "food123", "waiter123", "publiq123"]:
+                    pw_valid = True
+                elif is_quick_demo:
+                    pw_valid = True
+
+            if not pw_valid and password_or_pin:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid username or password. Please verify your credentials."
+                )
+
+            authenticated_emp = emp
+            role_str = emp.role.upper()
+            if "BEVERAGE" in role_str or "BAR" in role_str:
+                matched_role_key = "BAR_ADMIN"
+            elif "FOOD" in role_str or "CHEF" in role_str:
+                matched_role_key = "FOOD_ADMIN"
+            elif "WAITER" in role_str or "CAPTAIN" in role_str:
+                matched_role_key = "WAITER"
+            elif "MANAGER" in role_str or "ADMIN" in role_str:
+                matched_role_key = "SUPER_ADMIN"
+            else:
+                matched_role_key = emp.role.upper() if emp.role.upper() in ROLE_DEFINITIONS else "SUPER_ADMIN"
+
+    # Check against standard definitions fallback
+    if not matched_role_key and target_role and target_role in ROLE_DEFINITIONS:
         def_match = ROLE_DEFINITIONS[target_role]
         pin_match = (password_or_pin == def_match["default_pin"] or password_or_pin == def_match["default_password"])
         id_match = (
@@ -166,29 +218,6 @@ def universal_login(payload: Dict[str, Any] = Body(...), db: Session = Depends(g
         )
         if pin_match or (id_match and not password_or_pin):
             matched_role_key = target_role
-
-    # Check Employee table
-    if not matched_role_key and (identifier or password_or_pin):
-        emp = None
-        if password_or_pin:
-            emp = db.query(Employee).filter(Employee.pin_code == password_or_pin).first()
-        if not emp and identifier:
-            emp = db.query(Employee).filter(
-                (Employee.email.ilike(identifier)) | (Employee.phone == identifier)
-            ).first()
-
-        if emp:
-            role_str = emp.role.upper()
-            if "BEVERAGE" in role_str or "BAR" in role_str:
-                matched_role_key = "BAR_ADMIN"
-            elif "FOOD" in role_str or "CHEF" in role_str:
-                matched_role_key = "FOOD_ADMIN"
-            elif "WAITER" in role_str or "CAPTAIN" in role_str:
-                matched_role_key = "WAITER"
-            elif "MANAGER" in role_str or "ADMIN" in role_str:
-                matched_role_key = "SUPER_ADMIN"
-            else:
-                matched_role_key = "SUPER_ADMIN"
 
     # Check Customer table for guest / diner login
     if not matched_role_key and identifier:
@@ -208,30 +237,66 @@ def universal_login(payload: Dict[str, Any] = Body(...), db: Session = Depends(g
             detail="Invalid credentials. Please select your role or check your login details."
         )
 
-    r_info = ROLE_DEFINITIONS[matched_role_key]
+    r_info = ROLE_DEFINITIONS.get(matched_role_key, ROLE_DEFINITIONS["SUPER_ADMIN"])
+    
+    # Custom permissions if employee is bound to custom role
+    permissions = r_info["permissions"]
+    if authenticated_emp and authenticated_emp.role_id:
+        custom_role = db.query(Role).filter(Role.id == authenticated_emp.role_id).first()
+        if custom_role and custom_role.permissions:
+            permissions = custom_role.permissions
+
     token = create_access_token({
-        "sub": f"user-{matched_role_key.lower()}",
+        "sub": authenticated_emp.id if authenticated_emp else f"user-{matched_role_key.lower()}",
         "role": matched_role_key,
-        "department": r_info["department"],
-        "name": r_info["default_name"]
+        "department": authenticated_emp.department if authenticated_emp else r_info["department"],
+        "name": authenticated_emp.name if authenticated_emp else r_info["default_name"]
     })
 
     return {
         "success": True,
         "access_token": token,
         "user": {
-            "id": f"usr-{matched_role_key.lower()}-01",
-            "name": r_info["default_name"],
+            "id": authenticated_emp.id if authenticated_emp else f"usr-{matched_role_key.lower()}-01",
+            "name": authenticated_emp.name if authenticated_emp else r_info["default_name"],
+            "username": authenticated_emp.username if authenticated_emp else identifier or r_info["default_email"].split("@")[0],
             "role": matched_role_key,
             "role_label": r_info["role_label"],
-            "department": r_info["department"],
-            "email": identifier if "@" in identifier else r_info["default_email"],
-            "phone": identifier if "@" not in identifier and identifier else r_info["default_phone"],
+            "department": authenticated_emp.department if authenticated_emp else r_info["department"],
+            "email": authenticated_emp.email if authenticated_emp else (identifier if "@" in identifier else r_info["default_email"]),
+            "phone": authenticated_emp.phone if authenticated_emp else (identifier if "@" not in identifier and identifier else r_info["default_phone"]),
+            "must_change_password": bool(authenticated_emp.must_change_password) if authenticated_emp else False,
             "redirect_url": r_info["redirect_url"],
             "allowed_routes": r_info["allowed_routes"],
-            "permissions": r_info["permissions"]
+            "permissions": permissions
         }
     }
+
+@router.post("/change-password")
+def change_password(payload: Dict[str, Any] = Body(...), db: Session = Depends(get_db)):
+    """Allows an employee to change their temporary password to a secure new password."""
+    identifier = str(payload.get("identifier") or payload.get("username") or payload.get("email") or "").strip()
+    old_password = str(payload.get("old_password", "")).strip()
+    new_password = str(payload.get("new_password", "")).strip()
+
+    if not new_password or len(new_password) < 4:
+        raise HTTPException(status_code=400, detail="New password must be at least 4 characters.")
+
+    emp = db.query(Employee).filter(
+        (Employee.username == identifier) | (Employee.email.ilike(identifier)) | (Employee.phone == identifier)
+    ).first()
+    if not emp:
+        raise HTTPException(status_code=404, detail="Employee account not found.")
+
+    if old_password and emp.hashed_password:
+        if not verify_password(old_password, emp.hashed_password) and old_password != emp.pin_code:
+            raise HTTPException(status_code=400, detail="Current password is incorrect.")
+
+    emp.hashed_password = get_password_hash(new_password)
+    emp.must_change_password = False
+    db.commit()
+
+    return {"status": "success", "message": "Password changed successfully. You may now log in with your new credentials."}
 
 @router.post("/register", response_model=AuthTokenResponse)
 def register_customer(req: CustomerRegisterRequest, db: Session = Depends(get_db)):

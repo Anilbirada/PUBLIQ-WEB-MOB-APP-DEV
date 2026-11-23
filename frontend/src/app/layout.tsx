@@ -20,8 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark scroll-smooth">
-      <body className="min-h-screen flex flex-col bg-[#070B12] text-[#9DA3AE] font-sans antialiased selection:bg-[#D4AF37]/30 selection:text-[#FDFBF7]">
+    <html lang="en" className="scroll-smooth">
+      <body className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-800 font-sans antialiased selection:bg-blue-600/20 selection:text-blue-900">
         <TableSessionProvider>
           <CartProvider>
             <AuthProvider>

@@ -70,11 +70,11 @@ export default function PartyAndEventsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          event_type: eventType,
           guest_name: guestName,
-          phone: phone,
-          email: email,
-          preferred_date: preferredDate || "2026-11-25",
+          phone,
+          email,
+          event_type: eventType,
+          preferred_date: preferredDate,
           preferred_time: preferredTime,
           guest_count: guestCount,
           special_requests: specialRequests,
@@ -102,25 +102,24 @@ export default function PartyAndEventsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070B12] text-slate-100 pb-24 selection:bg-[#D4AF37] selection:text-[#070B12] bg-cover bg-fixed" style={{ backgroundImage: "linear-gradient(to bottom, rgba(7,11,18,0.96), rgba(7,11,18,0.94)), url('/images/publiq/backgrounds/bg-events.webp')" }}>
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 pb-24 selection:bg-blue-600/20 selection:text-blue-900">
       {/* Top Hero Banner */}
-      <div className="relative py-20 sm:py-24 border-b border-[#D4AF37]/20 bg-cover bg-center overflow-hidden" style={{ backgroundImage: "linear-gradient(to bottom, rgba(10,17,31,0.92), rgba(7,11,18,0.95)), url('/images/publiq/backgrounds/bg-private-dining.webp')" }}>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#D4AF37]/10 via-transparent to-transparent pointer-events-none" />
+      <div className="relative py-20 sm:py-24 border-b border-slate-200 bg-gradient-to-b from-blue-50 via-indigo-50/30 to-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
-          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#0F1626] border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-bold uppercase tracking-[0.25em] shadow-lg">
-            <PartyPopper className="w-3.5 h-3.5 text-[#D4AF37]" />
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-slate-200 text-blue-600 text-xs font-bold uppercase tracking-[0.25em] shadow-xs">
+            <PartyPopper className="w-3.5 h-3.5 text-amber-500" />
             Bespoke Celebrations & Corporate Soirées
           </div>
-          <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-normal text-white tracking-tight">
-            Private Dining & <span className="italic text-[#D4AF37]">Events</span>
+          <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-bold text-slate-900 tracking-tight">
+            Private Dining &amp; <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">Events</span>
           </h1>
-          <p className="max-w-2xl mx-auto text-sm sm:text-base text-slate-400 leading-relaxed font-light">
+          <p className="max-w-2xl mx-auto text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
             Host milestone birthdays, intimate anniversaries, high-energy DJ parties, and executive corporate dinners in our fairy-lit garden cabanas, sky deck and private dining salons.
           </p>
           <div className="pt-4">
             <button
               onClick={() => handleOpenEnquiry()}
-              className="py-4 px-8 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#B38728] hover:opacity-95 text-[#070B12] font-bold text-xs tracking-widest uppercase transition-all shadow-xl shadow-[#D4AF37]/20 inline-flex items-center gap-2"
+              className="py-4 px-8 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs tracking-widest uppercase transition-all shadow-md inline-flex items-center gap-2"
             >
               <span>Enquire For Private Event</span>
               <ArrowRight className="w-4 h-4" />
@@ -132,11 +131,11 @@ export default function PartyAndEventsPage() {
       {/* Confirmation Toast */}
       {confirmationNotice && (
         <div className="max-w-4xl mx-auto px-4 pt-8">
-          <div className="p-6 rounded-3xl bg-[#0A111F] border border-[#D4AF37]/40 text-white shadow-2xl flex items-start gap-4">
-            <CheckCircle2 className="w-6 h-6 text-[#D4AF37] shrink-0 mt-0.5" />
+          <div className="p-6 rounded-3xl bg-emerald-50 border border-emerald-300 text-emerald-900 shadow-md flex items-start gap-4">
+            <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-serif text-lg font-normal text-white">Enquiry Registered Successfully</h3>
-              <p className="text-xs text-slate-400 mt-1 leading-relaxed">{confirmationNotice}</p>
+              <h3 className="font-serif text-lg font-bold text-slate-900">Enquiry Registered Successfully</h3>
+              <p className="text-xs text-slate-700 mt-1 leading-relaxed font-medium">{confirmationNotice}</p>
             </div>
           </div>
         </div>
@@ -145,11 +144,11 @@ export default function PartyAndEventsPage() {
       {/* Curated Event Types Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#D4AF37]">PARTIES &amp; CELEBRATIONS</p>
-          <h2 className="font-serif text-3xl sm:text-4xl font-normal text-white">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-blue-600">PARTIES &amp; CELEBRATIONS</p>
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-slate-900">
             Party Packages &amp; Private Dining Halls
           </h2>
-          <p className="text-xs sm:text-sm text-slate-300 font-normal">
+          <p className="text-xs sm:text-sm text-slate-600 font-normal">
             Every event includes a dedicated manager, custom food and drink menus, and private seating tailored to your celebration.
           </p>
         </div>
@@ -158,21 +157,21 @@ export default function PartyAndEventsPage() {
           {events.map((evt) => (
             <div
               key={evt.id}
-              className="bg-[#0A111F] rounded-3xl overflow-hidden border border-[#D4AF37]/20 shadow-xl hover:border-[#D4AF37]/50 hover:shadow-2xl hover:shadow-[#D4AF37]/5 transition-all duration-300 flex flex-col justify-between group"
+              className="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:border-blue-500 hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
             >
               {/* Image & Capacity Badge */}
               <div>
-                <div className="relative aspect-[16/10] overflow-hidden bg-[#070B12]">
+                <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
                   <img
                     src={evt.image_url}
                     alt={evt.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-[#070B12]/80 backdrop-blur-md text-[#D4AF37] border border-[#D4AF37]/30 text-[10px] font-bold uppercase tracking-wider shadow">
+                  <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-blue-700 border border-slate-200 text-[10px] font-bold uppercase tracking-wider shadow-xs">
                     {evt.category}
                   </div>
-                  <div className="absolute bottom-4 right-4 px-3 py-1 rounded-full bg-[#070B12]/85 text-white text-[10px] font-bold flex items-center gap-1 shadow border border-[#D4AF37]/30 backdrop-blur-md">
-                    <Users className="w-3 h-3 text-[#D4AF37]" />
+                  <div className="absolute bottom-4 right-4 px-3 py-1 rounded-full bg-slate-900/80 text-white text-[10px] font-bold flex items-center gap-1 shadow backdrop-blur-md">
+                    <Users className="w-3 h-3 text-amber-400" />
                     <span>{evt.capacity}</span>
                   </div>
                 </div>
@@ -180,21 +179,21 @@ export default function PartyAndEventsPage() {
                 {/* Details */}
                 <div className="p-6 space-y-4">
                   <div>
-                    <p className="text-[11px] text-[#D4AF37] font-bold uppercase tracking-widest">{evt.tagline}</p>
-                    <h3 className="font-serif text-xl font-normal text-white mt-1 group-hover:text-[#D4AF37] transition-colors">
+                    <p className="text-[11px] text-amber-600 font-bold uppercase tracking-widest">{evt.tagline}</p>
+                    <h3 className="font-serif text-xl font-bold text-slate-900 mt-1 group-hover:text-blue-600 transition-colors">
                       {evt.title}
                     </h3>
-                    <p className="text-xs text-slate-300 mt-2 leading-relaxed font-medium">
+                    <p className="text-xs text-slate-600 mt-2 leading-relaxed font-normal">
                       {evt.description}
                     </p>
                   </div>
 
                   {/* Inclusions List */}
-                  <div className="space-y-1.5 pt-3 border-t border-[#D4AF37]/15">
-                    <p className="text-[11px] font-bold text-slate-300 uppercase tracking-widest">Package Inclusions:</p>
+                  <div className="space-y-1.5 pt-3 border-t border-slate-100">
+                    <p className="text-[11px] font-bold text-slate-800 uppercase tracking-widest">Package Inclusions:</p>
                     {evt.inclusions?.map((inc, i) => (
-                      <div key={i} className="flex items-center gap-2 text-xs text-slate-400">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
+                      <div key={i} className="flex items-center gap-2 text-xs text-slate-600">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
                         <span>{inc}</span>
                       </div>
                     ))}
@@ -206,7 +205,7 @@ export default function PartyAndEventsPage() {
               <div className="p-6 pt-0">
                 <button
                   onClick={() => handleOpenEnquiry(evt)}
-                  className="w-full py-3 rounded-full bg-[#0F1626] hover:bg-[#D4AF37] text-white hover:text-[#070B12] border border-[#D4AF37]/30 text-xs font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 shadow-md"
+                  className="w-full py-3 rounded-full bg-slate-50 hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 text-slate-800 hover:text-white border border-slate-200 text-xs font-bold tracking-widest uppercase transition-all flex items-center justify-center gap-2 shadow-xs"
                 >
                   <span>Enquire For This Package</span>
                   <ChevronRight className="w-4 h-4" />
@@ -219,17 +218,17 @@ export default function PartyAndEventsPage() {
 
       {/* Interactive Enquiry Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-md">
-          <div className="bg-[#0A111F] border border-[#D4AF37]/30 rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto text-slate-100">
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 backdrop-blur-md">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto text-slate-800">
             {/* Modal Header */}
-            <div className="flex items-start justify-between border-b border-[#D4AF37]/20 pb-4">
+            <div className="flex items-start justify-between border-b border-slate-200 pb-4">
               <div>
-                <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-bold">VIP Private Events</span>
-                <h3 className="font-serif text-2xl font-normal text-white">Plan Your Celebration</h3>
+                <span className="text-[10px] uppercase tracking-widest text-blue-600 font-bold">VIP Private Events</span>
+                <h3 className="font-serif text-2xl font-bold text-slate-900">Plan Your Celebration</h3>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-[#070B12] text-[#D4AF37] border border-[#D4AF37]/30 flex items-center justify-center hover:bg-[#D4AF37] hover:text-[#070B12] transition-colors"
+                className="w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:text-rose-600 border border-slate-200 flex items-center justify-center transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -238,11 +237,11 @@ export default function PartyAndEventsPage() {
             {/* Form */}
             <form onSubmit={handleSubmitEnquiry} className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1.5 uppercase tracking-wider">Occasion / Event Type</label>
+                <label className="text-xs font-bold text-slate-700 block mb-1.5 uppercase tracking-wider">Occasion / Event Type</label>
                 <select
                   value={eventType}
                   onChange={(e) => setEventType(e.target.value)}
-                  className="w-full text-xs bg-[#070B12] border border-[#D4AF37]/25 rounded-xl px-3.5 py-3 text-white focus:outline-none focus:border-[#D4AF37]"
+                  className="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                 >
                   <option value="Bespoke Birthday Celebrations">Bespoke Birthday Celebrations</option>
                   <option value="Anniversary & Romantic Dining">Anniversary & Romantic Dining</option>
@@ -255,45 +254,45 @@ export default function PartyAndEventsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1.5 uppercase tracking-wider">Your Full Name *</label>
+                  <label className="text-xs font-bold text-slate-700 block mb-1.5 uppercase tracking-wider">Your Full Name *</label>
                   <input
                     type="text"
                     required
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
                     placeholder="e.g. Vikramaditya Roy"
-                    className="w-full text-xs bg-[#070B12] border border-[#D4AF37]/25 rounded-xl px-3.5 py-3 text-white focus:outline-none focus:border-[#D4AF37]"
+                    className="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1.5 uppercase tracking-wider">Phone Number (+91) *</label>
+                  <label className="text-xs font-bold text-slate-700 block mb-1.5 uppercase tracking-wider">Phone Number (+91) *</label>
                   <input
                     type="tel"
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="e.g. 98110 01100"
-                    className="w-full text-xs bg-[#070B12] border border-[#D4AF37]/25 rounded-xl px-3.5 py-3 text-white focus:outline-none focus:border-[#D4AF37]"
+                    className="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1.5 uppercase tracking-wider">Preferred Date</label>
+                  <label className="text-xs font-bold text-slate-700 block mb-1.5 uppercase tracking-wider">Preferred Date</label>
                   <input
                     type="date"
                     value={preferredDate}
                     onChange={(e) => setPreferredDate(e.target.value)}
-                    className="w-full text-xs bg-[#070B12] border border-[#D4AF37]/25 rounded-xl px-3.5 py-3 text-white focus:outline-none focus:border-[#D4AF37]"
+                    className="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1.5 uppercase tracking-wider">Time Slot</label>
+                  <label className="text-xs font-bold text-slate-700 block mb-1.5 uppercase tracking-wider">Time Slot</label>
                   <select
                     value={preferredTime}
                     onChange={(e) => setPreferredTime(e.target.value)}
-                    className="w-full text-xs bg-[#070B12] border border-[#D4AF37]/25 rounded-xl px-3.5 py-3 text-white focus:outline-none focus:border-[#D4AF37]"
+                    className="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                   >
                     <option value="12:30 PM">12:30 PM (Lunch)</option>
                     <option value="02:00 PM">02:00 PM (Afternoon)</option>
@@ -303,52 +302,52 @@ export default function PartyAndEventsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1.5 uppercase tracking-wider">Guest Count</label>
+                  <label className="text-xs font-bold text-slate-700 block mb-1.5 uppercase tracking-wider">Guest Count</label>
                   <input
                     type="number"
                     min={2}
                     max={250}
                     value={guestCount}
                     onChange={(e) => setGuestCount(Number(e.target.value))}
-                    className="w-full text-xs bg-[#070B12] border border-[#D4AF37]/25 rounded-xl px-3.5 py-3 text-white focus:outline-none focus:border-[#D4AF37]"
+                    className="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1.5 uppercase tracking-wider">Email Address (Optional)</label>
+                <label className="text-xs font-bold text-slate-700 block mb-1.5 uppercase tracking-wider">Email Address (Optional)</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
-                  className="w-full text-xs bg-[#070B12] border border-[#D4AF37]/25 rounded-xl px-3.5 py-3 text-white focus:outline-none focus:border-[#D4AF37]"
+                  className="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1.5 uppercase tracking-wider">Special Dietary Requests / Customization</label>
+                <label className="text-xs font-bold text-slate-700 block mb-1.5 uppercase tracking-wider">Special Dietary Requests / Customization</label>
                 <textarea
                   rows={3}
                   value={specialRequests}
                   onChange={(e) => setSpecialRequests(e.target.value)}
                   placeholder="e.g. Need acoustic violinist for 30 mins, 4 guests are Jain vegetarian, custom celebratory cake..."
-                  className="w-full text-xs bg-[#070B12] border border-[#D4AF37]/25 rounded-xl px-3.5 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-[#D4AF37]"
+                  className="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white"
                 />
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-[#D4AF37]/15">
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-2.5 rounded-full bg-[#070B12] border border-[#D4AF37]/30 text-slate-300 text-xs font-semibold hover:border-[#D4AF37]"
+                  className="px-5 py-2.5 rounded-full bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-200"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#B38728] text-[#070B12] hover:opacity-95 text-xs font-bold tracking-widest uppercase transition-all shadow-lg shadow-[#D4AF37]/20 disabled:opacity-50"
+                  className="px-6 py-2.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 text-xs font-bold tracking-widest uppercase transition-all shadow-md disabled:opacity-50"
                 >
                   {isSubmitting ? "Submitting..." : "Send Event Enquiry"}
                 </button>

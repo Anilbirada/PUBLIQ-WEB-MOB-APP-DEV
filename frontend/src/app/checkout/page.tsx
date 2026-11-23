@@ -40,10 +40,10 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center p-4 bg-[#070B12]">
+      <div className="min-h-[70vh] flex items-center justify-center p-4 bg-[#F8FAFC]">
         <div className="text-center space-y-4">
-          <p className="text-slate-400">Your order summary is empty.</p>
-          <a href="/menu" className="text-sm font-bold text-[#D4AF37] underline">
+          <p className="text-slate-600 font-medium">Your order summary is empty.</p>
+          <a href="/menu" className="text-sm font-bold text-blue-600 hover:text-blue-800 underline">
             Return to Digital Menu
           </a>
         </div>
@@ -110,60 +110,60 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070B12] text-slate-100 py-10 sm:py-14 bg-cover bg-fixed" style={{ backgroundImage: "linear-gradient(to bottom, rgba(7,11,18,0.97), rgba(7,11,18,0.95)), url('/images/publiq/backgrounds/bg-menu.webp')" }}>
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 py-10 sm:py-14">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <a href="/cart" className="p-2.5 rounded-full bg-[#0A111F] hover:bg-[#0F1626] border border-[#D4AF37]/30 text-[#D4AF37] transition-colors">
+          <a href="/cart" className="p-2.5 rounded-full bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 transition-colors shadow-xs">
             <ArrowLeft className="w-5 h-5" />
           </a>
           <div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-normal text-white">
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
               Confirm Your Order
             </h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-600 mt-1 font-medium">
               {isDineInActive ? `Dine-In • Table ${tableNumber}` : "Online Order Checkout"}
             </p>
           </div>
         </div>
 
         {errorMessage && (
-          <div className="mb-6 p-4 rounded-2xl bg-rose-950/60 border border-rose-500/40 text-rose-300 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+          <div className="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-300 text-rose-800 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
             <span>{errorMessage}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmitOrder} className="space-y-6">
           {/* 1. Dining Channel / Table Confirmation */}
-          <div className="bg-[#0A111F] rounded-3xl p-6 border border-[#D4AF37]/20 shadow-xl space-y-4">
-            <h2 className="font-serif text-lg font-normal text-white flex items-center justify-between">
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <h2 className="font-serif text-lg font-bold text-slate-900 flex items-center justify-between">
               <span>Dining Destination</span>
               {isDineInActive && (
-                <span className="text-xs font-bold text-[#D4AF37] bg-[#0F1626] px-3.5 py-1 rounded-full border border-[#D4AF37]/30">
+                <span className="text-xs font-bold text-blue-700 bg-blue-50 px-3.5 py-1 rounded-full border border-blue-200">
                   Dine-In Active
                 </span>
               )}
             </h2>
 
             {isDineInActive ? (
-              <div className="p-4 rounded-2xl bg-[#070B12] border border-[#D4AF37]/25 flex items-center justify-between">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                 <div>
-                  <span className="text-xs uppercase tracking-widest text-[#D4AF37] font-bold block">
+                  <span className="text-xs uppercase tracking-widest text-blue-700 font-bold block">
                     {outletName || "PUBLIQ Bar & Restaurant"}
                   </span>
-                  <span className="font-serif text-xl font-normal text-white">
+                  <span className="font-serif text-xl font-bold text-slate-900">
                     Table {tableNumber}
                   </span>
                 </div>
-                <div className="text-right text-[11px] text-slate-400">
+                <div className="text-right text-[11px] text-slate-500">
                   Culinary creations delivered <br /> directly to your table
                 </div>
               </div>
             ) : (
               <div className="space-y-3 text-xs">
                 <div>
-                  <label className="font-semibold text-slate-300 block mb-1">
+                  <label className="font-semibold text-slate-700 block mb-1">
                     Contact Phone Number (For updates)
                   </label>
                   <input
@@ -172,7 +172,7 @@ export default function CheckoutPage() {
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     placeholder="+91 98765 43210"
-                    className="w-full p-3 rounded-xl bg-[#070B12] border border-[#D4AF37]/25 text-white placeholder-slate-500 focus:outline-none focus:border-[#D4AF37]"
+                    className="w-full p-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white"
                   />
                 </div>
               </div>
@@ -180,15 +180,15 @@ export default function CheckoutPage() {
           </div>
 
           {/* 2. Customer Name & Special Requests */}
-          <div className="bg-[#0A111F] rounded-3xl p-6 border border-[#D4AF37]/20 shadow-xl space-y-4 text-xs">
-            <h2 className="font-serif text-lg font-normal text-white">
-              Guest Details & Preferences
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4 text-xs">
+            <h2 className="font-serif text-lg font-bold text-slate-900">
+              Guest Details &amp; Preferences
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="font-semibold text-slate-300 block mb-1.5">
-                  Guest Full Name <span className="text-[#D4AF37] font-bold">* (Required)</span>
+                <label className="font-semibold text-slate-700 block mb-1.5">
+                  Guest Full Name <span className="text-amber-600 font-bold">* (Required)</span>
                 </label>
                 <input
                   type="text"
@@ -196,15 +196,15 @@ export default function CheckoutPage() {
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="e.g. Rahul Sharma"
-                  className="w-full p-3 rounded-xl bg-[#070B12] border border-[#D4AF37]/25 text-white placeholder-slate-500 focus:outline-none focus:border-[#D4AF37] text-sm"
+                  className="w-full p-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white text-sm"
                 />
               </div>
               <div>
-                <label className="font-semibold text-slate-300 block mb-1.5">
-                  Mobile Phone Number <span className="text-[#D4AF37] font-bold">* (10 Digits Required)</span>
+                <label className="font-semibold text-slate-700 block mb-1.5">
+                  Mobile Phone Number <span className="text-amber-600 font-bold">* (10 Digits Required)</span>
                 </label>
                 <div className="flex gap-2">
-                  <span className="inline-flex items-center px-3.5 rounded-xl border border-[#D4AF37]/25 bg-[#070B12] text-[#D4AF37] font-bold text-xs">
+                  <span className="inline-flex items-center px-3.5 rounded-xl border border-slate-300 bg-slate-50 text-slate-800 font-bold text-xs">
                     🇮🇳 +91
                   </span>
                   <input
@@ -214,17 +214,17 @@ export default function CheckoutPage() {
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     placeholder="9876543210"
-                    className="w-full p-3 rounded-xl bg-[#070B12] border border-[#D4AF37]/25 text-white placeholder-slate-500 focus:outline-none focus:border-[#D4AF37] text-sm"
+                    className="w-full p-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white text-sm"
                   />
                 </div>
-                <p className="text-[10px] text-slate-400 mt-1">
-                  ⚡ Live KOT tracking & GST tax invoice will be sent to this number.
+                <p className="text-[10px] text-slate-500 mt-1 font-medium">
+                  ⚡ Live KOT tracking &amp; GST tax invoice will be sent to this number.
                 </p>
               </div>
             </div>
 
             <div>
-              <label className="font-semibold text-slate-300 block mb-1.5">
+              <label className="font-semibold text-slate-700 block mb-1.5">
                 Special Culinary Instructions
               </label>
               <textarea
@@ -232,17 +232,17 @@ export default function CheckoutPage() {
                 onChange={(e) => setSpecialInstructions(e.target.value)}
                 placeholder="Any dietary preferences or serving notes for the kitchen..."
                 rows={2}
-                className="w-full p-3 rounded-xl bg-[#070B12] border border-[#D4AF37]/25 text-white placeholder-slate-500 focus:outline-none focus:border-[#D4AF37]"
+                className="w-full p-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white"
               />
             </div>
 
             {/* Alcohol Compliance Disclaimer */}
             {hasAlcohol && (
-              <div className="p-4 rounded-2xl bg-[#0F1626] border border-amber-500/30 text-amber-300 space-y-2">
-                <div className="flex items-center gap-2 font-bold text-xs text-[#D4AF37]">
+              <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 space-y-2">
+                <div className="flex items-center gap-2 font-bold text-xs text-amber-800">
                   <span>Legal Drinking Age Verification (21+)</span>
                 </div>
-                <p className="text-[11px] text-slate-300 leading-relaxed">
+                <p className="text-[11px] text-slate-700 leading-relaxed font-normal">
                   Your order contains alcoholic beverages. In compliance with the Karnataka / Telangana Excise Act, alcoholic beverages may only be ordered by and served to adults aged 21 years and older. Physical government ID verification may be requested by floor staff.
                 </p>
                 <label className="flex items-center gap-2.5 cursor-pointer pt-1">
@@ -250,9 +250,9 @@ export default function CheckoutPage() {
                     type="checkbox"
                     checked={ageConfirmed}
                     onChange={(e) => setAgeConfirmed(e.target.checked)}
-                    className="w-4 h-4 rounded text-[#D4AF37] focus:ring-[#D4AF37] accent-[#D4AF37]"
+                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-600 accent-blue-600"
                   />
-                  <span className="font-bold text-xs text-white">
+                  <span className="font-bold text-xs text-slate-900">
                     I confirm that I am 21 years of age or older.
                   </span>
                 </label>
@@ -261,8 +261,8 @@ export default function CheckoutPage() {
           </div>
 
           {/* 3. Payment Method Selection */}
-          <div className="bg-[#0A111F] rounded-3xl p-6 border border-[#D4AF37]/20 shadow-xl space-y-4">
-            <h2 className="font-serif text-lg font-normal text-white">
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <h2 className="font-serif text-lg font-bold text-slate-900">
               Select Payment Method
             </h2>
 
@@ -272,19 +272,19 @@ export default function CheckoutPage() {
                 onClick={() => setPaymentMethod("UPI")}
                 className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
                   paymentMethod === "UPI"
-                    ? "border-[#D4AF37] bg-[#0F1626] ring-1 ring-[#D4AF37]"
-                    : "border-[#D4AF37]/20 bg-[#070B12] hover:border-[#D4AF37]/40"
+                    ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
+                    : "border-slate-200 bg-white hover:border-slate-300"
                 }`}
               >
                 <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-400 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center">
                     <Smartphone className="w-5 h-5" />
                   </div>
                   <div>
-                    <span className="font-bold text-sm text-white block">
+                    <span className="font-bold text-sm text-slate-900 block">
                       UPI Instant Pay (GPay, PhonePe, Paytm, BHIM)
                     </span>
-                    <span className="text-[11px] text-slate-400">
+                    <span className="text-[11px] text-slate-500">
                       Fast zero-contact digital payment with instant receipt
                     </span>
                   </div>
@@ -294,7 +294,7 @@ export default function CheckoutPage() {
                   name="payment"
                   checked={paymentMethod === "UPI"}
                   onChange={() => setPaymentMethod("UPI")}
-                  className="text-[#D4AF37] focus:ring-[#D4AF37] accent-[#D4AF37]"
+                  className="text-blue-600 focus:ring-blue-600 accent-blue-600"
                 />
               </label>
 
@@ -303,19 +303,19 @@ export default function CheckoutPage() {
                 onClick={() => setPaymentMethod("CARD")}
                 className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
                   paymentMethod === "CARD"
-                    ? "border-[#D4AF37] bg-[#0F1626] ring-1 ring-[#D4AF37]"
-                    : "border-[#D4AF37]/20 bg-[#070B12] hover:border-[#D4AF37]/40"
+                    ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
+                    : "border-slate-200 bg-white hover:border-slate-300"
                 }`}
               >
                 <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-blue-950/60 border border-blue-500/40 text-blue-400 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center">
                     <CreditCard className="w-5 h-5" />
                   </div>
                   <div>
-                    <span className="font-bold text-sm text-white block">
+                    <span className="font-bold text-sm text-slate-900 block">
                       Credit / Debit Card
                     </span>
-                    <span className="text-[11px] text-slate-400">
+                    <span className="text-[11px] text-slate-500">
                       Visa, MasterCard, RuPay, Amex
                     </span>
                   </div>
@@ -325,7 +325,7 @@ export default function CheckoutPage() {
                   name="payment"
                   checked={paymentMethod === "CARD"}
                   onChange={() => setPaymentMethod("CARD")}
-                  className="text-[#D4AF37] focus:ring-[#D4AF37] accent-[#D4AF37]"
+                  className="text-blue-600 focus:ring-blue-600 accent-blue-600"
                 />
               </label>
 
@@ -334,19 +334,19 @@ export default function CheckoutPage() {
                 onClick={() => setPaymentMethod("COUNTER_BILLING")}
                 className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
                   paymentMethod === "COUNTER_BILLING"
-                    ? "border-[#D4AF37] bg-[#0F1626] ring-1 ring-[#D4AF37]"
-                    : "border-[#D4AF37]/20 bg-[#070B12] hover:border-[#D4AF37]/40"
+                    ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
+                    : "border-slate-200 bg-white hover:border-slate-300"
                 }`}
               >
                 <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-amber-950/60 border border-[#D4AF37]/40 text-[#D4AF37] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center">
                     <Banknote className="w-5 h-5" />
                   </div>
                   <div>
-                    <span className="font-bold text-sm text-white block">
+                    <span className="font-bold text-sm text-slate-900 block">
                       Pay at Counter / Table Staff Billing
                     </span>
-                    <span className="text-[11px] text-slate-400">
+                    <span className="text-[11px] text-slate-500">
                       Settle your bill after enjoying your culinary experience
                     </span>
                   </div>
@@ -356,24 +356,24 @@ export default function CheckoutPage() {
                   name="payment"
                   checked={paymentMethod === "COUNTER_BILLING"}
                   onChange={() => setPaymentMethod("COUNTER_BILLING")}
-                  className="text-[#D4AF37] focus:ring-[#D4AF37] accent-[#D4AF37]"
+                  className="text-blue-600 focus:ring-blue-600 accent-blue-600"
                 />
               </label>
             </div>
           </div>
 
           {/* 4. Final Review & Submit Button */}
-          <div className="bg-[#0A111F] text-white rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border border-[#D4AF37]/30">
-            <div className="flex items-baseline justify-between border-b border-[#D4AF37]/20 pb-4">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 space-y-6 shadow-md border border-slate-200">
+            <div className="flex items-baseline justify-between border-b border-slate-200 pb-4">
               <div>
-                <span className="text-xs text-[#D4AF37] uppercase tracking-widest block font-semibold">
+                <span className="text-xs text-blue-600 uppercase tracking-widest block font-bold">
                   Total Payable Amount
                 </span>
-                <span className="text-[11px] text-slate-400">
+                <span className="text-[11px] text-slate-500">
                   Includes 5% GST (2.5% CGST + 2.5% SGST)
                 </span>
               </div>
-              <span className="font-serif text-3xl font-bold text-[#D4AF37]">
+              <span className="font-serif text-3xl font-bold text-slate-900">
                 ₹{finalAmount}
               </span>
             </div>
@@ -381,16 +381,16 @@ export default function CheckoutPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#B38728] hover:opacity-95 text-[#070B12] font-bold text-xs tracking-widest uppercase transition-all shadow-xl shadow-[#D4AF37]/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs tracking-widest uppercase transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {isSubmitting ? (
                 <span>Submitting Order to Kitchen...</span>
               ) : (
-                <span>Confirm & Place Order →</span>
+                <span>Confirm &amp; Place Order →</span>
               )}
             </button>
 
-            <div className="text-center text-[11px] text-slate-400">
+            <div className="text-center text-[11px] text-slate-500">
               Orders are immediately transmitted to the PUBLIQ kitchen display and POS terminal.
             </div>
           </div>

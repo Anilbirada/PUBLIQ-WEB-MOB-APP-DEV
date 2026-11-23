@@ -1072,7 +1072,7 @@ export default function WaiterMobileApp() {
 
               {/* Camera Scanner Viewport */}
               <div className="bg-white border border-slate-200 rounded-3xl p-4 shadow-xl text-center space-y-3">
-                <div className="relative w-full aspect-square max-w-[280px] mx-auto bg-black rounded-2xl overflow-hidden border-2 border-dashed border-[#D4AF37]/60 flex items-center justify-center">
+                <div className="relative w-full aspect-square max-w-[280px] mx-auto bg-slate-100 rounded-2xl overflow-hidden border-2 border-dashed border-amber-500/60 flex items-center justify-center">
                   {cameraActive ? (
                     <video 
                       ref={videoRef} 
@@ -1670,7 +1670,7 @@ export default function WaiterMobileApp() {
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-black">Table {pt.table_number}</span>
                           <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded ${
-                            billTableNum === pt.table_number ? "bg-black text-[#D4AF37]" : "bg-amber-950 text-amber-300"
+                            billTableNum === pt.table_number ? "bg-blue-600 text-white" : "bg-amber-100 text-amber-800"
                           }`}>
                             {pt.order_status}
                           </span>
@@ -2087,36 +2087,36 @@ export default function WaiterMobileApp() {
 
         {/* Printable Tax Invoice Modal */}
         {showInvoiceModal && generatedInvoice && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-slate-900/30 backdrop-blur-xs flex items-center justify-center p-4 z-50">
             <div className="w-full max-w-sm bg-white border border-slate-200 rounded-3xl p-5 shadow-2xl space-y-3.5 max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center border-b border-slate-200 pb-2">
-                <span className="text-xs font-black text-[#D4AF37] tracking-wider uppercase">OFFICIAL TAX INVOICE</span>
-                <button onClick={() => setShowInvoiceModal(false)} className="text-slate-400 hover:text-white">✕</button>
+                <span className="text-xs font-black text-amber-600 tracking-wider uppercase">OFFICIAL TAX INVOICE</span>
+                <button onClick={() => setShowInvoiceModal(false)} className="text-slate-400 hover:text-slate-700">✕</button>
               </div>
 
               <div className="text-center border-b border-slate-200 pb-2.5">
-                <div className="w-12 h-12 mx-auto rounded-xl bg-slate-50 p-1 border border-[#D4AF37]/50 mb-1 flex items-center justify-center">
+                <div className="w-12 h-12 mx-auto rounded-xl bg-slate-50 p-1 border border-amber-500/50 mb-1 flex items-center justify-center">
                   <img src="/logo.png?v=4" alt="PUBLIQ" className="w-full h-full object-contain" />
                 </div>
-                <h3 className="text-sm font-black text-white">{generatedInvoice.outlet_name}</h3>
-                <p className="text-[10px] text-slate-400">{generatedInvoice.legal_name}</p>
-                <p className="text-[9px] text-slate-400 font-mono">GSTIN: {generatedInvoice.gstin} • SAC: {generatedInvoice.sac_code}</p>
+                <h3 className="text-sm font-black text-slate-900">{generatedInvoice.outlet_name}</h3>
+                <p className="text-[10px] text-slate-500">{generatedInvoice.legal_name}</p>
+                <p className="text-[9px] text-slate-500 font-mono">GSTIN: {generatedInvoice.gstin} • SAC: {generatedInvoice.sac_code}</p>
               </div>
 
-              <div className="bg-[#111927] p-2.5 rounded-xl space-y-1 text-[11px]">
-                <div className="flex justify-between text-slate-300">
+              <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-1 text-[11px]">
+                <div className="flex justify-between text-slate-600">
                   <span>Invoice No:</span>
-                  <span className="font-mono text-[#D4AF37] font-bold">{generatedInvoice.invoice_number}</span>
+                  <span className="font-mono text-blue-600 font-bold">{generatedInvoice.invoice_number}</span>
                 </div>
-                <div className="flex justify-between text-slate-300">
+                <div className="flex justify-between text-slate-600">
                   <span>Date &amp; Time:</span>
                   <span>{generatedInvoice.invoice_date}</span>
                 </div>
-                <div className="flex justify-between text-slate-300">
+                <div className="flex justify-between text-slate-600">
                   <span>Table / Steward:</span>
                   <span>Table {generatedInvoice.table_number} • {generatedInvoice.waiter_name}</span>
                 </div>
-                <div className="flex justify-between text-slate-300">
+                <div className="flex justify-between text-slate-600">
                   <span>Guest Name:</span>
                   <span>{generatedInvoice.customer_name}</span>
                 </div>
@@ -2125,34 +2125,34 @@ export default function WaiterMobileApp() {
               {/* Invoice Line Items */}
               <div className="space-y-1 text-xs max-h-36 overflow-y-auto pr-1">
                 {(generatedInvoice.items || billPreview?.items || []).map((it: any) => (
-                  <div key={it.id || it.item_name} className="flex justify-between py-0.5 border-b border-slate-200/40">
-                    <span className="text-slate-200">{it.quantity}x {it.item_name}</span>
-                    <span className="text-white font-medium">₹{(it.total_price || 0).toFixed(2)}</span>
+                  <div key={it.id || it.item_name} className="flex justify-between py-0.5 border-b border-slate-200/60">
+                    <span className="text-slate-700">{it.quantity}x {it.item_name}</span>
+                    <span className="text-slate-900 font-medium">₹{(it.total_price || 0).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
 
               {/* Tax Breakdown */}
-              <div className="bg-[#111927] p-3 rounded-xl space-y-1 text-xs">
-                <div className="flex justify-between text-slate-400">
+              <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl space-y-1 text-xs">
+                <div className="flex justify-between text-slate-500">
                   <span>Subtotal</span>
                   <span>₹{generatedInvoice.subtotal.toFixed(2)}</span>
                 </div>
                 {generatedInvoice.discount_amount > 0 && (
-                  <div className="flex justify-between text-rose-400">
+                  <div className="flex justify-between text-rose-500">
                     <span>Discount ({generatedInvoice.discount_percent}%)</span>
                     <span>-₹{generatedInvoice.discount_amount.toFixed(2)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-slate-400">
+                <div className="flex justify-between text-slate-500">
                   <span>CGST (2.5%)</span>
                   <span>₹{generatedInvoice.cgst.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-slate-400">
+                <div className="flex justify-between text-slate-500">
                   <span>SGST (2.5%)</span>
                   <span>₹{generatedInvoice.sgst.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-base font-black text-[#D4AF37] pt-1.5 border-t border-slate-200">
+                <div className="flex justify-between text-base font-black text-slate-900 pt-1.5 border-t border-slate-200">
                   <span>NET PAYABLE</span>
                   <span>₹{generatedInvoice.grand_total.toFixed(2)}</span>
                 </div>
@@ -2161,7 +2161,7 @@ export default function WaiterMobileApp() {
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => window.print()}
-                  className="py-2.5 rounded-xl bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-slate-700"
+                  className="py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5 border border-slate-200"
                 >
                   <Printer className="w-4 h-4" />
                   PRINT RECEIPT
@@ -2171,7 +2171,7 @@ export default function WaiterMobileApp() {
                     setShowInvoiceModal(false);
                     handleGenerateUPIQR();
                   }}
-                  className="py-2.5 rounded-xl bg-[#D4AF37] text-black text-xs font-black flex items-center justify-center gap-1.5"
+                  className="py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-black flex items-center justify-center gap-1.5 shadow-md"
                 >
                   <QrCode className="w-4 h-4" />
                   PAY VIA UPI
@@ -2183,22 +2183,22 @@ export default function WaiterMobileApp() {
 
         {/* Split Bill Modal */}
         {showSplitModal && billPreview && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-slate-900/30 backdrop-blur-xs flex items-center justify-center p-4 z-50">
             <div className="w-full max-w-sm bg-white border border-slate-200 rounded-3xl p-6 space-y-4 shadow-xl">
               <div className="flex justify-between items-center">
-                <span className="text-xs font-black text-[#D4AF37] uppercase tracking-wider">SPLIT BILL CALCULATOR</span>
-                <button onClick={() => setShowSplitModal(false)} className="text-slate-400 hover:text-white">✕</button>
+                <span className="text-xs font-black text-amber-600 uppercase tracking-wider">SPLIT BILL CALCULATOR</span>
+                <button onClick={() => setShowSplitModal(false)} className="text-slate-400 hover:text-slate-700">✕</button>
               </div>
 
               <div>
-                <span className="text-xs text-slate-300">Number of Guests Splitting:</span>
+                <span className="text-xs text-slate-600">Number of Guests Splitting:</span>
                 <div className="grid grid-cols-4 gap-2 mt-2">
                   {[2, 3, 4, 5].map(n => (
                     <button
                       key={n}
                       onClick={() => setSplitCount(n)}
                       className={`py-2 rounded-xl text-xs font-bold ${
-                        splitCount === n ? "bg-[#D4AF37] text-black" : "bg-slate-50 text-white"
+                        splitCount === n ? "bg-amber-500 text-white shadow-xs" : "bg-slate-100 text-slate-800 border border-slate-200"
                       }`}
                     >
                       {n}
@@ -2207,16 +2207,16 @@ export default function WaiterMobileApp() {
                 </div>
               </div>
 
-              <div className="bg-slate-50 p-4 rounded-xl text-center border border-[#D4AF37]/40">
-                <span className="text-[10px] text-[#D4AF37] font-bold uppercase tracking-wider block">EACH GUEST PAYS:</span>
-                <span className="text-2xl font-black text-white mt-1 block">
+              <div className="bg-slate-50 p-4 rounded-xl text-center border border-amber-300">
+                <span className="text-[10px] text-amber-700 font-bold uppercase tracking-wider block">EACH GUEST PAYS:</span>
+                <span className="text-2xl font-black text-slate-900 mt-1 block">
                   ₹{(billPreview.grand_total / splitCount).toFixed(2)}
                 </span>
               </div>
 
               <button
                 onClick={() => setShowSplitModal(false)}
-                className="w-full py-2.5 rounded-xl bg-slate-800 text-xs font-bold text-slate-300"
+                className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 border border-slate-200"
               >
                 DONE
               </button>
@@ -2226,7 +2226,7 @@ export default function WaiterMobileApp() {
 
         {/* Call Manager Modal */}
         {showManagerModal && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-slate-900/30 backdrop-blur-xs flex items-center justify-center p-4 z-50">
             <div className="w-full max-w-sm bg-white border border-rose-300 rounded-3xl p-6 space-y-4 shadow-xl">
               <div className="flex justify-between items-center">
                 <span className="text-xs font-black text-rose-400 uppercase tracking-wider">CALL DUTY MANAGER</span>

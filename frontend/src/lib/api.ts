@@ -162,6 +162,18 @@ export const api = {
     }),
 
   // Auth & Customers
+  universalLogin: (data: {
+    role?: string;
+    identifier?: string;
+    password?: string;
+    pin?: string;
+    is_quick_demo?: boolean;
+  }) =>
+    apiRequest<any>("/auth/universal-login", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  getRoles: () => apiRequest<any>("/auth/roles"),
   registerCustomer: (data: { phone: string; full_name: string; email?: string; password?: string }) =>
     apiRequest<any>("/auth/register", {
       method: "POST",

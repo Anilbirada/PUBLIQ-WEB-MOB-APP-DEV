@@ -50,6 +50,7 @@ export const Navbar: React.FC = () => {
     { number: "07", label: "Private Dining", href: "/events#private-dining", desc: "Host birthdays, family celebrations & corporate dinners" },
     { number: "08", label: "Book a Table", href: "/reservations", desc: "Reserve your table in seconds with instant confirmation" },
     { number: "09", label: "Contact Us", href: "/#contact", desc: "Our address, phone number & daily opening hours" },
+    { number: "10", label: "Staff & Role Login", href: "/login", desc: "Super Admin, Bar Admin, Kitchen Admin, Waiter & Guest Portals" },
   ];
 
   return (
@@ -137,6 +138,16 @@ export const Navbar: React.FC = () => {
                 className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#E5C378] text-[#070B12] font-cinzel font-bold text-xs tracking-wider uppercase hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all duration-300 transform hover:-translate-y-0.5"
               >
                 RESERVE TABLE
+              </a>
+
+              {/* Portal & Role Login Button */}
+              <a
+                href="/login"
+                className="inline-flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 rounded-full border border-blue-500/40 text-blue-400 hover:text-white bg-blue-950/40 hover:bg-blue-600 transition-all text-xs font-semibold shadow-xs"
+                title="Employee & Role Login"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+                <span className="hidden sm:inline">Portal Login</span>
               </a>
 
               {/* Shopping Bag Button */}
@@ -290,14 +301,14 @@ export const Navbar: React.FC = () => {
               </div>
 
               {/* Administrative Portal Link */}
-              <div className="pt-2 text-center border-t border-white/5">
+              <div className="pt-2 text-center border-t border-white/5 space-y-2">
                 <a 
-                  href="/admin" 
+                  href="/login" 
                   onClick={() => setDrawerOpen(false)}
-                  className="text-[11px] text-[#CBD5E1] hover:text-[#D4AF37] font-mono tracking-wider inline-flex items-center gap-1.5"
+                  className="w-full py-2.5 px-4 rounded-xl bg-blue-950/60 hover:bg-blue-900/80 border border-blue-500/40 text-xs font-bold text-blue-300 hover:text-white flex items-center justify-center gap-2 transition-all shadow-md"
                 >
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  Staff Operations Portal
+                  <ShieldCheck className="w-4 h-4 text-blue-400" />
+                  Staff & Role-Based Login Portal
                 </a>
               </div>
             </div>

@@ -1126,7 +1126,7 @@ export default function HomePage() {
 
 
       {/* ========================================================================= */}
-      {/* SECTION 10: DUAL ACTIONS (RESERVE TABLE & ORDER ONLINE)                    */}
+      {/* SECTION 10: DUAL ACTIONS (RESERVE TABLE & EXPLORE MENU)                   */}
       {/* ========================================================================= */}
       <section className="py-20 relative bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1155,17 +1155,17 @@ export default function HomePage() {
               </a>
             </div>
 
-            {/* Card 2: Online Ordering */}
+            {/* Card 2: Culinary Craft & Menu */}
             <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-amber-50 via-orange-50 to-white border border-amber-200 text-slate-900 flex flex-col justify-between space-y-6 shadow-md hover:shadow-xl transition-all hover:-translate-y-1">
               <div>
                 <span className="text-[10px] font-cinzel uppercase tracking-[0.25em] text-amber-600 font-bold">
-                  DELIVERY &amp; TAKEAWAY
+                  CULINARY EXCELLENCE
                 </span>
                 <h3 className="font-serif text-2xl sm:text-3xl font-bold text-slate-900 mt-1 mb-3">
-                  Order Food to Your Doorstep
+                  Explore Food &amp; Drinks Menu
                 </h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Craving fresh food at home? Order our sizzling tandoori kebabs, rich butter chicken, and fragrant biryanis delivered hot and fresh right to your house.
+                  Discover our sizzling charcoal tandoori kebabs, rich Awadhi curries, fragrant handi biryanis, and artisanal cocktails crafted by master mixologists.
                 </p>
               </div>
 
@@ -1174,7 +1174,7 @@ export default function HomePage() {
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-cinzel font-bold text-xs uppercase tracking-wider transition-all shadow-md"
               >
                 <UtensilsCrossed className="w-4 h-4" />
-                <span>ORDER FOOD ONLINE</span>
+                <span>VIEW COMPLETE MENU</span>
               </a>
             </div>
 

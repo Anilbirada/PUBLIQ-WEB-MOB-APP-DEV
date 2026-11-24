@@ -8,7 +8,7 @@ import { Footer } from "../components/Footer";
 
 export const metadata: Metadata = {
   title: "PUBLIQ Bar & Restaurant — The Art of Gastronomy & Mixology",
-  description: "Experience culinary alchemy, bespoke mixology, and sophisticated nightlife dining at PUBLIQ Bar & Restaurant. Reserve your table or order online.",
+  description: "Experience culinary alchemy, bespoke mixology, and sophisticated nightlife dining at PUBLIQ Bar & Restaurant. Reserve your table or explore our menu.",
   icons: {
     icon: "/favicon.ico",
   },

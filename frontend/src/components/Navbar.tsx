@@ -124,15 +124,8 @@ export const Navbar: React.FC = () => {
               </a>
             </div>
 
-            {/* RIGHT: Actions (Order Online, Reserve Table, Portal Login, Cart) */}
+            {/* RIGHT: Actions (Reserve Table, Customer Orders, Portal Login, Cart) */}
             <div className="flex items-center gap-2.5 sm:gap-3">
-              <a
-                href="/menu"
-                className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold tracking-wider text-slate-700 hover:text-blue-700 px-3 py-2 transition-colors uppercase"
-              >
-                ORDER ONLINE
-              </a>
-
               <a
                 href="/account"
                 className="hidden md:inline-flex items-center gap-1 text-xs font-bold tracking-wider text-slate-700 hover:text-blue-700 px-2.5 py-2 transition-colors uppercase"
@@ -304,7 +297,7 @@ export const Navbar: React.FC = () => {
                   onClick={() => setDrawerOpen(false)}
                   className="px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 text-center font-bold text-xs tracking-wider uppercase transition-all shadow-xs"
                 >
-                  Order Online
+                  Explore Menu
                 </a>
               </div>
 

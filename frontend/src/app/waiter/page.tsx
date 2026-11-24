@@ -175,12 +175,6 @@ export default function WaiterMobileApp() {
     }
   };
 
-  // Quick Demo Login
-  const handleDemoLogin = () => {
-    setPin("6666");
-    handlePinSubmit("6666");
-  };
-
   // Numpad handler
   const handleNumpad = (char: string) => {
     if (char === "C") {
@@ -754,14 +748,6 @@ export default function WaiterMobileApp() {
               </button>
             ))}
           </div>
-
-          <button
-            onClick={handleDemoLogin}
-            disabled={isLoggingIn}
-            className="w-full py-3 rounded-xl bg-[#D4AF37]/15 hover:bg-[#D4AF37]/25 border border-[#D4AF37] text-xs font-bold text-[#D4AF37] tracking-wider transition-all mb-3 shadow-lg"
-          >
-            {isLoggingIn ? "Authenticating..." : "⚡ Fast Demo: Steward Raju (PIN: 6666)"}
-          </button>
 
           <a
             href="https://expo.dev/artifacts/eas/LtMYT2uVL7ZC19BJSr0VGKnvxi-URSRNtcXTzvhc9kE.apk"

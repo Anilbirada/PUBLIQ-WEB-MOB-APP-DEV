@@ -32,7 +32,6 @@ interface AuthContextType {
     identifier?: string;
     password?: string;
     pin?: string;
-    is_quick_demo?: boolean;
   }) => Promise<AuthUser>;
   login: (phoneOrEmail: string, pass: string) => Promise<void>;
   register: (data: { phone: string; full_name: string; email?: string; password?: string }) => Promise<void>;
@@ -70,7 +69,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     identifier?: string;
     password?: string;
     pin?: string;
-    is_quick_demo?: boolean;
   }): Promise<AuthUser> => {
     try {
       const res = await api.universalLogin(params);

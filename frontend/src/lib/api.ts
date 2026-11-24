@@ -167,7 +167,6 @@ export const api = {
     identifier?: string;
     password?: string;
     pin?: string;
-    is_quick_demo?: boolean;
   }) =>
     apiRequest<any>("/auth/universal-login", {
       method: "POST",

@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Clock, Flame, ShieldAlert, Plus, Minus, Check } from "lucide-react";
+import { X, Clock, Flame, ShieldAlert, Plus, Minus, Check, Star } from "lucide-react";
 import { useCart } from "../context/CartContext";
+import { getMenuItemImage } from "../lib/menuImages";
 
 export interface ProductDetailModalProps {
   product: any;
@@ -79,31 +80,24 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
         {/* Product Image Header */}
         <div className="relative h-56 sm:h-64 w-full bg-slate-100 shrink-0">
           <img
-            src={product.image_url || "/images/publiq/food_signature.webp"}
+            src={getMenuItemImage(product)}
             alt={product.name}
             className="w-full h-full object-cover"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.onerror = null;
-              target.src = "/images/publiq/food_signature.webp";
+              target.src = "/images/publiq/food/butter-chicken-copper-handi.webp";
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent pointer-events-none" />
           
           {/* Tags */}
           <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {product.is_veg ? (
-                <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-white/95 px-2.5 py-0.5 rounded border border-emerald-300 backdrop-blur-sm shadow-xs">
-                  <span className="w-2 h-2 rounded-full bg-emerald-600" />
-                  PURE VEG
-                </span>
-              ) : (
-                <span className="flex items-center gap-1 text-[11px] font-bold text-rose-800 bg-white/95 px-2.5 py-0.5 rounded border border-rose-300 backdrop-blur-sm shadow-xs">
-                  <span className="w-2 h-2 rounded-full bg-rose-600" />
-                  NON-VEG
-                </span>
-              )}
+              <div className="flex items-center gap-1 bg-white/95 backdrop-blur-md px-2.5 py-0.5 rounded-lg border border-slate-200 shadow-xs">
+                <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                <span className="text-xs font-bold text-slate-800">4.8</span>
+              </div>
               {product.is_alcohol && (
                 <span className="text-[11px] font-bold text-amber-900 bg-amber-100/90 px-2.5 py-0.5 rounded border border-amber-300 backdrop-blur-sm shadow-xs">
                   21+ RESERVE SPIRIT

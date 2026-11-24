@@ -48,8 +48,156 @@ def parse_size_variant(desc: str):
         
     return desc.title(), "Standard", 0
 
+def resolve_product_image(name: str, cat_slug: str, is_alcohol: bool, is_veg: bool) -> str:
+    n = name.lower()
+    s = cat_slug.lower()
+
+    if is_alcohol or "beer" in s or "whisky" in s or "rum" in s or "vodka" in s or "gin" in s or "wine" in s or "cocktail" in s or "brandy" in s:
+        if "beer" in s or "budweiser" in n or "kingfisher" in n or "bira" in n or "carlsberg" in n:
+            if "budweiser" in n:
+                return "/images/publiq/products/chilled-budweiser-beer-mug.webp"
+            elif "bira" in n or "white" in n:
+                return "/images/publiq/products/beer-chilled-mug-amber.webp"
+            elif "kingfisher" in n or "draught" in n:
+                return "/images/publiq/products/beer-golden-draught-mug.webp"
+            return "/images/publiq/products/beer-budweiser-froth-mug.webp"
+
+        if "whisky" in s or "scotch" in n or "whisky" in n or "whiskey" in n or "jack daniel" in n or "johnnie walker" in n:
+            if "johnnie walker" in n or "black label" in n:
+                return "/images/publiq/products/johnnie-walker-black-label-rocks.webp"
+            elif "single malt" in n or "glenfiddich" in n or "chivas" in n:
+                return "/images/publiq/products/whiskey-crystal-tumbler-bar.webp"
+            elif "jack daniel" in n or "bourbon" in n:
+                return "/images/publiq/drinks/publiq-smoked-bourbon.webp"
+            return "/images/publiq/products/whisky-on-the-rocks-tumbler.webp"
+
+        if "rum" in s or "old monk" in n or "bacardi" in n:
+            if "old monk" in n or "dark" in n or "black" in n:
+                return "/images/publiq/drinks/publiq-smoked-bourbon.webp"
+            return "/images/publiq/drinks/apple-sour-martini.webp"
+
+        if "vodka" in s or "absolut" in n or "smirnoff" in n:
+            return "/images/publiq/drinks/passion-fruit-martini.webp"
+
+        if "gin" in s or "bombay" in n:
+            return "/images/publiq/drinks/apple-sour-martini.webp"
+
+        if "brandy" in s or "morpheus" in n:
+            return "/images/publiq/products/whisky-amber-double-rocks.webp"
+
+        if "wine" in s or "shiraz" in n or "chenin" in n or "sula" in n:
+            return "/images/publiq/products/wine-red-glass-vineyard.webp"
+
+        if "cocktail" in s or "shooter" in s or "mojito" in n or "lagoon" in n or "kamikaze" in n:
+            if "mojito" in n:
+                return "/images/publiq/products/classic-mojito-fresh-mint.webp"
+            elif "blue" in n or "lagoon" in n or "kamikaze" in n:
+                return "/images/publiq/products/exotic-blue-lagoon-cocktail.webp"
+            return "/images/publiq/products/cocktails-tropical-trio.webp"
+
+        return "/images/publiq/products/cocktails-tropical-trio.webp"
+
+    # Non-alcoholic Beverages
+    if "juice" in s or "juice" in n:
+        if "watermelon" in n:
+            return "/images/publiq/products/fresh-watermelon-lime-cooler.webp"
+        return "/images/publiq/products/fresh-juices-trio-glass.webp"
+
+    if "shake" in s or "shake" in n or "coffee" in n or "soda" in n or "water" in s:
+        return "/images/publiq/products/strawberry-shake-and-cola.webp"
+
+    if "mocktail" in s or "mojito" in n:
+        if "blue" in n:
+            return "/images/publiq/products/electric-blue-mocktail-tall.webp"
+        return "/images/publiq/products/classic-mojito-fresh-mint.webp"
+
+    # Food: Soups
+    if "soup" in s or "soup" in n:
+        return "/images/publiq/products/hot-chicken-manchow-soup.webp"
+
+    # Food: Seafood
+    if "coastal" in s or "seafood" in s or "fish" in n or "prawn" in n:
+        if "prawn" in n:
+            return "/images/publiq/products/prawn-ghee-roast-jumbo.webp"
+        elif "rawa" in n:
+            return "/images/publiq/products/fish-rawa-fry.webp"
+        elif "tawa" in n:
+            return "/images/publiq/products/fish-tawa-fry.webp"
+        return "/images/publiq/products/fish-cutlet-fry.webp"
+
+    # Food: Biryani
+    if "biryani" in s or "biryani" in n:
+        if "mutton" in n or "lamb" in n:
+            return "/images/publiq/products/dum-mutton-biryani-copper-pot.webp"
+        elif is_veg or "veg" in n:
+            return "/images/publiq/food/vegetable-tawa-biryani.webp"
+        return "/images/publiq/products/royal-dum-biryani-platter.webp"
+
+    # Food: Breads
+    if "bread" in s or "naan" in n or "roti" in n:
+        return "/images/publiq/food/tandoori-garlic-naan.webp"
+
+    # Food: Desserts
+    if "dessert" in s or "brownie" in n or "ice cream" in n or "lava" in n:
+        if "lava" in n:
+            return "/images/publiq/products/molten-chocolate-lava-cake-icecream.webp"
+        return "/images/publiq/products/sizzling-brownie-vanilla-scoop.webp"
+
+    # Food: Continental
+    if "pizza" in n:
+        return "/images/publiq/products/wood-fired-bbq-chicken-pizza.webp"
+    if "pasta" in n:
+        return "/images/publiq/products/creamy-alfredo-chicken-pasta.webp"
+    if "fries" in n or "nacho" in n:
+        return "/images/publiq/products/crispy-golden-french-fries.webp"
+    if "burger" in n or "zinger" in n:
+        return "/images/publiq/products/crispy-kfc-style-chicken-burger.webp"
+
+    # Food: Indo-Chinese
+    if "noodle" in n or "hakka" in n or "fried rice" in n:
+        return "/images/publiq/products/indo-chinese-veg-hakka-noodles.webp"
+    if "spring roll" in n:
+        return "/images/publiq/products/crispy-veg-spring-rolls-golden.webp"
+    if "chilli" in n or "dragon" in n or "oriental" in s:
+        return "/images/publiq/products/chilli-chicken-wok.webp"
+
+    # Food: Vegetarian
+    if is_veg or "paneer" in n or "mushroom" in n or "dal" in n:
+        if "paneer" in n and ("tikka" in n or "starter" in s):
+            return "/images/publiq/products/tandoori-paneer-tikka-skewer.webp"
+        elif "paneer" in n:
+            return "/images/publiq/products/paneer-butter-masala-roti.webp"
+        elif "mushroom" in n:
+            return "/images/publiq/products/mushroom-ghee-roast-juicy.webp"
+        elif "dal" in n:
+            return "/images/publiq/products/traditional-dal-makhani-copper-handi.webp"
+        return "/images/publiq/products/tandoori-paneer-tikka-skewer.webp"
+
+    # Food: Mutton
+    if "mutton" in n or "lamb" in n or "boti" in n:
+        if "sukka" in n or "fry" in n:
+            return "/images/publiq/products/mutton-sukka-boti.webp"
+        elif "rogan" in n:
+            return "/images/publiq/products/mutton-rogan-josh-shank.webp"
+        return "/images/publiq/products/chettinad-pepper-mutton.webp"
+
+    # Food: Chicken & Tandoori
+    if "chicken" in n or "murgh" in n or "tandoori" in n or "tikka" in n:
+        if "65" in n:
+            return "/images/publiq/products/chicken-65-fiery.webp"
+        elif "sukka" in n:
+            return "/images/publiq/products/chicken-sukka-roast.webp"
+        elif "ghee roast" in n:
+            return "/images/publiq/products/chicken-ghee-roast-crispy.webp"
+        elif "tandoori" in n:
+            return "/images/publiq/products/tandoori-chicken-roast-spicy.webp"
+        elif "butter chicken" in n:
+            return "/images/publiq/products/chicken-curry-handi.webp"
+        return "/images/publiq/products/chicken-tikka-masala-copper-pot.webp"
+
+    return "/images/publiq/products/butter-chicken-copper-bowl.webp"
+
 def load_rows():
-    # Priority 1: JSON (zero external dependencies)
     if os.path.exists(JSON_PATH):
         try:
             with open(JSON_PATH, "r", encoding="utf-8") as f:
@@ -57,7 +205,6 @@ def load_rows():
         except Exception as e:
             print(f"JSON load note: {e}")
 
-    # Priority 2: Excel via openpyxl
     if os.path.exists(EXCEL_PATH):
         try:
             import openpyxl
@@ -93,7 +240,6 @@ def run_import(db: Session):
 
     print(f"Loaded {len(rows)} catalogue rows.")
 
-    # Category mappings: (Category Name, slug, is_alcohol, display_order, description)
     CATEGORIES_CONFIG = {
         "BEER": ("Beer & Draught", "beer", True, 10, "Chilled draught, premium craft and bottled lagers"),
         "IML_WHISKY": ("Whisky", "whisky", True, 11, "Single malts, premium scotch and blended whiskies"),
@@ -105,8 +251,6 @@ def run_import(db: Session):
         "LAB": ("RTD & Breezers", "rtd-breezers", True, 17, "Ready-to-drink premixed cocktail coolers"),
         "BEVERAGES_SOFTDRINKS": ("Soft Drinks & Energy", "soft-drinks", False, 18, "Chilled sodas, tonic water and energy drinks"),
         "BEVERAGES_WATER": ("Mineral Water", "mineral-water", False, 19, "Packaged drinking mineral water"),
-        
-        # Food Categories
         "FOOD_COASTAL": ("Coastal Cuisine", "coastal-cuisine", False, 1, "Fresh coastal seafood, tawa fry and authentic coastal gravies"),
         "FOOD_TANDOOR_NONVEG": ("Non-Veg Starters (Tandoor)", "non-veg-starters", False, 2, "Charcoal grilled chicken tikkas, kebabs and platters"),
         "FOOD_TANDOOR_VEG": ("Veg Starters (Tandoor)", "veg-starters", False, 3, "Paneer tikkas, dahi kebabs and tandoori mushroom"),
@@ -139,9 +283,6 @@ def run_import(db: Session):
             db.add(cat)
             db.commit()
             db.refresh(cat)
-        else:
-            cat.is_active = True
-            db.commit()
         cat_objs[key] = cat
 
     products_grouped = {}
@@ -152,7 +293,6 @@ def run_import(db: Session):
         desc_cell = row_dict["description"]
         price = float(row_dict["lane1_mrp"])
 
-        # Map to category config key
         cat_key = None
         if cat_cell == "BEER":
             cat_key = "BEER"
@@ -270,6 +410,8 @@ def run_import(db: Session):
             MenuItem.category_id == cat.id
         ).first()
 
+        img_url = resolve_product_image(pname, cat.slug, pdata["is_alcohol"], pdata["is_veg"])
+
         if not item:
             item = MenuItem(
                 id=str(uuid.uuid4()),
@@ -285,7 +427,7 @@ def run_import(db: Session):
                 is_bestseller=False,
                 is_signature=False,
                 preparation_time_minutes=15 if pdata["kitchen_station"] == "KITCHEN" else 5,
-                image_url=f"/images/menu/{cat.slug}.jpg",
+                image_url=img_url,
                 is_available=True,
                 kitchen_station=pdata["kitchen_station"],
                 created_at=datetime.utcnow()
@@ -295,32 +437,28 @@ def run_import(db: Session):
             db.refresh(item)
             items_created += 1
         else:
-            item.base_price = base_price
-            item.is_available = True
-            db.commit()
+            # Upgrade image URL if it was on old placeholder
+            if not item.image_url or "menu/" in item.image_url or "placeholder" in item.image_url:
+                item.image_url = img_url
+                db.commit()
 
-        db.query(MenuVariant).filter(MenuVariant.item_id == item.id).delete()
-        db.commit()
+        for vdata in variants:
+            var_slug = slugify(f"{pname}-{vdata['label']}")
+            existing_variant = db.query(MenuVariant).filter(
+                MenuVariant.menu_item_id == item.id,
+                MenuVariant.name == vdata["label"]
+            ).first()
 
-        for idx, var in enumerate(variants):
-            price_delta = round(var["price"] - base_price, 2)
-            v = MenuVariant(
-                id=str(uuid.uuid4()),
-                item_id=item.id,
-                name=var["label"],
-                price_delta=price_delta,
-                is_default=(idx == 0)
-            )
-            db.add(v)
-            variants_created += 1
+            if not existing_variant:
+                variant = MenuVariant(
+                    id=str(uuid.uuid4()),
+                    menu_item_id=item.id,
+                    name=vdata["label"],
+                    price=vdata["price"],
+                    is_available=True
+                )
+                db.add(variant)
+                variants_created += 1
 
-        db.commit()
-
-    print(f"IMPORT COMPLETE: {items_created} items created/updated, {variants_created} size variants attached.")
-
-if __name__ == "__main__":
-    db = SessionLocal()
-    try:
-        run_import(db)
-    finally:
-        db.close()
+    db.commit()
+    print(f"Catalog synchronization complete: {items_created} products created, {variants_created} variants created.")

@@ -30,7 +30,7 @@ const getItemRating = (item: any): string => {
 };
 
 // Item Availability Check - Ensures customers cannot click or order unavailable food
-export const isItemAvailable = (item: any): boolean => {
+const isItemAvailable = (item: any): boolean => {
   if (!item) return false;
   if (item.is_available === false || item.is_available === 0 || item.is_available === "false") return false;
   if (item.is_active === false || item.is_active === 0) return false;

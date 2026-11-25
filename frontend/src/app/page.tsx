@@ -200,6 +200,23 @@ export default function HomePage() {
     }
 
     loadData();
+
+    // Auto-scroll to #gallery if URL fragment is present (PUB-QA-067, PUB-QA-068, PUB-QA-069, PUB-BUG-003)
+    const handleHashScroll = () => {
+      if (typeof window !== "undefined" && window.location.hash) {
+        const id = window.location.hash.replace("#", "");
+        setTimeout(() => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 150);
+      }
+    };
+
+    handleHashScroll();
+    window.addEventListener("hashchange", handleHashScroll);
+    return () => window.removeEventListener("hashchange", handleHashScroll);
   }, []);
 
   const handleHeroAudioToggle = () => {
@@ -345,16 +362,6 @@ export default function HomePage() {
               STAFF PORTAL
             </a>
           </div>
-
-          {/* Current Table Session Pill if Active */}
-          {isDineInActive && tableNumber && (
-            <div className="mt-8 inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white border border-amber-400 text-xs shadow-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-              <span className="text-amber-800 font-bold">Active In-Restaurant Session:</span>
-              <span className="font-bold text-slate-900 bg-amber-100 px-2 py-0.5 rounded">Table {tableNumber}</span>
-              <a href="/menu" className="text-blue-700 font-bold underline ml-1 hover:text-blue-900">Order From Table →</a>
-            </div>
-          )}
 
         </div>
 

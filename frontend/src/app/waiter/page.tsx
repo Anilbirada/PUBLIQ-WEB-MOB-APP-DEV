@@ -123,6 +123,26 @@ export default function WaiterMobileApp() {
     }
   };
 
+  // Initialize session from unified login if authenticated
+  useEffect(() => {
+    try {
+      const storedToken = localStorage.getItem("publiq_auth_token");
+      const storedUser = localStorage.getItem("publiq_auth_user");
+      if (storedToken && storedUser) {
+        const u = JSON.parse(storedUser);
+        if (u.role === "WAITER" || u.role === "SUPER_ADMIN") {
+          setToken(storedToken);
+          setWaiter({
+            id: u.id,
+            name: u.fullName,
+            employee_code: u.id,
+            role: u.role,
+          });
+        }
+      }
+    } catch (_) {}
+  }, []);
+
   useEffect(() => {
     if (token) {
       fetchData();

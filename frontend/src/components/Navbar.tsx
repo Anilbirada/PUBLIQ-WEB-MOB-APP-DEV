@@ -35,9 +35,9 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Suppress public navbar inside admin portal
-  const isAdmin = pathname?.startsWith("/admin");
-  if (isAdmin) {
+  // Suppress public navbar and table session banner inside admin portal and login terminal
+  const isExcluded = pathname?.startsWith("/admin") || pathname === "/login";
+  if (isExcluded) {
     return null;
   }
 
@@ -57,27 +57,6 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
-      {/* Table Session Active Notification Ribbon (Crisp White/Amber) */}
-      {isDineInActive && tableNumber && (
-        <div className="bg-amber-50 border-b border-amber-200 text-amber-900 px-4 py-2 text-xs font-sans relative z-50">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-600 animate-ping" />
-              <span className="font-bold tracking-wider text-amber-800 uppercase text-[11px]">Table Session Active:</span>
-              <span className="font-extrabold text-white bg-gradient-to-r from-amber-600 to-orange-600 px-2.5 py-0.5 rounded-md text-[11px] uppercase tracking-wider shadow-xs">
-                PUBLIQ • Table {tableNumber} {diningArea ? `• ${diningArea}` : ""}
-              </span>
-            </div>
-            <button
-              onClick={clearTableSession}
-              className="text-amber-800 hover:text-amber-950 text-xs font-bold underline cursor-pointer ml-3 transition-colors"
-            >
-              Exit Table
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Main Luxury Header (Pure White Background with Soft Shadow) */}
       <header 
         className={`sticky top-0 z-40 transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-slate-200/90 ${

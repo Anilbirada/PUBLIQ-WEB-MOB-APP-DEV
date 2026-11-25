@@ -11,9 +11,34 @@ export interface ProductDetailModalProps {
   onClose: () => void;
 }
 
+const getItemRating = (item: any): string => {
+  if (item?.rating && typeof item.rating === "number") {
+    return item.rating.toFixed(1);
+  }
+  const str = (item?.name || "") + (item?.id || "");
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  const variance = Math.abs(hash % 4);
+  return (4.6 + variance * 0.1).toFixed(1);
+};
+
 export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product, isOpen = true, onClose }) => {
   if (isOpen === false || !product) return null;
   const { addItem, isLoading } = useCart();
+
+  const isAvailable = !(
+    product?.is_available === false ||
+    product?.is_available === 0 ||
+    product?.is_available === "false" ||
+    product?.is_active === false ||
+    product?.in_stock === false ||
+    product?.status === "UNAVAILABLE" ||
+    product?.status === "OUT_OF_STOCK" ||
+    product?.status === "86"
+  );
   
   // Initial variant: default or first
   const defaultVariant = product.variants?.find((v: any) => v.is_default) || product.variants?.[0];
@@ -96,7 +121,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1 bg-white/95 backdrop-blur-md px-2.5 py-0.5 rounded-lg border border-slate-200 shadow-xs">
                 <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                <span className="text-xs font-bold text-slate-800">4.8</span>
+                <span className="text-xs font-bold text-slate-800">{getItemRating(product)}</span>
               </div>
               {product.is_alcohol && (
                 <span className="text-[11px] font-bold text-amber-900 bg-amber-100/90 px-2.5 py-0.5 rounded border border-amber-300 backdrop-blur-sm shadow-xs">
@@ -199,6 +224,16 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
             </div>
           )}
 
+          {/* Product Availability Warning if Sold Out */}
+          {!isAvailable && (
+            <div className="flex items-center gap-2.5 p-3.5 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 text-xs font-semibold">
+              <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0" />
+              <span>
+                Sold Out Notice: This dish is currently unavailable in the kitchen or bar and cannot be ordered at this time.
+              </span>
+            </div>
+          )}
+
           {/* Allergens warning */}
           {product.allergens && product.allergens.length > 0 && (
             <div className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs">
@@ -216,10 +251,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
             </label>
             <input
               type="text"
+              disabled={!isAvailable}
               value={specialRequest}
               onChange={(e) => setSpecialRequest(e.target.value)}
               placeholder="e.g. Mild spice, dressing separate, extra crisp..."
-              className="w-full text-xs p-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white"
+              className="w-full text-xs p-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
         </div>
@@ -230,8 +266,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
           <div className="flex items-center border border-slate-300 rounded-xl bg-white shadow-xs">
             <button
               type="button"
+              disabled={!isAvailable}
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              className="p-2.5 text-slate-700 hover:text-blue-600 transition-colors"
+              className="p-2.5 text-slate-700 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               aria-label="Decrease quantity"
             >
               <Minus className="w-3.5 h-3.5" />
@@ -239,8 +276,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
             <span className="px-3 text-sm font-bold text-slate-900">{quantity}</span>
             <button
               type="button"
+              disabled={!isAvailable}
               onClick={() => setQuantity((q) => q + 1)}
-              className="p-2.5 text-slate-700 hover:text-blue-600 transition-colors"
+              className="p-2.5 text-slate-700 hover:text-blue-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               aria-label="Increase quantity"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -250,15 +288,17 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
           {/* Add to Order Button */}
           <button
             type="button"
-            disabled={isLoading || addedSuccess}
+            disabled={!isAvailable || isLoading || addedSuccess}
             onClick={handleAddToCart}
             className={`flex-1 py-3 px-6 rounded-xl font-bold text-xs uppercase tracking-widest transition-all shadow-md flex items-center justify-between ${
-              addedSuccess
+              !isAvailable
+                ? "bg-slate-200 text-slate-500 cursor-not-allowed border border-slate-300 shadow-none"
+                : addedSuccess
                 ? "bg-emerald-600 text-white"
                 : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
             }`}
           >
-            <span>{addedSuccess ? "Added to Order!" : "Add to Order"}</span>
+            <span>{!isAvailable ? "SOLD OUT - CANNOT ORDER" : addedSuccess ? "Added to Order!" : "Add to Order"}</span>
             <span className="font-serif text-sm font-bold">₹{currentTotal}</span>
           </button>
         </div>

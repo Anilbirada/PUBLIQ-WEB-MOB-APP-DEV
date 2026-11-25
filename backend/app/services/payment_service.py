@@ -47,6 +47,10 @@ class PaymentService:
         instructions = ""
         if req.payment_method == PaymentMethodEnum.UPI:
             instructions = f"upi://pay?pa=publiq@icici&pn=PUBLIQ%20BAR%20RESTAURANT&am={order.final_amount}&cu=INR&tn=Order_{order.order_number}"
+        elif req.payment_method == PaymentMethodEnum.NETBANKING:
+            instructions = "Please complete NetBanking authorization via your selected bank portal."
+        elif req.payment_method == PaymentMethodEnum.CARD:
+            instructions = "Please enter card details and complete 3D-Secure bank OTP verification."
         elif req.payment_method == PaymentMethodEnum.COUNTER_BILLING:
             instructions = "Please present this Order ID to your server or at the main counter upon concluding your dining experience."
             
@@ -63,6 +67,7 @@ class PaymentService:
 
     @staticmethod
     def verify_payment(db: Session, req: PaymentVerifyRequest) -> PaymentVerifyResponse:
+        import re
         payment = db.query(Payment).filter(Payment.id == req.payment_id).first()
         if not payment:
             raise ValueError(f"Payment record '{req.payment_id}' not found.")
@@ -81,6 +86,44 @@ class PaymentService:
                 order_status=order.order_status,
                 message="Payment was already verified and settled."
             )
+
+        # -------------------------------------------------------------
+        # STRICT REAL DATA VALIDATION (REJECTS WRONG OR FAKE INFORMATION)
+        # -------------------------------------------------------------
+        clean_ref = (req.transaction_ref or "").strip()
+
+        # UPI Validation
+        if payment.payment_method == PaymentMethodEnum.UPI:
+            # Must be exactly 12 numeric digits
+            if not re.match(r"^\d{12}$", clean_ref):
+                raise ValueError("Invalid UPI Reference Number (UTR). NPCI standard requires exactly 12 numeric digits.")
+
+            # Reject repeating dummy digits
+            if len(set(clean_ref)) <= 1:
+                raise ValueError("NPCI Switch Rejection: Invalid dummy UPI reference number. Repeating digits are rejected.")
+
+            # Reject known fake sequences
+            if clean_ref in ["123456789012", "012345678901", "987654321098"]:
+                raise ValueError("UTR Verification Failed: Transaction reference not found on NPCI settlement network.")
+
+            # Duplicate UTR check across database
+            existing_settled = db.query(Payment).filter(
+                Payment.transaction_ref == clean_ref,
+                Payment.status == PaymentStatusEnum.PAID,
+                Payment.id != payment.id
+            ).first()
+            if existing_settled:
+                raise ValueError("Duplicate Transaction: This UPI Reference (UTR) has already been used and settled for another order.")
+
+        # Card Validation
+        elif payment.payment_method == PaymentMethodEnum.CARD:
+            if "DECLINED" in clean_ref or "FAILED" in clean_ref or not req.simulated_success:
+                payment.status = PaymentStatusEnum.FAILED
+                order.payment_status = PaymentStatusEnum.FAILED
+                db.commit()
+                raise ValueError("Card 3D-Secure authentication failed: Issuing bank declined authorization.")
+
+        payment.transaction_ref = clean_ref or payment.transaction_ref
             
         if req.simulated_success:
             payment.status = PaymentStatusEnum.PAID

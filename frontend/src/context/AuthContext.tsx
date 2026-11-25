@@ -70,6 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     password?: string;
     pin?: string;
   }): Promise<AuthUser> => {
+    // Attempt real database-authenticated login
     try {
       const res = await api.universalLogin(params);
       const serverUser = res.user;
@@ -94,82 +95,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem(ROLE_KEY, serverUser.role);
       return authUser;
     } catch (err: any) {
-      // Offline fallback: synthesize user profile for zero-lockout experience
-      const role = (params.role || "SUPER_ADMIN").toUpperCase();
-      const fallbackProfiles: Record<string, AuthUser> = {
-        SUPER_ADMIN: {
-          id: "usr-super-admin",
-          fullName: "Vikramaditya Roy",
-          role: "SUPER_ADMIN",
-          roleLabel: "Super Admin",
-          department: "ALL",
-          email: "admin@publiq.in",
-          phone: "+91 98000 11001",
-          redirectUrl: "/admin",
-          allowedRoutes: ["/admin"],
-          permissions: ["ALL"],
-          isGuest: false,
-        },
-        BAR_ADMIN: {
-          id: "usr-bar-admin",
-          fullName: "Anil",
-          role: "BAR_ADMIN",
-          roleLabel: "Bar Admin (Anil)",
-          department: "BEVERAGE",
-          email: "anil@publiq.in",
-          phone: "8431712924",
-          redirectUrl: "/admin/owner/beverage",
-          allowedRoutes: ["/admin/owner/beverage", "/admin/bar", "/admin/inventory/liquor"],
-          permissions: ["VIEW_BAR_REVENUE"],
-          isGuest: false,
-        },
-        FOOD_ADMIN: {
-          id: "usr-food-admin",
-          fullName: "Ramesh S P",
-          role: "FOOD_ADMIN",
-          roleLabel: "Kitchen / Food Admin (Ramesh S P)",
-          department: "FOOD",
-          email: "ramesh@publiq.in",
-          phone: "7760590000",
-          redirectUrl: "/admin/owner/food",
-          allowedRoutes: ["/admin/owner/food", "/admin/kot", "/admin/inventory/restaurant"],
-          permissions: ["VIEW_FOOD_REVENUE"],
-          isGuest: false,
-        },
-        WAITER: {
-          id: "usr-waiter",
-          fullName: "Steward Raju",
-          role: "WAITER",
-          roleLabel: "Service Steward",
-          department: "FLOOR",
-          email: "raju.waiter@publiqrestaurant.com",
-          phone: "+91 98000 11007",
-          redirectUrl: "/waiter",
-          allowedRoutes: ["/waiter"],
-          permissions: ["TAKE_ORDERS"],
-          isGuest: false,
-        },
-        CUSTOMER: {
-          id: "usr-customer",
-          fullName: "Guest Diner",
-          role: "CUSTOMER",
-          roleLabel: "Guest Diner",
-          department: "GUEST",
-          redirectUrl: "/menu",
-          allowedRoutes: ["/menu", "/cart", "/"],
-          permissions: ["VIEW_MENU"],
-          isGuest: true,
-        },
-      };
-
-      const fallbackUser = fallbackProfiles[role] || fallbackProfiles.SUPER_ADMIN;
-      const mockToken = `mock-token-${role.toLowerCase()}-${Date.now()}`;
-      setToken(mockToken);
-      setUser(fallbackUser);
-      localStorage.setItem(TOKEN_KEY, mockToken);
-      localStorage.setItem(USER_KEY, JSON.stringify(fallbackUser));
-      localStorage.setItem(ROLE_KEY, fallbackUser.role);
-      return fallbackUser;
+      // Re-throw authentication rejection errors (PUB-QA-050: Login with invalid credentials must be rejected)
+      // Never bypass invalid passwords or fake credentials
+      throw err;
     }
   };
 

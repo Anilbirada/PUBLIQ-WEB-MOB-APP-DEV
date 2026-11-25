@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { 
   Phone, Clock, Search, Filter, ShoppingBag, CheckCircle2, 
   AlertCircle, ChevronRight, FileText, Utensils, Wine, ShieldCheck,
-  Calendar, ArrowRight, RefreshCw, Receipt, CreditCard, Sparkles, User
+  Calendar, ArrowRight, RefreshCw, Receipt, CreditCard, Sparkles, User, Star
 } from "lucide-react";
 import { API_BASE } from "@/lib/api";
 
@@ -18,6 +18,7 @@ export default function AccountOrdersPage() {
 
   // Orders Data
   const [customerName, setCustomerName] = useState<string>("");
+  const [loyaltyPoints, setLoyaltyPoints] = useState<number>(150);
   const [activeOrders, setActiveOrders] = useState<any[]>([]);
   const [previousOrders, setPreviousOrders] = useState<any[]>([]);
   const [totalFound, setTotalFound] = useState<number>(0);
@@ -113,6 +114,7 @@ export default function AccountOrdersPage() {
       if (res.ok) {
         const data = await res.json();
         setCustomerName(data.customer_name || "Valued Diner");
+        setLoyaltyPoints(data.loyalty_points || 150);
         setActiveOrders(data.active_orders || []);
         setPreviousOrders(data.previous_orders || []);
         setTotalFound(data.total_orders_found || 0);
@@ -326,6 +328,38 @@ export default function AccountOrdersPage() {
         {/* STEP 3: Display Orders & Complete History */}
         {step === "VIEW_ORDERS" && (
           <div className="space-y-8">
+            
+            {/* Customer Profile & Loyalty Rewards Card */}
+            <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-6 border border-slate-800">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-amber-300 font-serif font-black text-2xl shadow-inner">
+                  {customerName.charAt(0) || "P"}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="font-serif text-xl sm:text-2xl font-bold">{customerName}</h2>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                      VIP Diner
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 font-mono mt-0.5">+91 {phone.replace("+91", "").trim()}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15">
+                <div className="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-amber-300">
+                  <Star className="w-5 h-5 fill-amber-300" />
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-slate-300 block">
+                    PUBLIQ Rewards Balance
+                  </span>
+                  <span className="font-serif text-xl font-bold text-amber-300">
+                    {loyaltyPoints} Points
+                  </span>
+                </div>
+              </div>
+            </div>
             
             {/* Search and Time Filters Bar */}
             <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">

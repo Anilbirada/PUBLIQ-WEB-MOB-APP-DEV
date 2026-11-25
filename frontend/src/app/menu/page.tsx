@@ -79,8 +79,6 @@ export default function MenuPage() {
     async function loadMenu() {
       try {
         const data = await api.getMenu({
-          veg_only: vegOnly || undefined,
-          search: searchQuery || undefined,
           include_unavailable: true, // Fetch complete data with availability flags
         });
         if (data && data.length > 0) {
@@ -111,7 +109,7 @@ export default function MenuPage() {
       }
     }
     loadMenu();
-  }, [vegOnly, searchQuery]);
+  }, []);
 
   // Handle Quick Add to Cart (Strict availability enforcement)
   const handleQuickAdd = async (item: any, e: React.MouseEvent) => {
@@ -496,11 +494,16 @@ export default function MenuPage() {
             </button>
 
             {availableSubcategories.map((cat) => {
-              // Calculate filtered count matching what user sees
-              const matchingCat = displayedCategories.find((c) => (c.id && c.id === cat.id) || c.slug === cat.slug);
-              const countToDisplay = (searchQuery.trim() || vegOnly)
-                ? (matchingCat?.items?.length || 0)
-                : (cat.items?.length || 0);
+              // Calculate filtered count matching search and veg filter without being affected by selected category
+              const countToDisplay = (cat.items || []).filter((item: any) => {
+                if (vegOnly && !item.is_veg) return false;
+                if (availableOnly && !isItemAvailable(item)) return false;
+                if (searchQuery.trim()) {
+                  const q = searchQuery.toLowerCase().trim();
+                  return item.name?.toLowerCase().includes(q) || item.description?.toLowerCase().includes(q);
+                }
+                return true;
+              }).length;
 
               return (
                 <button

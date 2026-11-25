@@ -72,7 +72,7 @@ export default function ReservationsPage() {
     setIsSubmitting(true);
     try {
       const res = await api.createReservation({
-        outlet_id: selectedOutletId,
+        outlet_id: selectedOutletId || undefined,
         guest_name: guestName,
         guest_phone: guestPhone,
         guest_email: guestEmail || undefined,

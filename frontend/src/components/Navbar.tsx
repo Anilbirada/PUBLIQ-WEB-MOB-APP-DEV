@@ -46,7 +46,7 @@ export const Navbar: React.FC = () => {
     { number: "02", label: "Our Story", href: "/#story", desc: "Our passion for authentic Indian food & hospitality" },
     { number: "03", label: "Food Menu", href: "/menu", desc: "Tandoori kebabs, rich butter chicken & fragrant biryanis" },
     { number: "04", label: "Drinks Menu", href: "/menu?category=Cocktails", desc: "Craft cocktails, single malts, wines & chilled beers" },
-    { number: "05", label: "Gallery", href: "/#gallery", desc: "Photos and videos of our food, drinks & dining spaces" },
+    { number: "05", label: "Gallery", href: "/gallery", desc: "Photos and videos of our food, drinks & dining spaces" },
     { number: "06", label: "Events & DJ Nights", href: "/events", desc: "Weekend DJ nights, live acoustic music & party vibes" },
     { number: "07", label: "Private Dining", href: "/events#private-dining", desc: "Host birthdays, family celebrations & corporate dinners" },
     { number: "08", label: "Book a Table", href: "/reservations", desc: "Reserve your table in seconds with instant confirmation" },
@@ -87,7 +87,7 @@ export const Navbar: React.FC = () => {
               <nav className="hidden lg:flex items-center gap-6 text-xs uppercase font-bold tracking-wider text-slate-600">
                 <a href="/menu" className="hover:text-blue-700 transition-colors">Menu</a>
                 <a href="/#story" className="hover:text-blue-700 transition-colors">Story</a>
-                <a href="/#gallery" className="hover:text-blue-700 transition-colors">Gallery</a>
+                <a href="/gallery" className="hover:text-blue-700 transition-colors">Gallery</a>
                 <a href="/events" className="hover:text-blue-700 transition-colors">Private Dining</a>
               </nav>
             </div>

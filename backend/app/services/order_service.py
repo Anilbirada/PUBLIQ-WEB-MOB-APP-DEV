@@ -19,7 +19,8 @@ class OrderService:
     def generate_order_number(outlet_code: str) -> str:
         date_str = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         rand_suffix = secrets.token_hex(2).upper()
-        return f"PUB-{outlet_code}-{date_str}-{rand_suffix}"
+        clean_outlet = outlet_code.replace("PUB-", "") if outlet_code else "HARAGADDE"
+        return f"PUB-{clean_outlet}-{date_str}-{rand_suffix}"
 
     @staticmethod
     def create_order_from_cart(db: Session, req: OrderCreateRequest) -> Order:

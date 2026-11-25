@@ -131,7 +131,7 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li>
-                <a href="/#gallery" className="text-slate-600 hover:text-blue-600 font-medium transition-colors inline-flex items-center gap-1.5">
+                <a href="/gallery" className="text-slate-600 hover:text-blue-600 font-medium transition-colors inline-flex items-center gap-1.5">
                   <ArrowUpRight className="w-3 h-3 text-blue-500" />
                   Photo &amp; Video Gallery
                 </a>

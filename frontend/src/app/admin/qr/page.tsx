@@ -56,11 +56,7 @@ export default function QrManagementPage() {
   const getUniversalLink = (rawLink: string, token: string, tableNumber: string) => {
     const origin = typeof window !== "undefined" && window.location.origin.startsWith("http")
       ? window.location.origin
-      : "https://publiq-frontend.onrender.com";
-
-    if (rawLink && !rawLink.includes("localhost") && rawLink.startsWith("http")) {
-      return rawLink;
-    }
+      : "https://publiq-frontend-gaii.onrender.com";
 
     const cleanToken = token || `table-${tableNumber.toLowerCase().replace(/\s+/g, "-")}`;
     return `${origin}/order/${cleanToken}`;
@@ -69,7 +65,7 @@ export default function QrManagementPage() {
   const getFallbackTables = (): TableToken[] => {
     const origin = typeof window !== "undefined" && window.location.origin.startsWith("http")
       ? window.location.origin
-      : "https://publiq-frontend.onrender.com";
+      : "https://publiq-frontend-gaii.onrender.com";
 
     return [
       { id: "tok-01", table_id: "t-01", table_number: "01", dining_area: "Open-Air Lush Garden", capacity: 4, qr_token: "publiq-table-01", universal_link: `${origin}/order/publiq-table-01`, scan_count: 84, is_active: true, created_at: "2026-11-20T10:00:00Z" },
@@ -152,7 +148,7 @@ export default function QrManagementPage() {
     const cleanTok = `table-${newTableNumber.trim().toLowerCase().replace(/\s+/g, "-")}`;
     const origin = typeof window !== "undefined" && window.location.origin.startsWith("http")
       ? window.location.origin
-      : "https://publiq-frontend.onrender.com";
+      : "https://publiq-frontend-gaii.onrender.com";
 
     const fallbackTable: TableToken = {
       id: mockToken,

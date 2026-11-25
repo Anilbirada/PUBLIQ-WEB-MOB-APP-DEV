@@ -5,6 +5,7 @@ import {
   ShoppingBag, Trash2, Plus, Minus, ArrowRight, 
   Sparkles, ShieldCheck, ArrowLeft, UtensilsCrossed, Wine
 } from "lucide-react";
+import { getMenuItemImage } from "@/lib/menuImages";
 import { useCart } from "../../context/CartContext";
 import { useTableSession } from "../../context/TableSessionContext";
 
@@ -87,13 +88,13 @@ export default function CartPage() {
                 {/* Thumbnail */}
                 <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
                   <img
-                    src={item.item_image || "/images/publiq/food_signature.webp"}
+                    src={item.item_image || getMenuItemImage({ id: item.item_id, name: item.item_name })}
                     alt={item.item_name}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.onerror = null;
-                      target.src = "/images/publiq/food_signature.webp";
+                      target.src = "/images/publiq/food/butter-chicken-copper-handi.webp";
                     }}
                   />
                 </div>
@@ -151,7 +152,7 @@ export default function CartPage() {
                       </button>
                     </div>
                     <span className="font-serif text-base font-black text-slate-900">
-                      ₹{item.total_price}
+                      ₹{Number(item.total_price).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -177,7 +178,7 @@ export default function CartPage() {
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between text-slate-600">
                   <span>Item Subtotal</span>
-                  <span className="font-serif font-bold text-slate-900">₹{subtotal}</span>
+                  <span className="font-serif font-bold text-slate-900">₹{Number(subtotal).toFixed(2)}</span>
                 </div>
 
                 {/* Dual-Business Food vs Drinks Subtotals */}
@@ -189,7 +190,7 @@ export default function CartPage() {
                           <UtensilsCrossed className="w-3.5 h-3.5 text-amber-600" />
                           <span>Food (Proprietor: Ramesh S P)</span>
                         </span>
-                        <span className="font-serif font-bold text-amber-800">₹{foodSubtotal}</span>
+                        <span className="font-serif font-bold text-amber-800">₹{Number(foodSubtotal).toFixed(2)}</span>
                       </div>
                     )}
                     {beverageSubtotal > 0 && (
@@ -198,7 +199,7 @@ export default function CartPage() {
                           <Wine className="w-3.5 h-3.5 text-blue-600" />
                           <span>Drinks (Proprietor: Anil)</span>
                         </span>
-                        <span className="font-serif font-bold text-blue-700">₹{beverageSubtotal}</span>
+                        <span className="font-serif font-bold text-blue-700">₹{Number(beverageSubtotal).toFixed(2)}</span>
                       </div>
                     )}
                   </div>
@@ -207,30 +208,30 @@ export default function CartPage() {
                 {/* Indian GST Breakdown */}
                 <div className="flex justify-between text-slate-500">
                   <span>CGST (2.5%)</span>
-                  <span className="font-serif font-medium">₹{cgst}</span>
+                  <span className="font-serif font-medium">₹{Number(cgst).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-slate-500">
                   <span>SGST (2.5%)</span>
-                  <span className="font-serif font-medium">₹{sgst}</span>
+                  <span className="font-serif font-medium">₹{Number(sgst).toFixed(2)}</span>
                 </div>
 
                 {packagingFee > 0 && (
                   <div className="flex justify-between text-slate-500">
                     <span>Eco-friendly Packaging</span>
-                    <span className="font-serif font-medium">₹{packagingFee}</span>
+                    <span className="font-serif font-medium">₹{Number(packagingFee).toFixed(2)}</span>
                   </div>
                 )}
 
                 {deliveryFee > 0 && (
                   <div className="flex justify-between text-slate-500">
                     <span>Direct Delivery Charge</span>
-                    <span className="font-serif font-medium">₹{deliveryFee}</span>
+                    <span className="font-serif font-medium">₹{Number(deliveryFee).toFixed(2)}</span>
                   </div>
                 )}
 
                 <div className="pt-3 border-t border-slate-200 flex justify-between items-baseline">
                   <span className="text-sm font-bold text-slate-900 uppercase tracking-wider">Final Payable Amount</span>
-                  <span className="font-serif text-2xl font-black text-blue-700">₹{finalAmount}</span>
+                  <span className="font-serif text-2xl font-black text-blue-700">₹{Number(finalAmount).toFixed(2)}</span>
                 </div>
               </div>
 

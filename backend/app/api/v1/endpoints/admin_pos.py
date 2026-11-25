@@ -85,8 +85,10 @@ def settle_bill(payload: dict, db: Session = Depends(get_db)):
     final_amount = round(discounted_subtotal + cgst + sgst, 2)
 
     bill_number = f"PUB-INV-{datetime.now().strftime('%Y%m')}-{str(uuid.uuid4())[:6].upper()}"
+    bill_id = str(uuid.uuid4())
 
     bill = PosBill(
+        id=bill_id,
         outlet_id=order.outlet_id,
         order_id=order.id,
         bill_number=bill_number,
@@ -134,7 +136,7 @@ def settle_bill(payload: dict, db: Session = Depends(get_db)):
     # Audit log
     audit = AuditLog(
         entity_type="BILL",
-        entity_id=bill.id,
+        entity_id=bill_id,
         action="BILL_SETTLED",
         details={"bill_number": bill_number, "amount": final_amount, "mode": payment_mode}
     )

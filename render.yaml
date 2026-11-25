@@ -14,10 +14,6 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.0
-      - key: DATABASE_URL
-        fromDatabase:
-          name: publiq-postgres
-          property: connectionString
       - key: SECRET_KEY
         generateValue: true
       - key: QR_TOKEN_SALT
@@ -26,16 +22,6 @@ services:
         value: LOCAL_EMULATOR
       - key: SQL_ECHO
         value: "false"
-      - key: API_BASE_URL
-        fromService:
-          type: web
-          name: publiq-backend
-          property: host
-      - key: WEB_BASE_URL
-        fromService:
-          type: web
-          name: publiq-frontend
-          property: host
 
   # =========================================================================
   # 2. NEXT.JS LUXURY FRONTEND (Node.js 20 Web Service)
@@ -58,13 +44,3 @@ services:
           type: web
           name: publiq-backend
           property: host
-
-databases:
-  # =========================================================================
-  # 3. MANAGED POSTGRESQL 16 DATABASE
-  # =========================================================================
-  - name: publiq-postgres
-    databaseName: publiq_db
-    user: publiq_admin
-    region: oregon
-    plan: free

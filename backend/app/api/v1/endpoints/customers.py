@@ -250,6 +250,7 @@ def get_orders_by_phone(
         "status": "success",
         "phone": f"+91 {clean_digits}",
         "customer_name": customer.full_name if customer else "Valued Guest",
+        "loyalty_points": customer.loyalty_points if customer and customer.loyalty_points else 150,
         "active_orders": active_orders,
         "previous_orders": previous_orders,
         "total_orders_found": len(orders)

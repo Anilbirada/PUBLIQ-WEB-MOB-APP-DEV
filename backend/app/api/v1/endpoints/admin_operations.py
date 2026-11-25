@@ -91,8 +91,12 @@ def bump_kot_status(payload: dict, db: Session = Depends(get_db)):
     # Check overall
     if order.food_status == "SERVED" and order.beverage_status in ["SERVED", "REJECTED", "NOT_ORDERED"]:
         order.order_status = "SERVED"
-    elif order.food_status in ["PREPARING", "READY", "ACCEPTED"]:
-        order.order_status = "PREPARING" if order.food_status == "PREPARING" else "ACCEPTED"
+    elif order.food_status == "READY":
+        order.order_status = "READY"
+    elif order.food_status == "PREPARING":
+        order.order_status = "PREPARING"
+    elif order.food_status == "ACCEPTED":
+        order.order_status = "ACCEPTED"
 
     db.commit()
     return {"success": True, "order_status": order.order_status if isinstance(order.order_status, str) else order.order_status.value, "food_status": order.food_status}

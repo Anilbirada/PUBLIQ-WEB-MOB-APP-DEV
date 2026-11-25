@@ -1,21 +1,32 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { 
   Smartphone, Utensils, QrCode, Clock, CheckCircle2, AlertTriangle, 
   Search, Plus, Minus, UserCheck, ShieldAlert, ArrowRight, X, RefreshCw,
   CreditCard, Banknote, Split, Send, Bell, Download, Camera, Scan,
-  Receipt, FileText, Check, ChevronRight, Hash, Printer, Eye
+  Receipt, FileText, Check, ChevronRight, Hash, Printer, Eye, LogOut
 } from "lucide-react";
 import { API_BASE } from "@/lib/api";
 
 export default function WaiterMobileApp() {
+  const router = useRouter();
+  const { logout } = useAuth();
+
   // Auth state
   const [token, setToken] = useState<string | null>(null);
   const [waiter, setWaiter] = useState<any | null>(null);
   const [pin, setPin] = useState<string>("");
   const [authError, setAuthError] = useState<string>("");
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
+
+  const handleExit = () => {
+    setToken(null);
+    logout();
+    router.push("/login");
+  };
 
   // Navigation tab
   const [activeTab, setActiveTab] = useState<"dashboard" | "tables" | "scan" | "qr_orders" | "tracking" | "menu" | "billing">("dashboard");
@@ -835,10 +846,11 @@ export default function WaiterMobileApp() {
               MGR
             </button>
             <button
-              onClick={() => setToken(null)}
-              className="text-[10px] text-slate-400 hover:text-white px-2 py-1.5 rounded bg-slate-800/60"
+              onClick={handleExit}
+              className="text-[11px] font-bold text-rose-600 hover:text-rose-700 px-3 py-1.5 rounded-lg bg-rose-50 border border-rose-200 transition-colors flex items-center gap-1 cursor-pointer"
             >
-              Exit
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Logout</span>
             </button>
           </div>
         </div>
@@ -1023,24 +1035,24 @@ export default function WaiterMobileApp() {
                       onClick={() => setSelectedTable(t)}
                       className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between min-h-[125px] shadow-sm ${
                         hasOrder
-                          ? "bg-[#131B2A] border-[#D4AF37]/60 shadow-md"
+                          ? "bg-[#131B2A] border-[#D4AF37]/60 shadow-md text-white"
                           : t.is_occupied
-                          ? "bg-slate-900 border-amber-600/40"
-                          : "bg-white border-slate-200 hover:border-slate-200"
+                          ? "bg-slate-900 border-amber-600/40 text-white"
+                          : "bg-white border-slate-200 hover:border-blue-400 text-slate-900"
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-base font-black text-white">T-{t.table_number}</span>
+                        <span className={`text-base font-black ${hasOrder || t.is_occupied ? "text-white" : "text-slate-900"}`}>T-{t.table_number}</span>
                         <span className="text-[10px] text-slate-400 font-medium">👥 {t.capacity}</span>
                       </div>
 
                       <div className="my-1.5">
                         <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded inline-block ${
-                          t.status === "AVAILABLE" ? "bg-emerald-950/60 text-emerald-400 border border-emerald-800/40" :
-                          t.status === "READY_TO_SERVE" ? "bg-emerald-950/60 text-emerald-300 border border-emerald-500" :
-                          t.status === "PREPARING" ? "bg-blue-950/60 text-blue-300 border border-blue-800/40" :
-                          t.status === "BILLING" ? "bg-amber-950 text-[#D4AF37] border border-[#D4AF37]/50" :
-                          "bg-amber-950/60 text-amber-300 border border-amber-800/40"
+                          t.status === "AVAILABLE" ? "bg-emerald-50 text-emerald-800 border border-emerald-300" :
+                          t.status === "READY_TO_SERVE" ? "bg-emerald-100 text-emerald-900 border border-emerald-500" :
+                          t.status === "PREPARING" ? "bg-blue-100 text-blue-900 border border-blue-400" :
+                          t.status === "BILLING" ? "bg-amber-100 text-amber-900 border border-amber-400" :
+                          "bg-slate-100 text-slate-800 border border-slate-300"
                         }`}>
                           {t.status.replace(/_/g, " ")}
                         </span>
@@ -1057,6 +1069,84 @@ export default function WaiterMobileApp() {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          )}
+
+          {/* Table Command Modal */}
+          {selectedTable && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in">
+              <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl space-y-5 border border-slate-200">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-700 font-bold text-sm">
+                      T-{selectedTable.table_number}
+                    </div>
+                    <div>
+                      <h3 className="font-serif font-bold text-base text-slate-900">Table {selectedTable.table_number}</h3>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
+                        selectedTable.is_occupied || selectedTable.status !== "AVAILABLE"
+                          ? "bg-amber-100 text-amber-800"
+                          : "bg-emerald-100 text-emerald-800"
+                      }`}>
+                        {selectedTable.status?.replace(/_/g, " ") || (selectedTable.is_occupied ? "OCCUPIED" : "AVAILABLE")}
+                      </span>
+                    </div>
+                  </div>
+                  <button onClick={() => setSelectedTable(null)} className="p-2 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs space-y-1.5">
+                    <div className="flex justify-between text-slate-600">
+                      <span>Dining Capacity</span>
+                      <span className="font-bold text-slate-900">👥 {selectedTable.capacity} Guests</span>
+                    </div>
+                    <div className="flex justify-between text-slate-600">
+                      <span>Section / Area</span>
+                      <span className="font-bold text-slate-900">{selectedTable.dining_area || "Main Dining & Atrium"}</span>
+                    </div>
+                    {selectedTable.active_order && (
+                      <>
+                        <div className="flex justify-between text-slate-600 pt-1.5 border-t border-slate-200">
+                          <span>Active KOT Order</span>
+                          <span className="font-mono font-bold text-blue-700">#{selectedTable.active_order.order_number}</span>
+                        </div>
+                        <div className="flex justify-between text-slate-600">
+                          <span>Order Subtotal</span>
+                          <span className="font-bold text-slate-900">₹{selectedTable.active_order.final_amount || selectedTable.active_order.subtotal}</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <button
+                      onClick={() => {
+                        setPosTableNumber(selectedTable.table_number);
+                        setActiveTab("menu");
+                        setSelectedTable(null);
+                      }}
+                      className="py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider shadow-md shadow-blue-500/20 flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Take Order (+POS)</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setBillTableNum(selectedTable.table_number);
+                        setActiveTab("billing");
+                        setSelectedTable(null);
+                      }}
+                      className="py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <Receipt className="w-4 h-4" />
+                      <span>View Bill / Settle</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -1150,10 +1240,10 @@ export default function WaiterMobileApp() {
                     <button
                       key={t.table_number}
                       onClick={() => handleVerifyQR(t.table_number)}
-                      className="py-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#D4AF37] text-xs font-bold text-white flex flex-col items-center justify-center transition-all active:scale-95"
+                      className="py-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-500 text-xs font-bold text-slate-900 flex flex-col items-center justify-center transition-all active:scale-95 cursor-pointer"
                     >
                       <span>T-{t.table_number}</span>
-                      <span className="text-[9px] text-slate-400">👥 {t.capacity}</span>
+                      <span className="text-[9px] text-slate-500 font-medium">👥 {t.capacity}</span>
                     </button>
                   ))}
                 </div>
@@ -1164,7 +1254,7 @@ export default function WaiterMobileApp() {
                     value={scanInput}
                     onChange={e => setScanInput(e.target.value)}
                     placeholder="Or enter token / table (e.g. 04, T-04)"
-                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 font-medium"
+                    className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 font-medium focus:outline-none focus:border-blue-500"
                     onKeyDown={e => {
                       if (e.key === "Enter") handleVerifyQR(scanInput);
                     }}
@@ -1194,12 +1284,12 @@ export default function WaiterMobileApp() {
                         <CheckCircle2 className="w-6 h-6 text-[#D4AF37]" />
                       </div>
                       <div>
-                        <span className="text-lg font-black text-white">Table {scanResult.table_number}</span>
-                        <p className="text-[10px] text-slate-400">Capacity: 👥 {scanResult.capacity} Guests • Verified</p>
+                        <span className="text-lg font-black text-slate-900">Table {scanResult.table_number}</span>
+                        <p className="text-[10px] text-slate-500 font-medium">Capacity: 👥 {scanResult.capacity} Guests • Verified</p>
                       </div>
                     </div>
                     <span className={`text-[10px] font-black px-2.5 py-1 rounded-full uppercase ${
-                      scanResult.is_occupied ? "bg-amber-950 text-amber-300 border border-amber-800" : "bg-emerald-950 text-emerald-300 border border-emerald-800"
+                      scanResult.is_occupied ? "bg-amber-100 text-amber-900 border border-amber-300" : "bg-emerald-100 text-emerald-900 border border-emerald-300"
                     }`}>
                       {scanResult.status_label || (scanResult.is_occupied ? "OCCUPIED" : "AVAILABLE")}
                     </span>
@@ -1208,16 +1298,16 @@ export default function WaiterMobileApp() {
                   {scanResult.active_order ? (
                     <div className="bg-slate-50 p-3 rounded-xl space-y-1">
                       <div className="flex justify-between text-xs">
-                        <span className="text-slate-400">Active Order:</span>
-                        <span className="text-white font-mono">{scanResult.active_order.order_number}</span>
+                        <span className="text-slate-500">Active Order:</span>
+                        <span className="text-slate-900 font-mono font-bold">{scanResult.active_order.order_number}</span>
                       </div>
                       <div className="flex justify-between text-xs">
-                        <span className="text-slate-400">Guest:</span>
-                        <span className="text-white font-semibold">{scanResult.active_order.customer_name}</span>
+                        <span className="text-slate-500">Guest:</span>
+                        <span className="text-slate-900 font-semibold">{scanResult.active_order.customer_name}</span>
                       </div>
                       <div className="flex justify-between text-sm pt-1 border-t border-slate-200">
-                        <span className="text-[#D4AF37] font-bold">Unsettled Total:</span>
-                        <span className="text-white font-black">₹{scanResult.active_order.final_amount.toFixed(0)}</span>
+                        <span className="text-blue-700 font-bold">Unsettled Total:</span>
+                        <span className="text-slate-900 font-black">₹{scanResult.active_order.final_amount.toFixed(0)}</span>
                       </div>
                     </div>
                   ) : (
@@ -1511,7 +1601,7 @@ export default function WaiterMobileApp() {
                   <select
                     value={posTableNumber}
                     onChange={e => setPosTableNumber(e.target.value)}
-                    className="bg-slate-50 border border-[#D4AF37]/50 rounded-lg px-2.5 py-1 text-xs font-bold text-white focus:outline-none"
+                    className="bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs font-bold text-slate-900 focus:outline-none"
                   >
                     {tables.map(t => (
                       <option key={t.table_number} value={t.table_number}>
@@ -1557,7 +1647,7 @@ export default function WaiterMobileApp() {
                   placeholder="Search 281 culinary & bar items..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-[#D4AF37]"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white rounded-xl border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 shadow-xs"
                 />
               </div>
 
@@ -1575,7 +1665,7 @@ export default function WaiterMobileApp() {
                       <div className="flex-1 pr-2">
                         <div className="flex items-center gap-1.5">
                           <span className={`w-2 h-2 rounded-full ${it.is_veg ? "bg-emerald-500" : "bg-rose-500"}`} />
-                          <span className="text-xs font-semibold text-white">{it.name}</span>
+                          <span className="text-xs font-semibold text-slate-900">{it.name}</span>
                         </div>
                         <span className="text-xs text-[#D4AF37] font-bold mt-0.5 block">₹{it.base_price.toFixed(2)}</span>
                       </div>

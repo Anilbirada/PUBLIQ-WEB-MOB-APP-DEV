@@ -234,8 +234,9 @@ export default function LiquorInventoryPage() {
   const categories = ["ALL", ...Array.from(new Set(items.map(i => i.category)))];
 
   const filteredItems = items.filter(it => {
-    const matchesSearch = it.brand_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          it.excise_code.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (it.brand_name || "").toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          (it.excise_code || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (it.category || "").toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "ALL" || it.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });

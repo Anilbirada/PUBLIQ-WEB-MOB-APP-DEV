@@ -4,6 +4,7 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 import uuid
+import re
 
 from app.core.database import get_db
 from app.models import WebsiteContent, GalleryItem, Testimonial, PrivateEventBooking
@@ -170,18 +171,38 @@ def get_events_list():
 @router.post("/events/enquiry")
 def submit_event_enquiry(payload: dict, db: Session = Depends(get_db)):
     """Submit a private party or event enquiry saved to database."""
-    name = payload.get("guest_name") or payload.get("name", "Valued Guest")
-    phone = payload.get("phone", "")
-    email = payload.get("email", "")
+    name = (payload.get("guest_name") or payload.get("name", "")).strip()
+    if not name or len(name) < 2:
+        raise HTTPException(status_code=400, detail="Please provide a valid full name for the event host.")
+
+    phone = str(payload.get("phone", "")).strip()
+    clean_phone = re.sub(r"\D", "", phone)
+    if not clean_phone or len(clean_phone) < 10:
+        raise HTTPException(status_code=400, detail="Please provide a valid 10-digit contact phone number.")
+
+    email = str(payload.get("email", "")).strip()
     event_type = payload.get("event_type", "Private Celebration")
-    event_date = payload.get("preferred_date") or payload.get("event_date", datetime.now().strftime("%Y-%m-%d"))
-    guest_count = int(payload.get("guest_count", 20))
+    
+    event_date = str(payload.get("preferred_date") or payload.get("event_date", "")).strip()
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    if not event_date:
+        event_date = today_str
+    elif event_date < today_str:
+        raise HTTPException(status_code=400, detail="Event date cannot be in the past. Please select today or a future date.")
+
+    try:
+        guest_count = int(payload.get("guest_count", 20))
+        if guest_count < 2 or guest_count > 500:
+            raise HTTPException(status_code=400, detail="Guest count must be between 2 and 500.")
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=400, detail="Invalid guest count specified.")
+
     special_requests = payload.get("special_requests", "")
 
     booking = PrivateEventBooking(
         name=name,
         email=email,
-        phone=phone,
+        phone=clean_phone,
         event_type=event_type,
         event_date=event_date,
         guest_count=guest_count,

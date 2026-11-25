@@ -38,26 +38,29 @@ export const TableSessionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     isDineInActive: false,
   });
 
-  // Load from localStorage on mount
+  // Automatic table selection is strictly disabled across the entire application
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setSession(parsed);
-      }
+      localStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(STORAGE_KEY);
     } catch (_) {}
   }, []);
 
   const setTableSession = (data: Partial<TableSessionData>) => {
     setSession((prev) => {
+      const hasTable = Boolean(data.tableNumber || prev.tableNumber);
       const updated = {
         ...prev,
         ...data,
-        isDineInActive: !!data.tableNumber || prev.isDineInActive,
+        isDineInActive: Boolean(data.tableNumber),
       };
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        if (updated.tableNumber) {
+          sessionStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        } else {
+          sessionStorage.removeItem(STORAGE_KEY);
+        }
+        localStorage.removeItem(STORAGE_KEY); // wipe any legacy persistent table
       } catch (_) {}
       return updated;
     });
@@ -78,6 +81,7 @@ export const TableSessionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     };
     setSession(empty);
     try {
+      sessionStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(STORAGE_KEY);
     } catch (_) {}
   };

@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 import secrets
+from datetime import datetime
+import re
 
 from app.core.database import get_db
 from app.models import Reservation, Outlet, ReservationStatusEnum
@@ -17,6 +19,33 @@ def create_reservation(req: ReservationCreateRequest, db: Session = Depends(get_
         
     if not outlet:
         raise HTTPException(status_code=404, detail="Restaurant outlet not found.")
+
+    # Validation: Phone Number
+    clean_phone = re.sub(r"\D", "", req.guest_phone or "")
+    if len(clean_phone) < 10:
+        raise HTTPException(status_code=400, detail="Please provide a valid 10-digit mobile phone number.")
+
+    # Validation: Past Date
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    if str(req.reservation_date) < today_str:
+        raise HTTPException(status_code=400, detail="Reservations cannot be booked for past dates.")
+
+    # Validation: Party Size
+    if req.guest_count < 1 or req.guest_count > 30:
+        raise HTTPException(status_code=400, detail="Party size must be between 1 and 30 guests.")
+
+    # Validation: Prevent Duplicate Reservation (PUB-QA-046)
+    existing_res = db.query(Reservation).filter(
+        Reservation.guest_phone == req.guest_phone,
+        Reservation.reservation_date == req.reservation_date,
+        Reservation.time_slot == req.time_slot,
+        Reservation.status != ReservationStatusEnum.CANCELLED
+    ).first()
+    if existing_res:
+        raise HTTPException(
+            status_code=400,
+            detail=f"A booking already exists for {req.guest_phone} on {req.reservation_date} at {req.time_slot}. Duplicate reservations are prevented."
+        )
         
     ref_code = f"RES-PUB-{secrets.token_hex(4).upper()}"
     reservation = Reservation(

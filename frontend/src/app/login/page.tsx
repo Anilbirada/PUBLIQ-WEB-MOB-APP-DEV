@@ -9,12 +9,19 @@ import {
   Sparkles, Check, ChevronRight, Eye, EyeOff, Store, Phone, LogIn
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { useTableSession } from "../../context/TableSessionContext";
 
 export default function UniversalLoginPage() {
   const router = useRouter();
   const { universalLogin } = useAuth();
+  const { clearTableSession } = useTableSession();
 
-  const [selectedRole, setSelectedRole] = useState<string>("AUTO");
+  // Clear any active customer table session when entering staff/admin portal
+  React.useEffect(() => {
+    clearTableSession();
+  }, []);
+
+  const [selectedRole, setSelectedRole] = useState<string>("");
   const [identifier, setIdentifier] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -24,12 +31,16 @@ export default function UniversalLoginPage() {
 
   const handleCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedRole) {
+      setErrorMsg("Please select your Department / Access Terminal from the dropdown.");
+      return;
+    }
     if (!identifier.trim()) {
-      setErrorMsg("Please enter your staff username, email, phone number, or employee ID.");
+      setErrorMsg("Please enter your registered staff username, email, or mobile number.");
       return;
     }
     if (!password.trim()) {
-      setErrorMsg("Please enter your password or security PIN.");
+      setErrorMsg("Please enter your staff password or security PIN.");
       return;
     }
 
@@ -39,17 +50,23 @@ export default function UniversalLoginPage() {
 
     try {
       const user = await universalLogin({
-        role: selectedRole === "AUTO" ? undefined : selectedRole,
+        role: selectedRole,
         identifier: identifier.trim(),
         password: password.trim(),
         pin: password.trim()
       });
-      setSuccessMsg(`Welcome, ${user.fullName}! Authenticated as ${user.roleLabel}. Redirecting...`);
+      const targetDestination = user.redirectUrl || (
+        user.role === "WAITER" ? "/waiter" :
+        user.role === "BAR_ADMIN" ? "/admin/owner/beverage" :
+        user.role === "FOOD_ADMIN" ? "/admin/owner/food" :
+        user.role === "CUSTOMER" ? "/menu" : "/admin"
+      );
+      setSuccessMsg(`Welcome, ${user.fullName}! Authenticated as ${user.roleLabel}. Redirecting to your terminal...`);
       setTimeout(() => {
-        router.push(user.redirectUrl || "/admin");
-      }, 600);
+        router.push(targetDestination);
+      }, 500);
     } catch (err: any) {
-      setErrorMsg(err.message || "Invalid credentials. Please verify your staff username and password/PIN.");
+      setErrorMsg(err.message || "Invalid credentials. Please verify your department terminal selection and login details.");
     } finally {
       setIsSubmitting(false);
     }
@@ -117,19 +134,23 @@ export default function UniversalLoginPage() {
             {/* Department / Role Selector */}
             <div>
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700 block mb-1.5">
-                Department / Access Terminal
+                Department / Access Terminal <span className="text-amber-600 font-bold">* (Required)</span>
               </label>
               <select
+                required
                 value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 font-semibold focus:outline-none focus:border-blue-600 focus:bg-white transition"
+                onChange={(e) => {
+                  setSelectedRole(e.target.value);
+                  setErrorMsg(null);
+                }}
+                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 font-semibold focus:outline-none focus:border-blue-600 focus:bg-white transition cursor-pointer"
               >
-                <option value="AUTO">Auto-Detect from Staff Account</option>
+                <option value="">-- Select Department / Access Role --</option>
                 <option value="SUPER_ADMIN">Super Admin (All Modules &amp; Full Governance)</option>
-                <option value="BAR_ADMIN">Bar Admin (Beverage &amp; Liquor Division - Anil)</option>
-                <option value="FOOD_ADMIN">Kitchen Admin (Culinary &amp; Food Division - Ramesh S P)</option>
-                <option value="WAITER">Service Steward (Dining Floor &amp; Waiter Terminal)</option>
-                <option value="CUSTOMER">Guest Customer Portal</option>
+                <option value="BAR_ADMIN">Bar Admin (Beverage Division - Restricted)</option>
+                <option value="FOOD_ADMIN">Kitchen Admin (Food Division - Restricted)</option>
+                <option value="WAITER">Service Steward (Dining Floor - Restricted)</option>
+                <option value="CUSTOMER">Guest Customer Portal (Restricted)</option>
               </select>
             </div>
 
@@ -143,7 +164,7 @@ export default function UniversalLoginPage() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. admin, anil, ramesh, raju.waiter, or phone"
+                  placeholder="Enter staff username, email, or mobile number"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white transition"
@@ -198,62 +219,6 @@ export default function UniversalLoginPage() {
           <div className="pt-3 border-t border-slate-100 flex items-center gap-2 text-[11px] text-slate-500">
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>256-bit encrypted authentication. All sessions are logged with staff ID and timestamp.</span>
-          </div>
-        </div>
-
-        {/* 5-Role Access Control Matrix Table */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <Store className="w-4 h-4 text-blue-600" />
-              Department Terminals &amp; Access Routing
-            </h3>
-            <span className="text-xs text-blue-600 font-bold">RBAC Enforcement</span>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-100 bg-slate-50/50">
-                <tr>
-                  <th className="p-3">Department Role</th>
-                  <th className="p-3">Designated Scope</th>
-                  <th className="p-3">Terminal Path</th>
-                  <th className="p-3">PhonePe QR Settlement</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                <tr className="hover:bg-slate-50/50">
-                  <td className="p-3 font-bold text-blue-700">Super Admin</td>
-                  <td className="p-3 text-slate-600">Executive Analytics, Staff Management, POS, KDS, Full Governance</td>
-                  <td className="p-3 font-mono text-slate-900">/admin</td>
-                  <td className="p-3 text-slate-600">Consolidated Indian 5% GST Reports</td>
-                </tr>
-                <tr className="hover:bg-slate-50/50">
-                  <td className="p-3 font-bold text-cyan-700">Bar Admin (Anil)</td>
-                  <td className="p-3 text-slate-600">Beverage Station, Mixology Queue, Cellar Ledger &amp; Peg Tracker</td>
-                  <td className="p-3 font-mono text-slate-900">/admin/owner/beverage</td>
-                  <td className="p-3 font-mono text-cyan-700 font-bold">8431712924-3@ybl</td>
-                </tr>
-                <tr className="hover:bg-slate-50/50">
-                  <td className="p-3 font-bold text-amber-700">Kitchen Admin (Ramesh S P)</td>
-                  <td className="p-3 text-slate-600">Kitchen Display System (KDS), Clay Tandoor Lines &amp; Raw Materials</td>
-                  <td className="p-3 font-mono text-slate-900">/admin/owner/food</td>
-                  <td className="p-3 font-mono text-amber-700 font-bold">ramesh776059@ybl</td>
-                </tr>
-                <tr className="hover:bg-slate-50/50">
-                  <td className="p-3 font-bold text-emerald-700">Service Steward (Waiter)</td>
-                  <td className="p-3 text-slate-600">Floor Seating Map, Table QR Scanning, Order Taking &amp; KOTs</td>
-                  <td className="p-3 font-mono text-slate-900">/waiter</td>
-                  <td className="p-3 text-slate-600">Direct Split Bill Payment</td>
-                </tr>
-                <tr className="hover:bg-slate-50/50">
-                  <td className="p-3 font-bold text-purple-700">Customer / Guest Diner</td>
-                  <td className="p-3 text-slate-600">Table QR Dine-In Ordering, Cart Review &amp; Order History</td>
-                  <td className="p-3 font-mono text-slate-900">/menu</td>
-                  <td className="p-3 text-slate-600">Dual Split PhonePe UPI</td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </div>
 

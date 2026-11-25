@@ -1,9 +1,6 @@
-from fastapi import APIRouter, Depends, Query, HTTPException, Body, UploadFile, File
+from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
-from typing import List, Optional, Dict, Any
-import os
-import uuid
-import shutil
+from typing import List, Optional
 
 from app.core.database import get_db
 from app.models import MenuCategory, MenuItem, MenuVariant
@@ -17,6 +14,8 @@ def get_full_menu(
     veg_only: Optional[bool] = None,
     include_alcohol: bool = True,
     search: Optional[str] = None,
+    available_only: Optional[bool] = None,
+    include_unavailable: bool = False,
     db: Session = Depends(get_db)
 ):
     query = db.query(MenuCategory).filter(MenuCategory.is_active == True)
@@ -29,9 +28,11 @@ def get_full_menu(
     result = []
     for cat in categories:
         cat_items_query = db.query(MenuItem).filter(
-            MenuItem.category_id == cat.id,
-            MenuItem.is_available == True
+            MenuItem.category_id == cat.id
         )
+        # If available_only is True, or if include_unavailable is False and available_only is not False:
+        if available_only is True or (not include_unavailable and available_only is not False):
+            cat_items_query = cat_items_query.filter(MenuItem.is_available == True)
         if veg_only:
             cat_items_query = cat_items_query.filter(MenuItem.is_veg == True)
         if not include_alcohol:
@@ -56,6 +57,31 @@ def get_full_menu(
             
     return result
 
+@router.patch("/items/{item_id}/toggle-availability")
+def toggle_item_availability(item_id: str, is_available: Optional[bool] = None, db: Session = Depends(get_db)):
+    """
+    Toggles or sets the availability of a food or drink item.
+    When set to False, customers scanning QR codes cannot order or click it.
+    """
+    item = db.query(MenuItem).filter(MenuItem.id == item_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail=f"Menu item '{item_id}' not found.")
+        
+    if is_available is not None:
+        item.is_available = is_available
+    else:
+        item.is_available = not item.is_available
+        
+    db.commit()
+    db.refresh(item)
+    return {
+        "success": True,
+        "item_id": item.id,
+        "name": item.name,
+        "is_available": item.is_available,
+        "message": f"{item.name} is now {'AVAILABLE' if item.is_available else 'UNAVAILABLE (86 / OUT OF STOCK)'} for ordering."
+    }
+
 @router.post("/import-catalogue")
 def trigger_catalogue_import(db: Session = Depends(get_db)):
     """
@@ -75,113 +101,3 @@ def trigger_catalogue_import(db: Session = Depends(get_db)):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Catalogue import error: {str(e)}")
-
-
-@router.patch("/items/{item_id}/image")
-def update_product_image(
-    item_id: str,
-    payload: Dict[str, Any] = Body(...),
-    db: Session = Depends(get_db)
-):
-    """
-    Super Admin endpoint to view, replace or update an individual product image URL.
-    Guarantees that only the targeted product record is modified.
-    """
-    new_image_url = (payload.get("image_url") or "").strip()
-    if not new_image_url:
-        raise HTTPException(status_code=400, detail="Field 'image_url' cannot be empty.")
-
-    item = db.query(MenuItem).filter(MenuItem.id == item_id).first()
-    if not item:
-        raise HTTPException(status_code=404, detail=f"Menu item with ID {item_id} not found.")
-
-    item.image_url = new_image_url
-    db.commit()
-    db.refresh(item)
-
-    return {
-        "success": True,
-        "message": f"Successfully updated product image for '{item.name}'.",
-        "item": {
-            "id": item.id,
-            "name": item.name,
-            "image_url": item.image_url,
-            "category_id": item.category_id
-        }
-    }
-
-
-@router.post("/upload-image")
-def upload_product_image(file: UploadFile = File(...)):
-    """
-    Super Admin image upload endpoint.
-    Accepts .webp, .jpg, .jpeg, .png image files, validates format and size,
-    and stores in the frontend public product photography directory.
-    """
-    valid_exts = {".webp", ".jpg", ".jpeg", ".png"}
-    ext = os.path.splitext(file.filename or "")[1].lower()
-    if ext not in valid_exts:
-        raise HTTPException(status_code=400, detail=f"Unsupported format '{ext}'. Allowed: {', '.join(valid_exts)}")
-
-    # Target storage directory
-    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-    target_dir = os.path.join(base_dir, "frontend", "public", "images", "publiq", "products")
-    os.makedirs(target_dir, exist_ok=True)
-
-    safe_name = f"upload_{uuid.uuid4().hex[:12]}{ext}"
-    target_path = os.path.join(target_dir, safe_name)
-
-    with open(target_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    rel_url = f"/images/publiq/products/{safe_name}"
-    return {
-        "success": True,
-        "image_url": rel_url,
-        "filename": safe_name,
-        "size_bytes": os.path.getsize(target_path)
-    }
-
-
-@router.get("/missing-images")
-def get_products_with_missing_images(db: Session = Depends(get_db)):
-    """
-    Returns all menu items whose image_url is missing, empty, or pointing to a non-existent file.
-    """
-    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-    public_dir = os.path.join(base_dir, "frontend", "public")
-
-    items = db.query(MenuItem).all()
-    missing = []
-
-    for it in items:
-        img = (it.image_url or "").strip()
-        is_missing = False
-        reason = ""
-
-        if not img or len(img) < 4:
-            is_missing = True
-            reason = "EMPTY_URL"
-        elif "placeholder" in img or "broken" in img:
-            is_missing = True
-            reason = "PLACEHOLDER_URL"
-        elif img.startswith("/"):
-            local_fp = os.path.join(public_dir, img.lstrip("/").replace("/", os.sep))
-            if not os.path.exists(local_fp):
-                is_missing = True
-                reason = "FILE_NOT_ON_DISK"
-
-        if is_missing:
-            missing.append({
-                "id": it.id,
-                "name": it.name,
-                "category_id": it.category_id,
-                "image_url": it.image_url,
-                "reason": reason
-            })
-
-    return {
-        "total_items": len(items),
-        "missing_count": len(missing),
-        "items": missing
-    }

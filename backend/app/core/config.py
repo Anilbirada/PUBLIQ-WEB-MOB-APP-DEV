@@ -47,8 +47,11 @@ class Settings(BaseSettings):
     PACKAGING_CHARGE_TAKEAWAY: float = 25.0
     DELIVERY_FEE_FLAT: float = 40.0
 
+    PORT: int = 8001
+
     class Config:
         case_sensitive = True
         env_file = ".env"
+        extra = "ignore"
 
 settings = Settings()

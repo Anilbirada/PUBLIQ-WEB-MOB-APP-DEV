@@ -20,7 +20,76 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("publiq_auth_user");
+      if (!storedUser) {
+        router.replace("/login");
+        return;
+      }
+      try {
+        const parsed = JSON.parse(storedUser);
+        const allowedAdminRoles = [
+          "SUPER_ADMIN", "BAR_ADMIN", "FOOD_ADMIN", "EXECUTIVE_CHEF", 
+          "CASHIER", "STOREKEEPER", "ACCOUNTANT"
+        ];
+        if (!allowedAdminRoles.includes(parsed.role)) {
+          if (parsed.role === "WAITER") {
+            router.replace("/waiter");
+          } else {
+            router.replace("/login");
+          }
+          return;
+        }
+
+        // Department route authorization for operational managers & staff:
+        if (parsed.role === "BAR_ADMIN") {
+          const barAllowed = ["/admin/owner/beverage", "/admin/bar", "/admin/inventory/liquor", "/admin/menu", "/admin/owners", "/admin/reviews"];
+          const isAllowed = barAllowed.some((r) => pathname === r || pathname?.startsWith(r + "/"));
+          if (!isAllowed) {
+            router.replace("/admin/owner/beverage");
+            return;
+          }
+        } else if (parsed.role === "FOOD_ADMIN") {
+          const foodAllowed = ["/admin/owner/food", "/admin/kot", "/admin/inventory/restaurant", "/admin/recipes", "/admin/menu", "/admin/owners", "/admin/reviews"];
+          const isAllowed = foodAllowed.some((r) => pathname === r || pathname?.startsWith(r + "/"));
+          if (!isAllowed) {
+            router.replace("/admin/owner/food");
+            return;
+          }
+        } else if (parsed.role === "EXECUTIVE_CHEF") {
+          const chefAllowed = ["/admin/owner/food", "/admin/kot", "/admin/inventory/restaurant", "/admin/recipes", "/admin/menu"];
+          const isAllowed = chefAllowed.some((r) => pathname === r || pathname?.startsWith(r + "/"));
+          if (!isAllowed) {
+            router.replace("/admin/owner/food");
+            return;
+          }
+        } else if (parsed.role === "CASHIER") {
+          const cashierAllowed = ["/admin/pos", "/admin/invoices", "/admin/tables"];
+          const isAllowed = cashierAllowed.some((r) => pathname === r || pathname?.startsWith(r + "/"));
+          if (!isAllowed) {
+            router.replace("/admin/pos");
+            return;
+          }
+        } else if (parsed.role === "STOREKEEPER") {
+          const storeAllowed = ["/admin/inventory/liquor", "/admin/inventory/restaurant", "/admin/suppliers"];
+          const isAllowed = storeAllowed.some((r) => pathname === r || pathname?.startsWith(r + "/"));
+          if (!isAllowed) {
+            router.replace("/admin/inventory/liquor");
+            return;
+          }
+        } else if (parsed.role === "ACCOUNTANT") {
+          const acctAllowed = ["/admin/reports", "/admin/invoices", "/admin/expenses"];
+          const isAllowed = acctAllowed.some((r) => pathname === r || pathname?.startsWith(r + "/"));
+          if (!isAllowed) {
+            router.replace("/admin/reports");
+            return;
+          }
+        }
+      } catch (_) {
+        router.replace("/login");
+      }
+    }
+  }, [router, pathname]);
 
   const currentRole = (mounted && user?.role) ? user.role : "SUPER_ADMIN";
 
@@ -28,11 +97,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     {
       title: "OPERATIONS",
       items: [
-        { name: "Executive Dashboard", href: "/admin", icon: LayoutDashboard, roles: ["SUPER_ADMIN", "BAR_ADMIN", "FOOD_ADMIN"] },
-        { name: "Restaurant & Bar POS", href: "/admin/pos", icon: ShoppingCart, roles: ["SUPER_ADMIN"] },
-        { name: "Kitchen Display (KDS)", href: "/admin/kot", icon: Flame, badge: "LIVE", badgeColor: "from-amber-500 to-orange-500", roles: ["SUPER_ADMIN", "FOOD_ADMIN"] },
+        { name: "Executive Dashboard", href: "/admin", icon: LayoutDashboard, roles: ["SUPER_ADMIN"] },
+        { name: "Restaurant & Bar POS", href: "/admin/pos", icon: ShoppingCart, roles: ["SUPER_ADMIN", "CASHIER"] },
+        { name: "Kitchen Display (KDS)", href: "/admin/kot", icon: Flame, badge: "LIVE", badgeColor: "from-amber-500 to-orange-500", roles: ["SUPER_ADMIN", "FOOD_ADMIN", "EXECUTIVE_CHEF"] },
         { name: "Bar Dispense Station", href: "/admin/bar", icon: Wine, badgeColor: "from-cyan-500 to-blue-600", roles: ["SUPER_ADMIN", "BAR_ADMIN"] },
-        { name: "Table Floor Plan", href: "/admin/tables", icon: Grid3X3, roles: ["SUPER_ADMIN"] },
+        { name: "Table Floor Plan", href: "/admin/tables", icon: Grid3X3, roles: ["SUPER_ADMIN", "CASHIER"] },
         { name: "Table QR Manager", href: "/admin/qr", icon: QrCode, roles: ["SUPER_ADMIN"] },
       ],
     },
@@ -44,15 +113,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: "AI Content & Sommelier", href: "/admin/ai-promos", icon: Bot, badge: "AI", badgeColor: "from-emerald-500 to-teal-600", roles: ["SUPER_ADMIN"] },
         { name: "Party & Event Enquiries", href: "/admin/events", icon: PartyPopper, roles: ["SUPER_ADMIN"] },
         { name: "Guest Reservations", href: "/admin/reservations", icon: Calendar, roles: ["SUPER_ADMIN"] },
-        { name: "Centralized Menu", href: "/admin/menu", icon: UtensilsCrossed, roles: ["SUPER_ADMIN", "BAR_ADMIN", "FOOD_ADMIN"] },
+        { name: "Centralized Menu", href: "/admin/menu", icon: UtensilsCrossed, roles: ["SUPER_ADMIN", "BAR_ADMIN", "FOOD_ADMIN", "EXECUTIVE_CHEF"] },
       ],
     },
     {
       title: "INVENTORY & PRECISION BAR",
       items: [
-        { name: "Liquor Cellar & mL Pour", href: "/admin/inventory/liquor", icon: Beer, roles: ["SUPER_ADMIN", "BAR_ADMIN"] },
-        { name: "Kitchen Raw Materials", href: "/admin/inventory/restaurant", icon: Package, roles: ["SUPER_ADMIN", "FOOD_ADMIN"] },
-        { name: "Recipe Costing & Margins", href: "/admin/recipes", icon: BookOpen, roles: ["SUPER_ADMIN", "FOOD_ADMIN"] },
+        { name: "Liquor Cellar & mL Pour", href: "/admin/inventory/liquor", icon: Beer, roles: ["SUPER_ADMIN", "BAR_ADMIN", "STOREKEEPER"] },
+        { name: "Kitchen Raw Materials", href: "/admin/inventory/restaurant", icon: Package, roles: ["SUPER_ADMIN", "FOOD_ADMIN", "STOREKEEPER", "EXECUTIVE_CHEF"] },
+        { name: "Recipe Costing & Margins", href: "/admin/recipes", icon: BookOpen, roles: ["SUPER_ADMIN", "FOOD_ADMIN", "EXECUTIVE_CHEF"] },
       ],
     },
     {
@@ -60,13 +129,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       items: [
         { name: "Dual Business Owners", href: "/admin/owners", icon: ShieldCheck, badge: "DUAL", badgeColor: "from-blue-600 to-indigo-600", roles: ["SUPER_ADMIN"] },
         { name: "Bar Admin (Anil)", href: "/admin/owner/beverage", icon: Wine, badge: "8431712924-3@ybl", badgeColor: "from-cyan-500 to-blue-600", roles: ["SUPER_ADMIN", "BAR_ADMIN"] },
-        { name: "Food Admin (Ramesh)", href: "/admin/owner/food", icon: UtensilsCrossed, badge: "ramesh776059@ybl", badgeColor: "from-amber-500 to-orange-500", roles: ["SUPER_ADMIN", "FOOD_ADMIN"] },
+        { name: "Food Admin (Ramesh)", href: "/admin/owner/food", icon: UtensilsCrossed, badge: "ramesh776059@ybl", badgeColor: "from-amber-500 to-orange-500", roles: ["SUPER_ADMIN", "FOOD_ADMIN", "EXECUTIVE_CHEF"] },
         { name: "Staff & Attendance", href: "/admin/employees", icon: Users, roles: ["SUPER_ADMIN"] },
-        { name: "Billing & Invoices", href: "/admin/invoices", icon: Receipt, badge: "GST", badgeColor: "from-emerald-500 to-teal-600", roles: ["SUPER_ADMIN"] },
+        { name: "Billing & Invoices", href: "/admin/invoices", icon: Receipt, badge: "GST", badgeColor: "from-emerald-500 to-teal-600", roles: ["SUPER_ADMIN", "CASHIER", "ACCOUNTANT"] },
         { name: "Customer Reviews", href: "/admin/reviews", icon: Star, badge: "5★", badgeColor: "from-amber-500 to-orange-500", roles: ["SUPER_ADMIN", "BAR_ADMIN", "FOOD_ADMIN"] },
-        { name: "Suppliers & Purchases", href: "/admin/suppliers", icon: Truck, roles: ["SUPER_ADMIN"] },
-        { name: "Operating Expenses", href: "/admin/expenses", icon: Receipt, roles: ["SUPER_ADMIN"] },
-        { name: "Financial & 5% GST Reports", href: "/admin/reports", icon: TrendingUp, roles: ["SUPER_ADMIN"] },
+        { name: "Suppliers & Purchases", href: "/admin/suppliers", icon: Truck, roles: ["SUPER_ADMIN", "STOREKEEPER"] },
+        { name: "Operating Expenses", href: "/admin/expenses", icon: Receipt, roles: ["SUPER_ADMIN", "ACCOUNTANT"] },
+        { name: "Financial & 5% GST Reports", href: "/admin/reports", icon: TrendingUp, roles: ["SUPER_ADMIN", "ACCOUNTANT"] },
       ],
     },
   ];
@@ -101,6 +170,42 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           badgeBg: "bg-amber-50 text-amber-700 border-amber-200",
           initials: "RS",
           avatarGrad: "from-amber-500 to-orange-500",
+        };
+      case "EXECUTIVE_CHEF":
+        return {
+          name: user?.fullName || "Chef Rajeshwar Rawat",
+          roleTitle: "Executive Chef (Culinary Operations)",
+          badge: "EXECUTIVE CHEF",
+          badgeBg: "bg-orange-50 text-orange-700 border-orange-200",
+          initials: "RR",
+          avatarGrad: "from-orange-500 to-amber-600",
+        };
+      case "CASHIER":
+        return {
+          name: user?.fullName || "Rohit Sen",
+          roleTitle: "Cashier / POS Terminal",
+          badge: "CASHIER",
+          badgeBg: "bg-indigo-50 text-indigo-700 border-indigo-200",
+          initials: "RS",
+          avatarGrad: "from-indigo-500 to-blue-600",
+        };
+      case "STOREKEEPER":
+        return {
+          name: user?.fullName || "Karthik Raja",
+          roleTitle: "Storekeeper & Liquor Cellar",
+          badge: "STOREKEEPER",
+          badgeBg: "bg-teal-50 text-teal-700 border-teal-200",
+          initials: "KR",
+          avatarGrad: "from-teal-500 to-emerald-600",
+        };
+      case "ACCOUNTANT":
+        return {
+          name: user?.fullName || "Meera Nambiar",
+          roleTitle: "Accountant & GST Statutory",
+          badge: "ACCOUNTANT",
+          badgeBg: "bg-rose-50 text-rose-700 border-rose-200",
+          initials: "MN",
+          avatarGrad: "from-rose-500 to-pink-600",
         };
       case "WAITER":
         return {

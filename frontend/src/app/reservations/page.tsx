@@ -41,10 +41,31 @@ export default function ReservationsPage() {
     e.preventDefault();
     setErrorMessage("");
 
+    if (!guestName || guestName.trim().length < 2) {
+      setErrorMessage("Please enter your full name.");
+      return;
+    }
+
     // Validation: 10 digit Indian phone
     const cleanPhone = guestPhone.replace(/\D/g, "");
     if (cleanPhone.length < 10) {
       setErrorMessage("Please enter a valid 10-digit mobile number for SMS confirmation.");
+      return;
+    }
+
+    const todayStr = new Date().toISOString().split("T")[0];
+    if (reservationDate < todayStr) {
+      setErrorMessage("Reservations cannot be booked for past dates. Please choose today or a future date.");
+      return;
+    }
+
+    if (guestEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guestEmail)) {
+      setErrorMessage("Please enter a valid email address.");
+      return;
+    }
+
+    if (!guestCount || guestCount < 1 || guestCount > 30) {
+      setErrorMessage("Party size must be between 1 and 30 guests.");
       return;
     }
 
@@ -218,6 +239,7 @@ export default function ReservationsPage() {
                   <input
                     type="date"
                     required
+                    min={new Date().toISOString().split("T")[0]}
                     value={reservationDate}
                     onChange={(e) => setReservationDate(e.target.value)}
                     className="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"

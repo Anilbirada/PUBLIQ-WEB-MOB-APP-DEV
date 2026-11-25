@@ -59,8 +59,30 @@ export default function PartyAndEventsPage() {
 
   const handleSubmitEnquiry = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!guestName || !phone) {
-      alert("Please provide your Name and Phone Number.");
+    if (!guestName || guestName.trim().length < 2) {
+      alert("Please provide your full Name.");
+      return;
+    }
+
+    const cleanPhone = phone.replace(/\D/g, "");
+    if (!cleanPhone || cleanPhone.length < 10) {
+      alert("Please provide a valid 10-digit mobile number for event coordination.");
+      return;
+    }
+
+    const todayStr = new Date().toISOString().split("T")[0];
+    if (preferredDate && preferredDate < todayStr) {
+      alert("Event date cannot be in the past. Please choose today or a future date.");
+      return;
+    }
+
+    if (!guestCount || guestCount < 2 || guestCount > 500) {
+      alert("Please specify a guest count between 2 and 500 attendees.");
+      return;
+    }
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert("Please enter a valid email address.");
       return;
     }
 
@@ -70,9 +92,9 @@ export default function PartyAndEventsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          guest_name: guestName,
-          phone,
-          email,
+          guest_name: guestName.trim(),
+          phone: cleanPhone,
+          email: email?.trim(),
           event_type: eventType,
           preferred_date: preferredDate,
           preferred_time: preferredTime,
@@ -91,11 +113,11 @@ export default function PartyAndEventsPage() {
         setEmail("");
         setSpecialRequests("");
       } else {
-        throw new Error("API failed");
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || "Event enquiry submission failed");
       }
-    } catch (_) {
-      setConfirmationNotice(`Thank you, ${guestName}. Your event enquiry has been received. Our Event Director will call you at ${phone} shortly.`);
-      setIsModalOpen(false);
+    } catch (err: any) {
+      alert(err.message || "Failed to submit event enquiry. Please try again or call our event desk.");
     } finally {
       setIsSubmitting(false);
     }
@@ -282,6 +304,7 @@ export default function PartyAndEventsPage() {
                   <label className="text-xs font-bold text-slate-700 block mb-1.5 uppercase tracking-wider">Preferred Date</label>
                   <input
                     type="date"
+                    min={new Date().toISOString().split("T")[0]}
                     value={preferredDate}
                     onChange={(e) => setPreferredDate(e.target.value)}
                     className="w-full text-xs bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white"

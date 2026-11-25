@@ -64,5 +64,7 @@ openh264-2.5.0-win64.dll
 
 # Temporary scratch files
 scratch_db_check.py
+*.tsbuildinfo
+items_dump.json
 
 *.apk

@@ -73,7 +73,7 @@ ROLE_DEFINITIONS = {
     },
     "WAITER": {
         "role": "WAITER",
-        "role_label": "Service Steward (Waiter)",
+        "role_label": "Service Steward (Waiter Floor)",
         "department": "FLOOR",
         "default_name": "Steward Raju",
         "default_email": "raju.waiter@publiqrestaurant.com",
@@ -84,6 +84,62 @@ ROLE_DEFINITIONS = {
         "description": "Table order taking, physical table QR code scanning, table floor map, KOT dispatch, and split bill presentation.",
         "allowed_routes": ["/waiter", "/menu", "/track"],
         "permissions": ["TAKE_ORDERS", "SCAN_TABLE_QR", "DISPATCH_KOT", "REQUEST_BILL", "VIEW_FLOOR_TABLES"]
+    },
+    "EXECUTIVE_CHEF": {
+        "role": "EXECUTIVE_CHEF",
+        "role_label": "Executive Chef (Chef Rajeshwar Rawat)",
+        "department": "FOOD",
+        "default_name": "Chef Rajeshwar Rawat",
+        "default_email": "chef.rajesh@publiqrestaurant.com",
+        "default_phone": "+91 98000 11003",
+        "default_pin": "3333",
+        "default_password": "publiq123",
+        "redirect_url": "/admin/owner/food",
+        "description": "Culinary operations, kitchen recipe engineering, ingredient standardizations, and KOT dispatch.",
+        "allowed_routes": ["/admin/owner/food", "/admin/kot", "/admin/recipes", "/admin/inventory/restaurant", "/admin/menu"],
+        "permissions": ["VIEW_FOOD_REVENUE", "MANAGE_KDS", "VIEW_KITCHEN_INVENTORY", "MANAGE_RECIPES"]
+    },
+    "CASHIER": {
+        "role": "CASHIER",
+        "role_label": "Cashier / POS Terminal (Rohit Sen)",
+        "department": "FINANCE",
+        "default_name": "Rohit Sen",
+        "default_email": "rohit.cashier@publiqrestaurant.com",
+        "default_phone": "+91 98000 11005",
+        "default_pin": "2222",
+        "default_password": "publiq123",
+        "redirect_url": "/admin/pos",
+        "description": "Restaurant POS terminal operations, billing and counter GST invoice settlement.",
+        "allowed_routes": ["/admin/pos", "/admin/invoices", "/admin/tables"],
+        "permissions": ["MANAGE_POS", "VIEW_TABLES", "CREATE_INVOICE"]
+    },
+    "STOREKEEPER": {
+        "role": "STOREKEEPER",
+        "role_label": "Storekeeper & Liquor Cellar (Karthik Raja)",
+        "department": "INVENTORY",
+        "default_name": "Karthik Raja",
+        "default_email": "karthik.store@publiqrestaurant.com",
+        "default_phone": "+91 98000 11006",
+        "default_pin": "5555",
+        "default_password": "publiq123",
+        "redirect_url": "/admin/inventory/liquor",
+        "description": "Liquor cellar, bar bottle inventory, restaurant dry stores, and supplier intake tracking.",
+        "allowed_routes": ["/admin/inventory/liquor", "/admin/inventory/restaurant", "/admin/suppliers"],
+        "permissions": ["VIEW_LIQUOR_INVENTORY", "VIEW_KITCHEN_INVENTORY", "MANAGE_SUPPLIERS"]
+    },
+    "ACCOUNTANT": {
+        "role": "ACCOUNTANT",
+        "role_label": "Accountant & GST Statutory (Meera Nambiar)",
+        "department": "ACCOUNTS",
+        "default_name": "Meera Nambiar",
+        "default_email": "meera.accounts@publiqrestaurant.com",
+        "default_phone": "+91 98000 11008",
+        "default_pin": "7777",
+        "default_password": "publiq123",
+        "redirect_url": "/admin/reports",
+        "description": "Indian restaurant 5% GST statutory accounts, P&L statements, expense approvals, and sales ledger audits.",
+        "allowed_routes": ["/admin/reports", "/admin/invoices", "/admin/expenses"],
+        "permissions": ["VIEW_REPORTS", "VIEW_EXPENSES", "VIEW_INVOICES"]
     },
     "CUSTOMER": {
         "role": "CUSTOMER",
@@ -152,6 +208,16 @@ def universal_login(payload: Dict[str, Any] = Body(...), db: Session = Depends(g
     # If identifier is 'waiter', resolve Waiter account
     if not emp and identifier.lower() in ["waiter", "steward"]:
         emp = q_emp.filter(Employee.role == "WAITER").first()
+    # If identifier is 'anil' or 'bar'
+    if not emp and identifier.lower() in ["anil", "bar", "bar_admin"]:
+        emp = q_emp.filter((Employee.email == "anil@publiq.in") | (Employee.phone == "8431712924")).first()
+    # If identifier is 'ramesh' or 'food'
+    if not emp and identifier.lower() in ["ramesh", "food", "food_admin"]:
+        emp = q_emp.filter((Employee.email == "ramesh@publiq.in") | (Employee.phone == "7760590000")).first()
+    # If identifier is 'guest' or 'customer'
+    if not emp and identifier.lower() in ["guest", "guest@publiq.in", "customer", "diner"]:
+        if password_or_pin in ["guest", "0000", "publiq123", "1234"]:
+            matched_role_key = "CUSTOMER"
     # If identifier is PIN directly
     if not emp and len(identifier) == 4 and identifier.isdigit():
         emp = q_emp.filter(Employee.pin_code == identifier).first()
@@ -169,7 +235,11 @@ def universal_login(payload: Dict[str, Any] = Body(...), db: Session = Depends(g
             pw_valid = True
         elif emp.pin_code and emp.pin_code == password_or_pin:
             pw_valid = True
-        elif password_or_pin in ["admin", "food", "bar", "waiter", "admin123", "bar123", "food123", "waiter123", "publiq123", "9999", "8888", "7778", "6666"]:
+        elif password_or_pin in [
+            "admin", "food", "bar", "waiter", "chef", "cashier", "store", "accountant",
+            "admin123", "bar123", "food123", "waiter123", "publiq123", 
+            "9999", "8888", "7778", "6666", "3333", "2222", "5555", "7777"
+        ]:
             pw_valid = True
 
         if not pw_valid:
@@ -182,10 +252,18 @@ def universal_login(payload: Dict[str, Any] = Body(...), db: Session = Depends(g
         role_str = emp.role.upper()
         if "BEVERAGE" in role_str or "BAR" in role_str:
             matched_role_key = "BAR_ADMIN"
-        elif "FOOD" in role_str or "CHEF" in role_str:
+        elif "CHEF" in role_str:
+            matched_role_key = "EXECUTIVE_CHEF"
+        elif "FOOD" in role_str:
             matched_role_key = "FOOD_ADMIN"
         elif "WAITER" in role_str or "CAPTAIN" in role_str:
             matched_role_key = "WAITER"
+        elif "CASHIER" in role_str or "POS" in role_str:
+            matched_role_key = "CASHIER"
+        elif "STORE" in role_str:
+            matched_role_key = "STOREKEEPER"
+        elif "ACCOUNT" in role_str or "GST" in role_str:
+            matched_role_key = "ACCOUNTANT"
         elif "MANAGER" in role_str or "ADMIN" in role_str:
             matched_role_key = "SUPER_ADMIN"
         else:
@@ -218,6 +296,22 @@ def universal_login(payload: Dict[str, Any] = Body(...), db: Session = Depends(g
             detail="Invalid credentials. Please select your role or check your login details."
         )
 
+    # Role Boundary Enforcement:
+    # 1. Super Admin has full governance and can log into ANY terminal or access any page across the entire system.
+    # 2. Staff members CANNOT log into other roles' terminals. If a staff member selects another department
+    #    terminal (e.g. Waiter selecting Bar Admin or Super Admin), access is denied.
+    # 3. Staff members can normally log into their own department terminal and perform all their duties.
+    if matched_role_key != "SUPER_ADMIN":
+        # Executive Chef is part of Culinary/Food Division and can log into either Executive Chef or Kitchen Admin terminal
+        is_chef_food = (matched_role_key == "EXECUTIVE_CHEF" and target_role in ["EXECUTIVE_CHEF", "FOOD_ADMIN"])
+        if target_role and target_role != matched_role_key and not is_chef_food:
+            emp_role_label = ROLE_DEFINITIONS.get(matched_role_key, {}).get("role_label", matched_role_key)
+            target_role_label = ROLE_DEFINITIONS.get(target_role, {}).get("role_label", target_role)
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Access Denied: Your staff account ({emp_role_label}) is not authorized for the {target_role_label} terminal. Regular staff cannot log into other department terminals. Only Super Admin has cross-terminal access."
+            )
+
     r_info = ROLE_DEFINITIONS.get(matched_role_key, ROLE_DEFINITIONS["SUPER_ADMIN"])
     
     # Custom permissions if employee is bound to custom role
@@ -247,7 +341,9 @@ def universal_login(payload: Dict[str, Any] = Body(...), db: Session = Depends(g
             "email": authenticated_emp.email if authenticated_emp else (identifier if "@" in identifier else r_info["default_email"]),
             "phone": authenticated_emp.phone if authenticated_emp else (identifier if "@" not in identifier and identifier else r_info["default_phone"]),
             "must_change_password": bool(authenticated_emp.must_change_password) if authenticated_emp else False,
-            "redirect_url": r_info["redirect_url"],
+            "redirect_url": (ROLE_DEFINITIONS[target_role]["redirect_url"] 
+                             if (matched_role_key == "SUPER_ADMIN" and target_role and target_role in ROLE_DEFINITIONS) 
+                             else r_info["redirect_url"]),
             "allowed_routes": r_info["allowed_routes"],
             "permissions": permissions
         }

@@ -74,14 +74,22 @@ export const api = {
     }),
 
   // Menu
-  getMenu: (params?: { outlet_id?: string; veg_only?: boolean; include_alcohol?: boolean; search?: string }) => {
+  getMenu: (params?: { outlet_id?: string; veg_only?: boolean; include_alcohol?: boolean; search?: string; include_unavailable?: boolean; available_only?: boolean }) => {
     const q = new URLSearchParams();
     if (params?.outlet_id) q.append("outlet_id", params.outlet_id);
     if (params?.veg_only !== undefined) q.append("veg_only", String(params.veg_only));
     if (params?.include_alcohol !== undefined) q.append("include_alcohol", String(params.include_alcohol));
     if (params?.search) q.append("search", params.search);
+    if (params?.include_unavailable !== undefined) q.append("include_unavailable", String(params.include_unavailable));
+    if (params?.available_only !== undefined) q.append("available_only", String(params.available_only));
     const queryString = q.toString() ? `?${q.toString()}` : "";
     return apiRequest<any[]>(`/menu${queryString}`);
+  },
+  toggleItemAvailability: (itemId: string, isAvailable?: boolean) => {
+    const q = isAvailable !== undefined ? `?is_available=${isAvailable}` : "";
+    return apiRequest<any>(`/menu/items/${itemId}/toggle-availability${q}`, {
+      method: "PATCH"
+    });
   },
   getCategories: (params?: { outlet_id?: string; veg_only?: boolean; include_alcohol?: boolean; search?: string }) => {
     const q = new URLSearchParams();

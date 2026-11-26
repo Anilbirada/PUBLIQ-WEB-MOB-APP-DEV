@@ -153,7 +153,7 @@ def seed_database():
             ("Continental", "continental", "Artisanal pastas, charred steaks, and European comfort gastronomy", 4, "/images/publiq/food/firecracker-tiger-prawns.webp", False),
             ("Chinese", "chinese", "Wok-tossed dim sums, spicy schezwan delicacies, and crispy noodles", 5, "/images/publiq/food/crispy-salt-pepper-fish.webp", False),
             ("Tandoor", "tandoor", "Traditional clay oven kebabs, tikkas, and smoking grills", 6, "/images/publiq/food/tandoori-mixed-grill.webp", False),
-            ("Biryani", "biryani", "Aromatic slow-cooked Dum biryanis sealed with whole royal spices", 7, "/images/publiq/food/hyderabadi-lamb-biryani.webp", False),
+            ("Biryani", "biryani", "Aromatic slow-cooked Dum biryanis sealed with whole royal spices", 7, "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80", False),
             ("Vegetarian", "vegetarian", "Chef-curated pure vegetarian and botanical culinary creations", 8, "/images/publiq/food/dal-saag-paneer-duo.webp", False),
             ("Non-Vegetarian", "non-vegetarian", "Prime cuts, fresh coastal seafood, tender lamb, and poultry", 9, "/images/publiq/food/tandoori-mixed-grill.webp", False),
             ("Desserts", "desserts", "Decadent handcrafted confections, kulfi platters, and chocolate textures", 10, "/images/publiq/food/publiq-food-showcase-10.webp", False),
@@ -204,7 +204,7 @@ def seed_database():
                 "spice": "MILD",
                 "prep": 15,
                 "is_sig": True,
-                "img": "/images/publiq/food/aloo-beetroot-chaat.webp",
+                "img": "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?auto=format&fit=crop&w=800&q=80",
                 "tags": ["Vegetarian", "Signature Starter"]
             },
             {
@@ -216,7 +216,7 @@ def seed_database():
                 "spice": "HOT",
                 "prep": 18,
                 "is_sig": False,
-                "img": "/images/publiq/food/crispy-salt-pepper-fish.webp",
+                "img": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=800&q=80",
                 "tags": ["Seafood", "Crispy"]
             },
             # Main Courses & Curries
@@ -241,7 +241,7 @@ def seed_database():
                 "spice": "MILD",
                 "prep": 15,
                 "is_sig": True,
-                "img": "/images/publiq/food/dal-saag-paneer-duo.webp",
+                "img": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80",
                 "tags": ["Vegetarian", "Heritage"]
             },
             {
@@ -253,10 +253,22 @@ def seed_database():
                 "spice": "HOT",
                 "prep": 25,
                 "is_sig": False,
-                "img": "/images/publiq/food/chettinad-pepper-curry.webp",
+                "img": "https://images.unsplash.com/photo-1545247181-516773cae754?auto=format&fit=crop&w=800&q=80",
                 "tags": ["South Indian", "Lamb"]
             },
             # Biryanis
+            {
+                "cat": "biryani",
+                "name": "Hyderabadi Dum Biryani",
+                "desc": "Signature slow-cooked royal Hyderabadi dum biryani layered with saffron-fragrant basmati rice, tender spiced meat, caramelized onions, fresh mint, and slow-braised on coal embers. Served with mirchi ka salan and burani raita.",
+                "price": 520.0,
+                "is_veg": False,
+                "spice": "MEDIUM",
+                "prep": 25,
+                "is_sig": True,
+                "img": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80",
+                "tags": ["Biryani", "Dum Cooked", "Bestseller"]
+            },
             {
                 "cat": "biryani",
                 "name": "Nizami Lamb Dum Biryani",
@@ -266,7 +278,7 @@ def seed_database():
                 "spice": "MEDIUM",
                 "prep": 30,
                 "is_sig": True,
-                "img": "/images/publiq/food/hyderabadi-lamb-biryani.webp",
+                "img": "https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=800&q=80",
                 "tags": ["Biryani", "Dum Cooked"]
             },
             {
@@ -278,7 +290,7 @@ def seed_database():
                 "spice": "MEDIUM",
                 "prep": 20,
                 "is_sig": False,
-                "img": "/images/publiq/food/vegetable-tawa-biryani.webp",
+                "img": "https://images.unsplash.com/photo-1642821373181-696a54913e93?auto=format&fit=crop&w=800&q=80",
                 "tags": ["Vegetarian", "Biryani"]
             },
             # Breads & Accompaniments
@@ -291,7 +303,7 @@ def seed_database():
                 "spice": "MILD",
                 "prep": 8,
                 "is_sig": False,
-                "img": "/images/publiq/food/tandoori-garlic-naan.webp",
+                "img": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
                 "tags": ["Bread", "Tandoor"]
             },
             # Cocktails & Mixology

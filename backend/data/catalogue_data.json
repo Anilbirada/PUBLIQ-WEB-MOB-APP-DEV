@@ -3,2442 +3,2461 @@
     "category": "BEER",
     "subcategory": "BEER",
     "description": "BUDWEISER MAGNUM BEER 330 - CAN",
-    "lane1_mrp": 105.0
+    "lane1_mrp": 105
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "BUDWEISER MAGNUM BEER 500 - CAN",
-    "lane1_mrp": 195.0
+    "lane1_mrp": 195
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "BUDWEISER MAGNUM BEER 650 - BTL",
-    "lane1_mrp": 255.0
+    "lane1_mrp": 255
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "BUDWEISER PREMIUM KING OF BEERS 500 - CAN",
-    "lane1_mrp": 165.0
+    "lane1_mrp": 165
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "BUDWEISER PREMIUM KING OF BEERS 650 - BTL",
-    "lane1_mrp": 205.0
+    "lane1_mrp": 205
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "BULLET LAGER BEER 650 - BTL",
-    "lane1_mrp": 100.0
+    "lane1_mrp": 100
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "BULLET SUPER STRONG BEER 330 - BTL",
-    "lane1_mrp": 75.0
+    "lane1_mrp": 75
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "BULLET SUPER STRONG BEER 500 - CAN",
-    "lane1_mrp": 100.0
+    "lane1_mrp": 100
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "BULLET SUPER STRONG BEER 650 - BTL",
-    "lane1_mrp": 125.0
+    "lane1_mrp": 125
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "CARLSBERG ELEPHANT STRONG SUPER PREMIUM BEER 650 - BTL",
-    "lane1_mrp": 245.0
+    "lane1_mrp": 245
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "KINGFISHER PREMIUM LAGER BEER 330 - CAN",
-    "lane1_mrp": 65.0
+    "lane1_mrp": 65
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "KINGFISHER PREMIUM LAGER BEER 500 - CAN",
-    "lane1_mrp": 85.0
+    "lane1_mrp": 85
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "KINGFISHER PREMIUM LAGER BEER 650 - BTL",
-    "lane1_mrp": 115.0
+    "lane1_mrp": 115
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "KINGFISHER STRONG PREMIUM BEER 330 - CAN",
-    "lane1_mrp": 85.0
+    "lane1_mrp": 85
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "KINGFISHER STRONG PREMIUM BEER 500 - CAN",
-    "lane1_mrp": 145.0
+    "lane1_mrp": 145
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "KINGFISHER STRONG PREMIUM BEER 650 - BTL",
-    "lane1_mrp": 185.0
+    "lane1_mrp": 185
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "KINGFISHER SUPER SMOOTH STRONG PREMIUM BEER 500 - CAN",
-    "lane1_mrp": 130.0
+    "lane1_mrp": 130
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "KINGFISHER ULTRA LAGER BEER 650 - BTL",
-    "lane1_mrp": 155.0
+    "lane1_mrp": 155
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "KINGFISHER ULTRA MAX PREMIUM STRONG BEER 650 - BTL",
-    "lane1_mrp": 255.0
+    "lane1_mrp": 255
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "KNOCK OUT HIGH PUNCH STRONG BEER 650 - BTL",
-    "lane1_mrp": 180.0
+    "lane1_mrp": 180
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "KNOCK OUT SUPER STRONG BEER 650 - BTL",
-    "lane1_mrp": 180.0
+    "lane1_mrp": 180
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "LEGEND STRONG BEER 500 - CAN",
-    "lane1_mrp": 90.0
+    "lane1_mrp": 90
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "LEGEND STRONG BEER 650 - BTL",
-    "lane1_mrp": 120.0
+    "lane1_mrp": 120
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "POWER COOL STRONG BEER 330 - BTL",
-    "lane1_mrp": 100.0
+    "lane1_mrp": 100
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "POWER COOL STRONG BEER 500 - BTL",
-    "lane1_mrp": 95.0
+    "lane1_mrp": 95
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "POWER COOL STRONG BEER 650 - BTL",
-    "lane1_mrp": 125.0
+    "lane1_mrp": 125
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "ROYAL CHALLENGE PREMIUM LAGER BEER 650 - BTL",
-    "lane1_mrp": 95.0
+    "lane1_mrp": 95
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "ROYAL CHALLENGE STRONG PREMIUM BEER 330 - BTL",
-    "lane1_mrp": 75.0
+    "lane1_mrp": 75
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "ROYAL CHALLENGE STRONG PREMIUM BEER 500 - CAN",
-    "lane1_mrp": 100.0
+    "lane1_mrp": 100
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "ROYAL CHALLENGE STRONG PREMIUM BEER 650 - BTL",
-    "lane1_mrp": 125.0
+    "lane1_mrp": 125
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "ROYAL CHALLENGE STRONG ULTIMATE SUPER STRONG BEER 330 - CAN",
-    "lane1_mrp": 70.0
+    "lane1_mrp": 70
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "ROYAL CHALLENGE STRONG ULTIMATE SUPER STRONG BEER 500 - CAN",
-    "lane1_mrp": 100.0
+    "lane1_mrp": 100
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "ROYAL CHALLENGE STRONG ULTIMATE SUPER STRONG BEER 650 - BTL",
-    "lane1_mrp": 125.0
+    "lane1_mrp": 125
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "ROYAL CHALLENGE ULTIMATE SUPER SMOOTH BEER 330 - BTL",
-    "lane1_mrp": 55.0
+    "lane1_mrp": 55
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "ROYAL CHALLENGE ULTIMATE SUPER SMOOTH BEER 500 - CAN",
-    "lane1_mrp": 80.0
+    "lane1_mrp": 80
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "ROYAL CHALLENGE ULTIMATE SUPER SMOOTH BEER 650 - BTL",
-    "lane1_mrp": 100.0
+    "lane1_mrp": 100
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "SUNNY BEACHES STRONG PREMIUM BEER 650 - BTL",
-    "lane1_mrp": 115.0
+    "lane1_mrp": 115
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "TUBORG CLASSIC BLACK STRONG BEER 650 - BTL",
-    "lane1_mrp": 260.0
+    "lane1_mrp": 260
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "TUBORG STRONG PREMIUM BEER 330 - BTL",
-    "lane1_mrp": 125.0
+    "lane1_mrp": 125
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "TUBORG STRONG PREMIUM BEER 500 - CAN",
-    "lane1_mrp": 135.0
+    "lane1_mrp": 135
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "TUBORG STRONG PREMIUM BEER 650 - BTL",
-    "lane1_mrp": 180.0
+    "lane1_mrp": 180
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "UB EXPORT PREMIUM LAGER BEER 650 - BTL",
-    "lane1_mrp": 165.0
+    "lane1_mrp": 165
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "UB EXPORT STRONG PREMIUM BEER 330 - BTL",
-    "lane1_mrp": 100.0
+    "lane1_mrp": 100
   },
   {
     "category": "BEER",
     "subcategory": "BEER",
     "description": "UB EXPORT STRONG PREMIUM BEER 650 - BTL",
-    "lane1_mrp": 140.0
+    "lane1_mrp": 140
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "AMRUT SILVER CUP VSOP INDIAN BRANDY 180 - PET",
-    "lane1_mrp": 115.0
+    "lane1_mrp": 115
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "AMRUT SILVER CUP VSOP INDIAN BRANDY 90 - PET",
-    "lane1_mrp": 55.0
+    "lane1_mrp": 55
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "BEJOIS VSOP INDIAN BRANDY 180 - TPACK",
-    "lane1_mrp": 140.0
+    "lane1_mrp": 140
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "MCDOWELLS NO 1 INDIAN BRANDY 180 - TPACK",
-    "lane1_mrp": 180.0
+    "lane1_mrp": 180
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "MCDOWELLS NO 1 INDIAN BRANDY 375 - BTL",
-    "lane1_mrp": 430.0
+    "lane1_mrp": 430
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "MCDOWELLS NO 1 INDIAN BRANDY 750 - BTL",
-    "lane1_mrp": 855.0
+    "lane1_mrp": 855
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "MCDOWELLS NO 1 INDIAN BRANDY 90 - TPACK",
-    "lane1_mrp": 95.0
+    "lane1_mrp": 95
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "MORPHEUS XO BLENDED PREMIUM BRANDY 180 - BTL",
-    "lane1_mrp": 330.0
+    "lane1_mrp": 330
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "MORPHEUS XO BLENDED PREMIUM BRANDY 60 - PET",
-    "lane1_mrp": 115.0
+    "lane1_mrp": 115
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "MORPHEUS XO BLENDED PREMIUM BRANDY 750 - BTL",
-    "lane1_mrp": 1300.0
+    "lane1_mrp": 1300
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "OLD ADMIRAL VSOP BRANDY 180 - TPACK",
-    "lane1_mrp": 140.0
+    "lane1_mrp": 140
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "OLD ADMIRAL VSOP BRANDY 90 - TPACK",
-    "lane1_mrp": 75.0
+    "lane1_mrp": 75
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "TI MANSION HOUSE FRENCH BRANDY 180 - BTL",
-    "lane1_mrp": 210.0
+    "lane1_mrp": 210
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "TI MANSION HOUSE FRENCH BRANDY 375 - BTL",
-    "lane1_mrp": 425.0
+    "lane1_mrp": 425
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "TI MANSION HOUSE FRENCH BRANDY 750 - BTL",
-    "lane1_mrp": 835.0
+    "lane1_mrp": 835
   },
   {
     "category": "IML",
     "subcategory": "BRANDY",
     "description": "TI MANSION HOUSE FRENCH BRANDY 90 - PET",
-    "lane1_mrp": 110.0
+    "lane1_mrp": 110
   },
   {
     "category": "IML",
     "subcategory": "GIN",
     "description": "CARNIVAL DRY GIN 180 - TPACK",
-    "lane1_mrp": 110.0
+    "lane1_mrp": 110
   },
   {
     "category": "IML",
     "subcategory": "GIN",
     "description": "CARNIVAL DRY GIN 90 - TPACK",
-    "lane1_mrp": 60.0
+    "lane1_mrp": 60
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "AMRUT XXX CLASSIC RUM 180 - TPACK",
-    "lane1_mrp": 115.0
+    "lane1_mrp": 115
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "AMRUT XXX CLASSIC RUM 375 - PET",
-    "lane1_mrp": 235.0
+    "lane1_mrp": 235
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "AMRUT XXX CLASSIC RUM 750 - PET",
-    "lane1_mrp": 455.0
+    "lane1_mrp": 455
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "AMRUT XXX CLASSIC RUM 90 - TPACK",
-    "lane1_mrp": 55.0
+    "lane1_mrp": 55
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "BACARDI CARTA BLANCA SUPERIOR WHITE RUM 180 - BTL",
-    "lane1_mrp": 350.0
+    "lane1_mrp": 350
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "BACARDI CARTA BLANCA SUPERIOR WHITE RUM 750 - BTL",
-    "lane1_mrp": 1760.0
+    "lane1_mrp": 1760
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "BACARDI LIMON ORIGINAL CITRUS RUM 750 - BTL",
-    "lane1_mrp": 1310.0
+    "lane1_mrp": 1310
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "BACARDI ORIGINAL ORANGE RUM 750 - BTL",
-    "lane1_mrp": 1310.0
+    "lane1_mrp": 1310
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "BAGPIPER XXX RUM 180 - TPACK",
-    "lane1_mrp": 140.0
+    "lane1_mrp": 140
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "BAGPIPER XXX RUM 90 - TPACK",
-    "lane1_mrp": 75.0
+    "lane1_mrp": 75
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "CARNIVAL XXX RUM 180 - TPACK",
-    "lane1_mrp": 95.0
+    "lane1_mrp": 95
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "CARNIVAL XXX RUM 750 - PET",
-    "lane1_mrp": 270.0
+    "lane1_mrp": 270
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "CARNIVAL XXX RUM 90 - TPACK",
-    "lane1_mrp": 55.0
+    "lane1_mrp": 55
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "HERCULES OLD MATURED DELUXE 3X RUM 180 - BTL",
-    "lane1_mrp": 285.0
+    "lane1_mrp": 285
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "MCDOWELLS NO 1 CELEBRATION CLASSIC XXX RUM 180 - TPACK",
-    "lane1_mrp": 170.0
+    "lane1_mrp": 170
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "MCDOWELLS NO 1 CELEBRATION CLASSIC XXX RUM 90 - TPACK",
-    "lane1_mrp": 90.0
+    "lane1_mrp": 90
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "MCDOWELLS NO 1 CELEBRATION DELUXE RUM 375 - BTL",
-    "lane1_mrp": 385.0
+    "lane1_mrp": 385
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "MCDOWELLS NO 1 CELEBRATION DELUXE RUM 750 - BTL",
-    "lane1_mrp": 760.0
+    "lane1_mrp": 760
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "OLD MONK EXTRA ORDINARY XO COFFEE FALVOURED PREMIUM RUM 180 - BTL",
-    "lane1_mrp": 315.0
+    "lane1_mrp": 315
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "OLD MONK EXTRA ORDINARY XO COFFEE FALVOURED PREMIUM RUM 750 - BTL",
-    "lane1_mrp": 1725.0
+    "lane1_mrp": 1725
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "OLD MONK THE LEGEND VERY OLD VATTED RUM 750 - BTL",
-    "lane1_mrp": 1210.0
+    "lane1_mrp": 1210
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "OLD MONK VERY OLD VATTED SPECIAL XXX RUM 180 - TPACK",
-    "lane1_mrp": 170.0
+    "lane1_mrp": 170
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "OLD MONK VERY OLD VATTED SPECIAL XXX RUM 375 - BTL",
-    "lane1_mrp": 430.0
+    "lane1_mrp": 430
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "OLD MONK VERY OLD VATTED SPECIAL XXX RUM 750 - BTL",
-    "lane1_mrp": 850.0
+    "lane1_mrp": 850
   },
   {
     "category": "IML",
     "subcategory": "RUM",
     "description": "OLD MONK VERY OLD VATTED SPECIAL XXX RUM 90 - TPACK",
-    "lane1_mrp": 90.0
+    "lane1_mrp": 90
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "MAGIC MOMENTS PREMIUM GRAIN VODKA 375 - BTL",
-    "lane1_mrp": 550.0
+    "lane1_mrp": 550
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "MAGIC MOMENTS PREMIUM GRAIN VODKA 750 - BTL",
-    "lane1_mrp": 1090.0
+    "lane1_mrp": 1090
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "MAGIC MOMENTS REMIX GREEN APPLE VODKA 180 - BTL",
-    "lane1_mrp": 270.0
+    "lane1_mrp": 270
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "MAGIC MOMENTS REMIX GREEN APPLE VODKA 375 - BTL",
-    "lane1_mrp": 550.0
+    "lane1_mrp": 550
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "MAGIC MOMENTS REMIX GREEN APPLE VODKA 60 - PET",
-    "lane1_mrp": 95.0
+    "lane1_mrp": 95
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "MAGIC MOMENTS REMIX GREEN APPLE VODKA 750 - BTL",
-    "lane1_mrp": 1090.0
+    "lane1_mrp": 1090
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "MAGIC MOMENTS REMIX ORANGE VODKA 180 - BTL",
-    "lane1_mrp": 270.0
+    "lane1_mrp": 270
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "MAGIC MOMENTS REMIX ORANGE VODKA 375 - BTL",
-    "lane1_mrp": 550.0
+    "lane1_mrp": 550
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "MAGIC MOMENTS REMIX ORANGE VODKA 60 - PET",
-    "lane1_mrp": 95.0
+    "lane1_mrp": 95
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "MAGIC MOMENTS REMIX ORANGE VODKA 750 - BTL",
-    "lane1_mrp": 1090.0
+    "lane1_mrp": 1090
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "MUSCOVY ORANGE VODKA 180 - BTL",
-    "lane1_mrp": 185.0
+    "lane1_mrp": 185
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "MUSCOVY ORANGE VODKA 90 - PET",
-    "lane1_mrp": 100.0
+    "lane1_mrp": 100
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "ROMANOV PLATINUM VODKA ORANGE FLAVOURED 180 - BTL",
-    "lane1_mrp": 200.0
+    "lane1_mrp": 200
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "ROMANOV PLATINUM VODKA ORANGE FLAVOURED 750 - BTL",
-    "lane1_mrp": 975.0
+    "lane1_mrp": 975
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "ROMANOV PLATINUM VODKA ORANGE FLAVOURED 90 - PET",
-    "lane1_mrp": 110.0
+    "lane1_mrp": 110
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "SMIRNOFF GREEN APPLE TRIPLE DISTILLED VODKA 180 - PET",
-    "lane1_mrp": 325.0
+    "lane1_mrp": 325
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "SMIRNOFF GREEN APPLE TRIPLE DISTILLED VODKA 750 - BTL",
-    "lane1_mrp": 1310.0
+    "lane1_mrp": 1310
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "SMIRNOFF MINTY JAMUN TRIPLE DISTILLED FLAVOURED VODKA 180 - PET",
-    "lane1_mrp": 325.0
+    "lane1_mrp": 325
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "SMIRNOFF MINTY JAMUN TRIPLE DISTILLED FLAVOURED VODKA 750 - BTL",
-    "lane1_mrp": 1310.0
+    "lane1_mrp": 1310
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "SMIRNOFF ORANGE TRIPLE DISTILLED VODKA 180 - PET",
-    "lane1_mrp": 320.0
+    "lane1_mrp": 320
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "SMIRNOFF ORANGE TRIPLE DISTILLED VODKA 60 - PET",
-    "lane1_mrp": 110.0
+    "lane1_mrp": 110
   },
   {
     "category": "IML",
     "subcategory": "VODKA",
     "description": "SMIRNOFF ORANGE TRIPLE DISTILLED VODKA 750 - BTL",
-    "lane1_mrp": 1310.0
+    "lane1_mrp": 1310
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "8 PM SPECIAL WHISKY BLEND 180 - TPACK",
-    "lane1_mrp": 140.0
+    "lane1_mrp": 140
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "8 PM SPECIAL WHISKY BLEND 375 - PET",
-    "lane1_mrp": 285.0
+    "lane1_mrp": 285
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "8 PM SPECIAL WHISKY BLEND 750 - PET",
-    "lane1_mrp": 560.0
+    "lane1_mrp": 560
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "8 PM SPECIAL WHISKY BLEND 90 - TPACK",
-    "lane1_mrp": 75.0
+    "lane1_mrp": 75
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "AFTER DARK BLUE CLASSIC GRAIN WHISKY 180 - PET",
-    "lane1_mrp": 205.0
+    "lane1_mrp": 205
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "AFTER DARK BLUE CLASSIC GRAIN WHISKY 750 - BTL",
-    "lane1_mrp": 835.0
+    "lane1_mrp": 835
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "AFTER DARK BLUE CLASSIC GRAIN WHISKY 90 - PET",
-    "lane1_mrp": 105.0
+    "lane1_mrp": 105
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "AMRUT PRESTIGE FINE WHISKY 180 - BTL",
-    "lane1_mrp": 115.0
+    "lane1_mrp": 115
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "AMRUT PRESTIGE FINE WHISKY 90 - TPACK",
-    "lane1_mrp": 55.0
+    "lane1_mrp": 55
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "ANTIQUITY BLUE ULTRA PREMIUM WHISKY 750 - BTL",
-    "lane1_mrp": 1830.0
+    "lane1_mrp": 1830
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "BAGPIPER DELUXE WHISKY 180 - TPACK",
-    "lane1_mrp": 160.0
+    "lane1_mrp": 160
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "BAGPIPER DELUXE WHISKY 375 - BTL",
-    "lane1_mrp": 330.0
+    "lane1_mrp": 330
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "BAGPIPER DELUXE WHISKY 750 - BTL",
-    "lane1_mrp": 645.0
+    "lane1_mrp": 645
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "BAGPIPER DELUXE WHISKY 90 - TPACK",
-    "lane1_mrp": 85.0
+    "lane1_mrp": 85
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "BANGALORE MALT WHISKY 180 - TPACK",
-    "lane1_mrp": 95.0
+    "lane1_mrp": 95
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "BANGALORE MALT WHISKY 90 - TPACK",
-    "lane1_mrp": 50.0
+    "lane1_mrp": 50
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "BLACK DOG CENTENARY BLACK RESERVE AGED & RARE BLENDED SCOTCH WHISKY 180 - PET",
-    "lane1_mrp": 580.0
+    "lane1_mrp": 580
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "BLACK DOG CENTENARY BLACK RESERVE AGED & RARE BLENDED SCOTCH WHISKY 750 - BTL",
-    "lane1_mrp": 2375.0
+    "lane1_mrp": 2375
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "BLACK DOG TRIPLE GOLD RESERVE BLENDED SCOTCH WHISKY 180 - PET",
-    "lane1_mrp": 850.0
+    "lane1_mrp": 850
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "BLACK & WHITE BLENDED SCOTCH WHISKY 180 - PET",
-    "lane1_mrp": 585.0
+    "lane1_mrp": 585
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "BLACK & WHITE BLENDED SCOTCH WHISKY 375 - BTL",
-    "lane1_mrp": 1210.0
+    "lane1_mrp": 1210
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "BLACK & WHITE BLENDED SCOTCH WHISKY 60 - PET",
-    "lane1_mrp": 195.0
+    "lane1_mrp": 195
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "BLACK & WHITE BLENDED SCOTCH WHISKY 750 - BTL",
-    "lane1_mrp": 2410.0
+    "lane1_mrp": 2410
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "DK DOUBLE KICK FINE WHISKY 180 - TPACK",
-    "lane1_mrp": 85.0
+    "lane1_mrp": 85
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "DK DOUBLE KICK FINE WHISKY 90 - TPACK",
-    "lane1_mrp": 55.0
+    "lane1_mrp": 55
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "DK DOUBLE KICK NEAT WHISKY 180 - TPACK",
-    "lane1_mrp": 100.0
+    "lane1_mrp": 100
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "DSP BLACK DELUXE WHISKY 180 - BTL",
-    "lane1_mrp": 210.0
+    "lane1_mrp": 210
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "DSP BLACK DELUXE WHISKY 375 - BTL",
-    "lane1_mrp": 450.0
+    "lane1_mrp": 450
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "DSP BLACK DELUXE WHISKY 750 - BTL",
-    "lane1_mrp": 850.0
+    "lane1_mrp": 850
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "DSP BLACK DELUXE WHISKY 90 - TPACK",
-    "lane1_mrp": 115.0
+    "lane1_mrp": 115
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "DSP BLACK RESERVE WHISKY 180 - PET",
-    "lane1_mrp": 195.0
+    "lane1_mrp": 195
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "HAYWARDS PUNCH FINE WHISKY 180 - TPACK",
-    "lane1_mrp": 110.0
+    "lane1_mrp": 110
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "HAYWARDS PUNCH FINE WHISKY 90 - TPACK",
-    "lane1_mrp": 55.0
+    "lane1_mrp": 55
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "ICONIQ WHITE GRAND INTERNATIONAL GRAIN WHISKY 180 - BTL",
-    "lane1_mrp": 205.0
+    "lane1_mrp": 205
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "ICONIQ WHITE GRAND INTERNATIONAL GRAIN WHISKY 750 - BTL",
-    "lane1_mrp": 835.0
+    "lane1_mrp": 835
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "ICONIQ WHITE GRAND INTERNATIONAL GRAIN WHISKY 90 - PET",
-    "lane1_mrp": 105.0
+    "lane1_mrp": 105
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "J & B RARE BLENDED SCOTCH WHISKY 750 - BTL",
-    "lane1_mrp": 1375.0
+    "lane1_mrp": 1375
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "JOHNNIE WALKER RED LABEL BLENDED SCOTCH WHISKY 750 - BTL",
-    "lane1_mrp": 2810.0
+    "lane1_mrp": 2810
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "MCDOWELLS NO 1 LUXURY PREMIUM WHISKY 180 - BTL",
-    "lane1_mrp": 205.0
+    "lane1_mrp": 205
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "MCDOWELLS NO 1 LUXURY SELECT WHISKY 90 - TPACK",
-    "lane1_mrp": 110.0
+    "lane1_mrp": 110
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "MCDOWELLS NO 1 RESERVE WHISKY 180 - BTL",
-    "lane1_mrp": 205.0
+    "lane1_mrp": 205
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "MCDOWELLS NO 1 RESERVE WHISKY 375 - BTL",
-    "lane1_mrp": 425.0
+    "lane1_mrp": 425
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "MCDOWELLS NO 1 RESERVE WHISKY 750 - BTL",
-    "lane1_mrp": 835.0
+    "lane1_mrp": 835
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "MCDOWELLS NO 1 RESERVE WHISKY 90 - PET",
-    "lane1_mrp": 110.0
+    "lane1_mrp": 110
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "MCDOWELLS NO 1 RESERVE WHISKY 90 - TPACK",
-    "lane1_mrp": 95.0
+    "lane1_mrp": 95
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "NO 1 HIGHWAY DELUXE WHISKY 180 - TPACK",
-    "lane1_mrp": 95.0
+    "lane1_mrp": 95
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "NO 1 HIGHWAY DELUXE WHISKY 90 - TPACK",
-    "lane1_mrp": 50.0
+    "lane1_mrp": 50
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "OLD TAVERN WHISKY 180 - TPACK",
-    "lane1_mrp": 140.0
+    "lane1_mrp": 140
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "OLD TAVERN WHISKY 375 - BTL",
-    "lane1_mrp": 280.0
+    "lane1_mrp": 280
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "OLD TAVERN WHISKY 750 - BTL",
-    "lane1_mrp": 560.0
+    "lane1_mrp": 560
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "OLD TAVERN WHISKY 90 - TPACK",
-    "lane1_mrp": 70.0
+    "lane1_mrp": 70
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "ORIGINAL CHOICE DELUXE WHISKY 180 - TPACK",
-    "lane1_mrp": 115.0
+    "lane1_mrp": 115
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "ORIGINAL CHOICE DELUXE WHISKY 375 - BTL",
-    "lane1_mrp": 235.0
+    "lane1_mrp": 235
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "ORIGINAL CHOICE DELUXE WHISKY 750 - BTL",
-    "lane1_mrp": 460.0
+    "lane1_mrp": 460
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "ORIGINAL CHOICE DELUXE WHISKY 90 - TPACK",
-    "lane1_mrp": 55.0
+    "lane1_mrp": 55
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "ORIGINAL CHOICE GOLD BLENDED MALT WHISKY 750 - BTL",
-    "lane1_mrp": 625.0
+    "lane1_mrp": 625
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "ORIGINAL TRAVELLER PREMIUM WHISKY 180 - TPACK",
-    "lane1_mrp": 105.0
+    "lane1_mrp": 105
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "ROYAL CHALLENGE PREMIUM RESERVE WHISKY 180 - BTL",
-    "lane1_mrp": 285.0
+    "lane1_mrp": 285
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "ROYAL CHALLENGE PREMIUM RESERVE WHISKY 750 - BTL",
-    "lane1_mrp": 1210.0
+    "lane1_mrp": 1210
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS 100 PIPERS DELUXE BLENDED SCOTCH WHISKY 180 - BTL",
-    "lane1_mrp": 585.0
+    "lane1_mrp": 585
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS 100 PIPERS DELUXE BLENDED SCOTCH WHISKY 60 - BTL",
-    "lane1_mrp": 195.0
+    "lane1_mrp": 195
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS 100 PIPERS DELUXE BLENDED SCOTCH WHISKY 750 - BTL",
-    "lane1_mrp": 2410.0
+    "lane1_mrp": 2410
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS BLENDERS PRIDE RARE PREMIUM WHISKY 180 - BTL",
-    "lane1_mrp": 350.0
+    "lane1_mrp": 350
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS BLENDERS PRIDE RARE PREMIUM WHISKY 60 - BTL",
-    "lane1_mrp": 120.0
+    "lane1_mrp": 120
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS BLENDERS PRIDE RARE PREMIUM WHISKY 750 - BTL",
-    "lane1_mrp": 1330.0
+    "lane1_mrp": 1330
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS IMPERIAL BLUE SUPERIOR GRAIN WHISKY 180 - BTL",
-    "lane1_mrp": 205.0
+    "lane1_mrp": 205
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS IMPERIAL BLUE SUPERIOR GRAIN WHISKY 375 - BTL",
-    "lane1_mrp": 425.0
+    "lane1_mrp": 425
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS IMPERIAL BLUE SUPERIOR GRAIN WHISKY 750 - BTL",
-    "lane1_mrp": 835.0
+    "lane1_mrp": 835
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS IMPERIAL BLUE SUPERIOR GRAIN WHISKY 90 - BTL",
-    "lane1_mrp": 105.0
+    "lane1_mrp": 105
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS ROYAL STAG DELUXE WHISKY 180 - BTL",
-    "lane1_mrp": 285.0
+    "lane1_mrp": 285
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS ROYAL STAG DELUXE WHISKY 375 - BTL",
-    "lane1_mrp": 575.0
+    "lane1_mrp": 575
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS ROYAL STAG DELUXE WHISKY 60 - BTL",
-    "lane1_mrp": 100.0
+    "lane1_mrp": 100
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS ROYAL STAG DELUXE WHISKY 750 - BTL",
-    "lane1_mrp": 1150.0
+    "lane1_mrp": 1150
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SEAGRAMS ROYAL STAG DELUXE WHISKY 90 - BTL",
-    "lane1_mrp": 145.0
+    "lane1_mrp": 145
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SIGNATURE PREMIER GRAIN WHISKY 750 - BTL",
-    "lane1_mrp": 1370.0
+    "lane1_mrp": 1370
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "SIGNATURE RARE AGED WHISKY 750 - BTL",
-    "lane1_mrp": 1725.0
+    "lane1_mrp": 1725
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "TEACHERS HIGHLAND CREAM BLENDED SCOTCH WHISKY 180 - BTL",
-    "lane1_mrp": 585.0
+    "lane1_mrp": 585
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "TEACHERS HIGHLAND CREAM BLENDED SCOTCH WHISKY 750 - BTL",
-    "lane1_mrp": 2395.0
+    "lane1_mrp": 2395
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "VAT 69 BLENDED SCOTCH WHISKY 375 - BTL",
-    "lane1_mrp": 1210.0
+    "lane1_mrp": 1210
   },
   {
     "category": "IML",
     "subcategory": "WHISKY",
     "description": "VAT 69 BLENDED SCOTCH WHISKY 750 - BTL",
-    "lane1_mrp": 2410.0
+    "lane1_mrp": 2410
   },
   {
     "category": "LAB",
     "subcategory": "RTD",
     "description": "BACARDI PLUS CRANBERRY 275 - BTL",
-    "lane1_mrp": 115.0
+    "lane1_mrp": 115
   },
   {
     "category": "LAB",
     "subcategory": "RTD",
     "description": "BACARDI PLUS CRANBERRY 500 - BTL",
-    "lane1_mrp": 185.0
+    "lane1_mrp": 185
   },
   {
     "category": "LAB",
     "subcategory": "RTD",
     "description": "BACARDI PLUS LEMONADE 275 - BTL",
-    "lane1_mrp": 115.0
+    "lane1_mrp": 115
   },
   {
     "category": "LAB",
     "subcategory": "RTD",
     "description": "BACARDI PLUS ORANGE 275 - BTL",
-    "lane1_mrp": 115.0
+    "lane1_mrp": 115
   },
   {
     "category": "LAB",
     "subcategory": "RTD",
     "description": "BREEZER BLACKBERRY 275 - BTL",
-    "lane1_mrp": 160.0
+    "lane1_mrp": 160
   },
   {
     "category": "LAB",
     "subcategory": "RTD",
     "description": "BREEZER CRANBERRY 275 - BTL",
-    "lane1_mrp": 115.0
+    "lane1_mrp": 115
   },
   {
     "category": "WINE",
     "subcategory": "WINE",
     "description": "BRO CODE CREMANT 330 - BTL",
-    "lane1_mrp": 165.0
+    "lane1_mrp": 165
   },
   {
     "category": "WINE",
     "subcategory": "WINE",
     "description": "BRO CODE ORIGINAL BRUT 250 - BTL",
-    "lane1_mrp": 125.0
+    "lane1_mrp": 125
   },
   {
     "category": "WINE",
     "subcategory": "WINE",
     "description": "BUZZBALL JAMUN MINT POP AROMATIZED WINE 180 - PET",
-    "lane1_mrp": 105.0
+    "lane1_mrp": 105
   },
   {
     "category": "WINE",
     "subcategory": "WINE",
     "description": "BUZZBALL STRAWBERRY SQUEEZE AROMATIZED WINE 180 - PET",
-    "lane1_mrp": 105.0
+    "lane1_mrp": 105
   },
   {
     "category": "WINE",
     "subcategory": "WINE",
     "description": "GOANAS WINE 180 - PET",
-    "lane1_mrp": 45.0
+    "lane1_mrp": 45
   },
   {
     "category": "WINE",
     "subcategory": "WINE",
     "description": "GOANAS WINE 375 - PET",
-    "lane1_mrp": 80.0
+    "lane1_mrp": 80
   },
   {
     "category": "WINE",
     "subcategory": "WINE",
     "description": "GOANAS WINE 750 - PET",
-    "lane1_mrp": 155.0
+    "lane1_mrp": 155
   },
   {
     "category": "FOOD",
     "subcategory": "ASSORTED BREADS",
     "description": "ALOO PARATHA",
-    "lane1_mrp": 75.0
+    "lane1_mrp": 75
   },
   {
     "category": "FOOD",
     "subcategory": "ASSORTED BREADS",
     "description": "CHEESE GARLIC NAAN",
-    "lane1_mrp": 100.0
+    "lane1_mrp": 100
   },
   {
     "category": "FOOD",
     "subcategory": "ASSORTED BREADS",
     "description": "GARLIC NAAN",
-    "lane1_mrp": 55.0
+    "lane1_mrp": 55
   },
   {
     "category": "FOOD",
     "subcategory": "ASSORTED BREADS",
     "description": "PLAIN KULCHA",
-    "lane1_mrp": 50.0
+    "lane1_mrp": 50
   },
   {
     "category": "FOOD",
     "subcategory": "ASSORTED BREADS",
     "description": "PLAIN NAAN",
-    "lane1_mrp": 50.0
+    "lane1_mrp": 50
   },
   {
     "category": "FOOD",
     "subcategory": "ASSORTED BREADS",
     "description": "STUFFED KULCHA",
-    "lane1_mrp": 85.0
+    "lane1_mrp": 85
   },
   {
     "category": "FOOD",
     "subcategory": "ASSORTED BREADS",
     "description": "STUFFED NAAN",
-    "lane1_mrp": 75.0
+    "lane1_mrp": 75
   },
   {
     "category": "FOOD",
     "subcategory": "ASSORTED BREADS",
     "description": "TANDOORI ROTI",
-    "lane1_mrp": 40.0
+    "lane1_mrp": 40
   },
   {
     "category": "FOOD",
     "subcategory": "BEVERAGES",
     "description": "BUTTER MILK MASALA",
-    "lane1_mrp": 80.0
+    "lane1_mrp": 80
   },
   {
     "category": "FOOD",
     "subcategory": "BEVERAGES",
     "description": "BUTTER MILK PLAIN",
-    "lane1_mrp": 80.0
+    "lane1_mrp": 80
   },
   {
     "category": "FOOD",
     "subcategory": "BEVERAGES",
     "description": "CHOICE OF CANNER JUICE",
-    "lane1_mrp": 100.0
+    "lane1_mrp": 100
   },
   {
     "category": "FOOD",
     "subcategory": "BEVERAGES",
     "description": "CHOICE OF MILKSHAKE",
-    "lane1_mrp": 140.0
+    "lane1_mrp": 140
   },
   {
     "category": "FOOD",
     "subcategory": "BEVERAGES",
     "description": "FRESH FRUITS JUICE",
-    "lane1_mrp": 90.0
+    "lane1_mrp": 90
   },
   {
     "category": "FOOD",
     "subcategory": "BEVERAGES",
     "description": "FRESH LIME SODA",
-    "lane1_mrp": 80.0
+    "lane1_mrp": 80
   },
   {
     "category": "FOOD",
     "subcategory": "BEVERAGES",
     "description": "FRESH LIME WATER",
-    "lane1_mrp": 60.0
+    "lane1_mrp": 60
   },
   {
     "category": "FOOD",
     "subcategory": "BEVERAGES",
     "description": "SWEET LASSI",
-    "lane1_mrp": 80.0
+    "lane1_mrp": 80
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "ANJAL FISH RAWA FRY",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "ANJAL FISH TAWA FRY",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "BANGDA FISH RAWA FRY",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "BANGDA FISH TAWA FRY",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "CHICKEN FRY",
-    "lane1_mrp": 270.0
+    "lane1_mrp": 270
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "CHICKEN GHEE ROAST",
-    "lane1_mrp": 280.0
+    "lane1_mrp": 280
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "CHICKEN KONDAPURI STYLE GRAVY",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "CHICKEN PEPPER FRY",
-    "lane1_mrp": 270.0
+    "lane1_mrp": 270
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "CHICKEN SUKKA",
-    "lane1_mrp": 280.0
+    "lane1_mrp": 280
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "CHICKEN TAWA FRY",
-    "lane1_mrp": 300.0
+    "lane1_mrp": 300
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "CHILLI CHICKEN ANDRA STYLE",
-    "lane1_mrp": 300.0
+    "lane1_mrp": 300
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "MUSHROOM GHEE ROAST",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "MUTTON FRY",
-    "lane1_mrp": 300.0
+    "lane1_mrp": 300
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "MUTTON GHEE ROAST",
-    "lane1_mrp": 330.0
+    "lane1_mrp": 330
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "MUTTON PEPPER FRY",
-    "lane1_mrp": 300.0
+    "lane1_mrp": 300
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "MUTTON SUKKA",
-    "lane1_mrp": 330.0
+    "lane1_mrp": 330
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "NATI STYLE CHICKEN FRY",
-    "lane1_mrp": 300.0
+    "lane1_mrp": 300
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "NEER DOSA",
-    "lane1_mrp": 50.0
+    "lane1_mrp": 50
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "PANEER GHEE ROAST",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "POMFRET RAWA FRY",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "POMFRET TAWA FRY",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "PRAWNS FRY",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "PRAWNS GHEE ROAST",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "PRAWNS PEPPER FRY",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "PRAWNS SUKKA",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "SILVER FISH NUGGET FRY",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "SILVER FISH RAWA FRY",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "SILVER FISH TAWA FRY",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "DESSERT",
     "description": "BROWNIE WITH ICE CREAM",
-    "lane1_mrp": 150.0
+    "lane1_mrp": 150
   },
   {
     "category": "FOOD",
     "subcategory": "DESSERT",
     "description": "CHOICE OF ICE CREAM",
-    "lane1_mrp": 110.0
+    "lane1_mrp": 110
   },
   {
     "category": "FOOD",
     "subcategory": "DESSERT",
     "description": "FRUITS WITH ICE CREAM",
-    "lane1_mrp": 150.0
+    "lane1_mrp": 150
   },
   {
     "category": "FOOD",
     "subcategory": "DESSERT",
     "description": "GULAB JAMUN",
-    "lane1_mrp": 30.0
+    "lane1_mrp": 30
   },
   {
     "category": "FOOD",
     "subcategory": "ICED TEAS",
     "description": "BULL FROG",
-    "lane1_mrp": 699.0
+    "lane1_mrp": 699
   },
   {
     "category": "FOOD",
     "subcategory": "ICED TEAS",
     "description": "LONG BEACH ICED TEA",
-    "lane1_mrp": 649.0
+    "lane1_mrp": 649
   },
   {
     "category": "FOOD",
     "subcategory": "ICED TEAS",
     "description": "LONG ISLAND ICED TEA",
-    "lane1_mrp": 549.0
+    "lane1_mrp": 549
   },
   {
     "category": "FOOD",
     "subcategory": "ICED TEAS",
     "description": "TEXUS ICED TEA",
-    "lane1_mrp": 699.0
+    "lane1_mrp": 699
   },
   {
     "category": "FOOD",
     "subcategory": "LITE BITES",
     "description": "CASHEWNUT FRY",
-    "lane1_mrp": 200.0
+    "lane1_mrp": 200
   },
   {
     "category": "FOOD",
     "subcategory": "LITE BITES",
     "description": "CCP CHEESE CHERRY PINEAPPLE",
-    "lane1_mrp": 210.0
+    "lane1_mrp": 210
   },
   {
     "category": "FOOD",
     "subcategory": "LITE BITES",
     "description": "CCT CHEESE CHERRY TOAST",
-    "lane1_mrp": 190.0
+    "lane1_mrp": 190
   },
   {
     "category": "FOOD",
     "subcategory": "LITE BITES",
     "description": "CRISPY PALAK CHAAT",
-    "lane1_mrp": 200.0
+    "lane1_mrp": 200
   },
   {
     "category": "FOOD",
     "subcategory": "LITE BITES",
     "description": "FRENCH FRIES",
-    "lane1_mrp": 170.0
+    "lane1_mrp": 170
   },
   {
     "category": "FOOD",
     "subcategory": "LITE BITES",
     "description": "GREEN SALAD",
-    "lane1_mrp": 110.0
+    "lane1_mrp": 110
   },
   {
     "category": "FOOD",
     "subcategory": "LITE BITES",
     "description": "MASALA PAPAD",
-    "lane1_mrp": 65.0
+    "lane1_mrp": 65
   },
   {
     "category": "FOOD",
     "subcategory": "LITE BITES",
     "description": "PEANUT MASALA",
-    "lane1_mrp": 130.0
+    "lane1_mrp": 130
   },
   {
     "category": "FOOD",
     "subcategory": "LITE BITES",
     "description": "VEG CHEESE BALL",
-    "lane1_mrp": 280.0
+    "lane1_mrp": 280
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "BERRY BLAST",
-    "lane1_mrp": 210.0
+    "lane1_mrp": 210
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "BLUE JACK",
-    "lane1_mrp": 210.0
+    "lane1_mrp": 210
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "BLUE LAGOON",
-    "lane1_mrp": 210.0
+    "lane1_mrp": 210
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "COCKTAIL CLASSIC",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "COSMOPOLITION",
-    "lane1_mrp": 549.0
+    "lane1_mrp": 549
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "DAIQUIRI",
-    "lane1_mrp": 549.0
+    "lane1_mrp": 549
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "GREEN SPIDER",
-    "lane1_mrp": 210.0
+    "lane1_mrp": 210
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "MAI TAI",
-    "lane1_mrp": 549.0
+    "lane1_mrp": 549
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "MANHATTAN",
-    "lane1_mrp": 549.0
+    "lane1_mrp": 549
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "MARGARITA",
-    "lane1_mrp": 599.0
+    "lane1_mrp": 599
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "NEGRONI",
-    "lane1_mrp": 549.0
+    "lane1_mrp": 549
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "PINK LADY",
-    "lane1_mrp": 549.0
+    "lane1_mrp": 549
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "SEX ON THE BEACH",
-    "lane1_mrp": 549.0
+    "lane1_mrp": 549
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "SPICY GUAVA",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "STRAWBERRY FIZZ",
-    "lane1_mrp": 210.0
+    "lane1_mrp": 210
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "TEQUILA SUNRISE",
-    "lane1_mrp": 599.0
+    "lane1_mrp": 599
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "TROPICAL MIST",
-    "lane1_mrp": 210.0
+    "lane1_mrp": 210
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "VIRGIN MOJITO",
-    "lane1_mrp": 210.0
+    "lane1_mrp": 210
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "VIRGIN PINACOLADA",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "WHISKEY SOUR",
-    "lane1_mrp": 549.0
+    "lane1_mrp": 549
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG MAIN COURSE",
     "description": "CHICKEN BUTTER MASALA",
-    "lane1_mrp": 360.0
+    "lane1_mrp": 360
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG MAIN COURSE",
     "description": "CHICKEN CHEF SPECIAL GRAVY",
-    "lane1_mrp": 320.0
+    "lane1_mrp": 320
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG MAIN COURSE",
     "description": "CHICKEN DO PYAZA",
-    "lane1_mrp": 310.0
+    "lane1_mrp": 310
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG MAIN COURSE",
     "description": "CHICKEN HYDRABADI MASALA",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG MAIN COURSE",
     "description": "CHICKEN KALI MIRCH",
-    "lane1_mrp": 330.0
+    "lane1_mrp": 330
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG MAIN COURSE",
     "description": "CHICKEN KOLHAPURI",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG MAIN COURSE",
     "description": "CHICKEN LABABDAR",
-    "lane1_mrp": 290.0
+    "lane1_mrp": 290
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG MAIN COURSE",
     "description": "CHICKEN MASALA",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG MAIN COURSE",
     "description": "CHICKEN TIKKA MASALA",
-    "lane1_mrp": 320.0
+    "lane1_mrp": 320
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG MAIN COURSE",
     "description": "KADAI CHICKEN",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG MAIN COURSE",
     "description": "MUTTON MASALA",
-    "lane1_mrp": 350.0
+    "lane1_mrp": 350
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG MAIN COURSE",
     "description": "MUTTON ROGAN JOSH",
-    "lane1_mrp": 360.0
+    "lane1_mrp": 360
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG MAIN COURSE",
     "description": "PEPPER CHICKEN MASALA",
-    "lane1_mrp": 330.0
+    "lane1_mrp": 330
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG MAIN COURSE",
     "description": "RARA CHICKEN MASALA",
-    "lane1_mrp": 320.0
+    "lane1_mrp": 320
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "CHICKEN ANGARA TIKKA",
-    "lane1_mrp": 330.0
+    "lane1_mrp": 330
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "CHICKEN BANJARA KEBAB",
-    "lane1_mrp": 330.0
+    "lane1_mrp": 330
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "CHICKEN MOZZARELLA KEBAB",
-    "lane1_mrp": 450.0
+    "lane1_mrp": 450
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "CHICKEN SEEKH KEBAB",
-    "lane1_mrp": 310.0
+    "lane1_mrp": 310
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "CHICKEN SHOLAY KEBAB",
-    "lane1_mrp": 310.0
+    "lane1_mrp": 310
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "CHICKEN TIKKA ACHARI",
-    "lane1_mrp": 310.0
+    "lane1_mrp": 310
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "CHICKEN TIKKA HARYALI",
-    "lane1_mrp": 310.0
+    "lane1_mrp": 310
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "CHICKEN TIKKA MALAI",
-    "lane1_mrp": 310.0
+    "lane1_mrp": 310
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "FISH TIKKA ACHARI",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "FISH TIKKA AJWAINI",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "FISH TIKKA HARYALI",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "FISH TIKKA PAHADI",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "GRILL CHICKEN FULL",
-    "lane1_mrp": 550.0
+    "lane1_mrp": 550
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "GRILL CHICKEN HALF",
-    "lane1_mrp": 280.0
+    "lane1_mrp": 280
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "JURB SPICY CHICKEN TIKKA",
-    "lane1_mrp": 330.0
+    "lane1_mrp": 330
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "KALMI KEBAB FULL",
-    "lane1_mrp": 420.0
+    "lane1_mrp": 420
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "KALMI KEBAB HALF",
-    "lane1_mrp": 240.0
+    "lane1_mrp": 240
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "MUTTON SEEKH KEBAB",
-    "lane1_mrp": 450.0
+    "lane1_mrp": 450
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "PEPPER BBQ CHICKEN FULL",
-    "lane1_mrp": 599.0
+    "lane1_mrp": 599
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "PEPPER BBQ CHICKEN HALF",
-    "lane1_mrp": 320.0
+    "lane1_mrp": 320
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "TANDOORI CHICKEN FULL",
-    "lane1_mrp": 550.0
+    "lane1_mrp": 550
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "TANDOORI CHICKEN HALF",
-    "lane1_mrp": 280.0
+    "lane1_mrp": 280
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "TANDOORI ZINGHA",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG MAIN COURSE",
     "description": "CHICKEN FRIED RICE",
-    "lane1_mrp": 210.0
+    "lane1_mrp": 210
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG MAIN COURSE",
     "description": "CHICKEN HAKKA NOODLES",
-    "lane1_mrp": 270.0
+    "lane1_mrp": 270
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG MAIN COURSE",
     "description": "CHICKEN TRIPPLE SCHEZWAN FRIED RICE",
-    "lane1_mrp": 260.0
+    "lane1_mrp": 260
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG MAIN COURSE",
     "description": "EGG FRIED RICE",
-    "lane1_mrp": 180.0
+    "lane1_mrp": 180
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG MAIN COURSE",
     "description": "EGG NOODLES",
-    "lane1_mrp": 190.0
+    "lane1_mrp": 190
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG MAIN COURSE",
     "description": "MIXED MEAT FRIED RICE",
-    "lane1_mrp": 310.0
+    "lane1_mrp": 310
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG MAIN COURSE",
     "description": "MIXED MEAT NOODLES",
-    "lane1_mrp": 310.0
+    "lane1_mrp": 310
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "BUTTER GARLIC PRAWNS",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "CHEESY CHEESE LOLLIPOP",
-    "lane1_mrp": 300.0
+    "lane1_mrp": 300
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "CHICKEN DRUMS OF HEAVEN",
-    "lane1_mrp": 300.0
+    "lane1_mrp": 300
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "CHICKEN LOLYPOP",
-    "lane1_mrp": 220.0
+    "lane1_mrp": 220
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "CHICKEN PEPPER DRY",
-    "lane1_mrp": 270.0
+    "lane1_mrp": 270
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "CHILLY FISH",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "CHILLY PRAWNS",
-    "lane1_mrp": 101.0
+    "lane1_mrp": 101
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "DRAGON CHICKEN",
-    "lane1_mrp": 300.0
+    "lane1_mrp": 300
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "EN CHILLY",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "EN MANCHURIAN",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "MUTTON CHILLY",
-    "lane1_mrp": 330.0
+    "lane1_mrp": 330
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "MUTTON PEPPER DRY",
-    "lane1_mrp": 330.0
+    "lane1_mrp": 330
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL VEG MAIN COURSE",
     "description": "KUNG PAO PANEER",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL VEG MAIN COURSE",
     "description": "VEG FRIED RICE",
-    "lane1_mrp": 170.0
+    "lane1_mrp": 170
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL VEG MAIN COURSE",
     "description": "VEG HAKKA NOODLES",
-    "lane1_mrp": 190.0
+    "lane1_mrp": 190
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL VEG MAIN COURSE",
     "description": "VEG STIR DRY",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL VEG STARTER",
     "description": "MUSHROOM CHILLY",
-    "lane1_mrp": 200.0
+    "lane1_mrp": 200
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL VEG STARTER",
     "description": "MUSHROOM MANCHURIAN",
-    "lane1_mrp": 200.0
+    "lane1_mrp": 200
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL VEG STARTER",
     "description": "PANEER CHILLY",
-    "lane1_mrp": 200.0
+    "lane1_mrp": 200
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL VEG STARTER",
     "description": "PANEER KURKURE",
-    "lane1_mrp": 280.0
+    "lane1_mrp": 280
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL VEG STARTER",
     "description": "PANEER MANCHURIAN",
-    "lane1_mrp": 200.0
+    "lane1_mrp": 200
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL VEG STARTER",
     "description": "VEG BALL MANCHURIAN",
-    "lane1_mrp": 200.0
+    "lane1_mrp": 200
   },
   {
     "category": "FOOD",
     "subcategory": "SHOOTERS",
     "description": "BLUE KAMIKAZE",
-    "lane1_mrp": 399.0
+    "lane1_mrp": 399
   },
   {
     "category": "FOOD",
     "subcategory": "SHOOTERS",
     "description": "BRAIN HEMRAGE",
-    "lane1_mrp": 449.0
+    "lane1_mrp": 449
   },
   {
     "category": "FOOD",
     "subcategory": "SHOOTERS",
     "description": "BS2",
-    "lane1_mrp": 399.0
+    "lane1_mrp": 399
   },
   {
     "category": "FOOD",
     "subcategory": "SHOOTERS",
     "description": "JAGGERBOMB",
-    "lane1_mrp": 399.0
+    "lane1_mrp": 399
   },
   {
     "category": "FOOD",
     "subcategory": "SHOOTERS",
     "description": "PINK GIN",
-    "lane1_mrp": 399.0
+    "lane1_mrp": 399
   },
   {
     "category": "FOOD",
     "subcategory": "SOUP",
     "description": "CLEAR SOUP NON VEG",
-    "lane1_mrp": 150.0
+    "lane1_mrp": 150
   },
   {
     "category": "FOOD",
     "subcategory": "SOUP",
     "description": "CLEAR SOUP VEG",
-    "lane1_mrp": 120.0
+    "lane1_mrp": 120
   },
   {
     "category": "FOOD",
     "subcategory": "SOUP",
     "description": "CREAM OF MUSHROOM",
-    "lane1_mrp": 120.0
+    "lane1_mrp": 120
   },
   {
     "category": "FOOD",
     "subcategory": "SOUP",
     "description": "HOT & SOUR SOUP NON VEG",
-    "lane1_mrp": 150.0
+    "lane1_mrp": 150
   },
   {
     "category": "FOOD",
     "subcategory": "SOUP",
     "description": "HOT & SOUR SOUP VEG",
-    "lane1_mrp": 120.0
+    "lane1_mrp": 120
   },
   {
     "category": "FOOD",
     "subcategory": "SOUP",
     "description": "MANCHOW SOUP NON VEG",
-    "lane1_mrp": 150.0
+    "lane1_mrp": 150
   },
   {
     "category": "FOOD",
     "subcategory": "SOUP",
     "description": "MANCHOW SOUP VEG",
-    "lane1_mrp": 120.0
+    "lane1_mrp": 120
   },
   {
     "category": "FOOD",
     "subcategory": "SOUP",
     "description": "PAYA SHORBA",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "SOUP",
     "description": "SWEET CORN SOUP NON VEG",
-    "lane1_mrp": 150.0
+    "lane1_mrp": 150
   },
   {
     "category": "FOOD",
     "subcategory": "SOUP",
     "description": "SWEET CORN SOUP VEG",
-    "lane1_mrp": 120.0
+    "lane1_mrp": 120
   },
   {
     "category": "FOOD",
     "subcategory": "SOUP",
     "description": "TOMATO SOUP",
-    "lane1_mrp": 120.0
+    "lane1_mrp": 120
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "ALOO JEERA DRY",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "DAL MAKHANI",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "DAL TADKA",
-    "lane1_mrp": 200.0
+    "lane1_mrp": 200
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "KADAI PANEER",
-    "lane1_mrp": 240.0
+    "lane1_mrp": 240
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "KADAI VEG",
-    "lane1_mrp": 230.0
+    "lane1_mrp": 230
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "KAJU MASALA",
-    "lane1_mrp": 260.0
+    "lane1_mrp": 260
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "MATAR PANEER",
-    "lane1_mrp": 240.0
+    "lane1_mrp": 240
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "MUSHROOM MASALA",
-    "lane1_mrp": 240.0
+    "lane1_mrp": 240
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "PALAK PANEER",
-    "lane1_mrp": 210.0
+    "lane1_mrp": 210
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "PANEER BUTTER MASALA",
-    "lane1_mrp": 210.0
+    "lane1_mrp": 210
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "PANEER TIKKA MASALA",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "SEV TOMATO",
-    "lane1_mrp": 260.0
+    "lane1_mrp": 260
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "VEG CHEF SPECIAL GRAVY",
-    "lane1_mrp": 280.0
+    "lane1_mrp": 280
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "VEG HYDRABADI MASALA",
-    "lane1_mrp": 230.0
+    "lane1_mrp": 230
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "VEG KOLHAPURI",
-    "lane1_mrp": 210.0
+    "lane1_mrp": 210
   },
   {
     "category": "FOOD",
     "subcategory": "VEG MAIN COURSE",
     "description": "VEG MELONI",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "VEG STARTER TANDOOR",
     "description": "CHUKANDAR KEBAB",
-    "lane1_mrp": 350.0
+    "lane1_mrp": 350
   },
   {
     "category": "FOOD",
     "subcategory": "VEG STARTER TANDOOR",
     "description": "DAHI KI KABAB",
-    "lane1_mrp": 290.0
+    "lane1_mrp": 290
   },
   {
     "category": "FOOD",
     "subcategory": "VEG STARTER TANDOOR",
     "description": "HARA BARA KEBAB",
-    "lane1_mrp": 250.0
+    "lane1_mrp": 250
   },
   {
     "category": "FOOD",
     "subcategory": "VEG STARTER TANDOOR",
     "description": "MALAI PANEER TIKKA",
-    "lane1_mrp": 220.0
+    "lane1_mrp": 220
   },
   {
     "category": "FOOD",
     "subcategory": "VEG STARTER TANDOOR",
     "description": "SIKANDARI PANEER TIKKA",
-    "lane1_mrp": 220.0
+    "lane1_mrp": 220
   },
   {
     "category": "FOOD",
     "subcategory": "VEG STARTER TANDOOR",
     "description": "TANDOORI BUTTON MUSHROOM",
-    "lane1_mrp": 220.0
+    "lane1_mrp": 220
   },
   {
     "category": "FOOD",
     "subcategory": "VEG STARTER TANDOOR",
     "description": "TANDOORI GOBI",
-    "lane1_mrp": 190.0
+    "lane1_mrp": 190
   },
   {
     "category": "FOOD",
     "subcategory": "VEG STARTER TANDOOR",
     "description": "ZAITOONI PANEER TIKKA",
-    "lane1_mrp": 350.0
+    "lane1_mrp": 350
   },
   {
     "category": "BEVERAGES",
     "subcategory": "SOFTDRINKS",
     "description": "COCA COLA 250 ML",
-    "lane1_mrp": 25.0
+    "lane1_mrp": 25
   },
   {
     "category": "BEVERAGES",
     "subcategory": "SOFTDRINKS",
     "description": "COCA COLA 750ML",
-    "lane1_mrp": 50.0
+    "lane1_mrp": 50
   },
   {
     "category": "BEVERAGES",
     "subcategory": "SOFTDRINKS",
     "description": "FANTA 250ML",
-    "lane1_mrp": 25.0
+    "lane1_mrp": 25
   },
   {
     "category": "BEVERAGES",
     "subcategory": "SOFTDRINKS",
     "description": "FANTA 740ML",
-    "lane1_mrp": 50.0
+    "lane1_mrp": 50
   },
   {
     "category": "BEVERAGES",
     "subcategory": "SOFTDRINKS",
     "description": "KINLEY CLUB SODA 750ML",
-    "lane1_mrp": 20.0
+    "lane1_mrp": 20
   },
   {
     "category": "BEVERAGES",
     "subcategory": "SOFTDRINKS",
     "description": "KINLEY PUNCH SODA 250ML",
-    "lane1_mrp": 15.0
+    "lane1_mrp": 15
   },
   {
     "category": "BEVERAGES",
     "subcategory": "SOFTDRINKS",
     "description": "MONSTER",
-    "lane1_mrp": 125.0
+    "lane1_mrp": 125
   },
   {
     "category": "BEVERAGES",
     "subcategory": "SOFTDRINKS",
     "description": "RED BULL",
-    "lane1_mrp": 130.0
+    "lane1_mrp": 130
   },
   {
     "category": "BEVERAGES",
     "subcategory": "SOFTDRINKS",
     "description": "SPRITE 250ML",
-    "lane1_mrp": 25.0
+    "lane1_mrp": 25
   },
   {
     "category": "BEVERAGES",
     "subcategory": "SOFTDRINKS",
     "description": "SPRITE 740ML",
-    "lane1_mrp": 50.0
+    "lane1_mrp": 50
   },
   {
     "category": "BEVERAGES",
     "subcategory": "SOFTDRINKS",
     "description": "THUMS UP 250ML",
-    "lane1_mrp": 25.0
+    "lane1_mrp": 25
   },
   {
     "category": "BEVERAGES",
     "subcategory": "SOFTDRINKS",
     "description": "THUMS UP 740ML",
-    "lane1_mrp": 50.0
+    "lane1_mrp": 50
   },
   {
     "category": "BEVERAGES",
     "subcategory": "WATER",
     "description": "KINLEY WATER 1000 ML",
-    "lane1_mrp": 25.0
+    "lane1_mrp": 25
   },
   {
     "category": "BEVERAGES",
     "subcategory": "WATER",
     "description": "VANDE MATARAM 1 LTS",
-    "lane1_mrp": 20.0
+    "lane1_mrp": 20
   },
   {
     "category": "BEVERAGES",
     "subcategory": "WATER",
     "description": "VANDE MATARAM WATER 05 LTS",
-    "lane1_mrp": 10.0
+    "lane1_mrp": 10
   },
   {
     "category": "BEVERAGES",
     "subcategory": "WATER",
     "description": "WATER 1000ML",
-    "lane1_mrp": 20.0
+    "lane1_mrp": 20
   },
   {
     "category": "BEVERAGES",
     "subcategory": "WATER",
     "description": "WATER 2000ML",
-    "lane1_mrp": 30.0
+    "lane1_mrp": 30
   },
   {
     "category": "BEVERAGES",
     "subcategory": "WATER",
     "description": "WATER 500ML",
-    "lane1_mrp": 10.0
+    "lane1_mrp": 10
+  },
+  {
+    "id": "cat-biryani",
+    "name": "Biryani & Rice",
+    "slug": "biryani",
+    "description": "Royal dum-cooked biryanis layered with saffron basmati rice.",
+    "is_alcohol": false,
+    "display_order": 8,
+    "items": [
+      {
+        "id": "item-hyderabadi-dum-biryani",
+        "name": "Hyderabadi Dum Biryani",
+        "base_price": 520,
+        "is_veg": false,
+        "is_alcohol": false,
+        "image_url": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80",
+        "description": "Signature slow-cooked royal Hyderabadi dum biryani layered with saffron-fragrant basmati rice, tender spiced meat, caramelized onions, fresh mint, and slow-braised on coal embers. Served with mirchi ka salan and burani raita."
+      }
+    ]
   }
 ]

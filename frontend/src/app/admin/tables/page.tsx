@@ -34,6 +34,7 @@ export default function TableManagementPage() {
   const [activeArea, setActiveArea] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -157,11 +158,22 @@ export default function TableManagementPage() {
             <span>+ Create Table & QR</span>
           </Link>
           <button
-            onClick={fetchTables}
-            className="p-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 transition shadow-xs"
+            onClick={async () => {
+              setIsRefreshing(true);
+              try {
+                await fetchTables();
+                showToast("Floor tables synced in real time");
+              } finally {
+                setTimeout(() => setIsRefreshing(false), 600);
+              }
+            }}
+            disabled={isRefreshing}
+            className={`p-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 transition shadow-xs flex items-center justify-center ${
+              isRefreshing ? "opacity-75 cursor-not-allowed" : "cursor-pointer active:scale-95"
+            }`}
             title="Refresh Live Floor"
           >
-            <RefreshCw className="w-4 h-4 text-blue-600" />
+            <RefreshCw className={`w-4 h-4 text-blue-600 transition-transform ${isRefreshing ? "animate-spin" : ""}`} />
           </button>
         </div>
       </div>

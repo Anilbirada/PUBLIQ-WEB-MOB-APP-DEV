@@ -25,8 +25,8 @@ def get_active_tables(outlet_id: str = None, db: Session = Depends(get_db)):
         # Find active order on this table
         active_order = db.query(Order).filter(
             Order.table_number == t.table_number,
-            Order.order_status.in_(["PLACED", "ACCEPTED", "PREPARING", "READY"])
-        ).order_by(Order.created_at.desc()).first()
+            Order.order_status.in_(["PLACED", "ACCEPTED", "PREPARING", "READY", "SERVED"])
+        ).filter(Order.payment_status != "PAID").order_by(Order.created_at.desc()).first()
 
         order_data = None
         if active_order:

@@ -19,10 +19,31 @@ const isSuspiciousUrl = (url: string, itemName: string = ""): boolean => {
   const u = (url || "").toLowerCase();
   const n = (itemName || "").toLowerCase();
   if (u.includes("french_fries") && !n.includes("fry") && !n.includes("fries")) return true;
+  if (u.includes("wikimedia.org") || u.includes("upload.wikimedia")) return true; // Block unrendered wikimedia scraped links
   if (u.includes("soup_bowl_met")) return true;
   if (u.includes("drawing")) return true;
   if (u.includes("placeholder")) return true;
-  if (u.includes("gulab_jamun") && n.includes("brownie")) return true;
+  if (u.includes("gulab_jamun") && (n.includes("brownie") || n.includes("ice cream"))) return true;
+  if (u.includes("photo-1603105037880")) return true; // antique porcelain plate
+  if (u.includes("photo-1540420773420") && !n.includes("fry") && !n.includes("fries")) return true; // fries with salt
+  if (u.includes("photo-1599488615731") && n.includes("chaap")) return true; // aquarium fish photo
+  if (u.includes("photo-1589301760014") && n.includes("kulcha")) return true; // idlis photo
+  if (u.includes("photo-1567620832903") && n.includes("peanut")) return true; // chicken wings photo
+  if (
+    u.includes("cream-of-mushroom.jpg") ||
+    u.includes("masala-papad.jpg") ||
+    u.includes("peanut-masala.jpg") ||
+    u.includes("brownie-ice-cream.jpg") ||
+    u.includes("ccp-cheese-cherry-pineapple.jpg") ||
+    u.includes("palak-chaat.webp") ||
+    u.includes("stuffed-kulcha.jpg") ||
+    u.includes("tandoori-roti.jpg") ||
+    u.includes("aloo-paratha.jpg") ||
+    u.includes("dal-makhani.jpg") ||
+    u.includes("dal-tadka.jpg")
+  ) {
+    return true; // Reject mismatched local scraped assets
+  }
   if (u.includes("fish") && (n.includes("chicken") || n.includes("paneer") || n.includes("mushroom") || n.includes("dosa") || n.includes("mutton"))) return true;
   // Concentric circle placeholder webp assets
   if (u.includes("hyderabadi-lamb-biryani.webp") || u.includes("vegetable-tawa-biryani.webp") || u.includes("dum-biryani-hyderabadi.webp")) return true;
@@ -59,6 +80,48 @@ export function getMenuItemImage(item: any, categoryName?: string, categorySlug?
 
   // 4. Keyword-level culinary intelligence matching
   const nameLower = (item.name || "").toLowerCase();
+  if (nameLower.includes("soya chaap") || nameLower.includes("malai chaap")) {
+    return "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("lotus stem")) {
+    return "https://images.unsplash.com/photo-1541832676-9b763b0239ab?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("dahi ke kebab") || nameLower.includes("dahi kebab")) {
+    return "https://images.unsplash.com/photo-1606491956689-2ea866880c84?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("kurkure cigars") || nameLower.includes("cheese cigars")) {
+    return "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("shashlik")) {
+    return "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("bhatti ka murgh") || nameLower.includes("bhatti")) {
+    return "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("kasturi murgh") || nameLower.includes("kasturi")) {
+    return "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("tangdi kebab") || nameLower.includes("tangdi")) {
+    return "https://images.unsplash.com/photo-1527477378378-0c644d62b9a7?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("ajwaini fish") || nameLower.includes("amritsari")) {
+    return "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("gilafi")) {
+    return "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("galouti")) {
+    return "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("tiger prawns skewer") || nameLower.includes("prawns skewer")) {
+    return "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("mutton chilly") || nameLower.includes("chilli mutton")) {
+    return "https://images.unsplash.com/photo-1545247181-516773cae754?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("mutton pepper") || nameLower.includes("mutton fry")) {
+    return "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=800&q=80";
+  }
   if (nameLower.includes("hyderabadi") || (nameLower.includes("biryani") && nameLower.includes("dum"))) {
     return "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80";
   }
@@ -66,22 +129,37 @@ export function getMenuItemImage(item: any, categoryName?: string, categorySlug?
     return "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80";
   }
   if (nameLower.includes("clear soup")) {
+    if (nameLower.includes("chicken") || nameLower.includes("non veg")) {
+      return "https://images.unsplash.com/photo-1578020190125-f4f7c18bc9cb?auto=format&fit=crop&w=800&q=80";
+    }
     return "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=80";
   }
   if (nameLower.includes("mushroom soup") || nameLower.includes("cream of mushroom")) {
-    return "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80";
+    return "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("hot & sour") || nameLower.includes("hot and sour")) {
+    if (nameLower.includes("non veg") || nameLower.includes("chicken")) {
+      return "https://images.unsplash.com/photo-1578020190125-f4f7c18bc9cb?auto=format&fit=crop&w=800&q=80";
+    }
+    return "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("cheese cherry pineapple") || nameLower.includes("ccp")) {
+    return "https://images.unsplash.com/photo-1541832676-9b763b0239ab?auto=format&fit=crop&w=800&q=80";
   }
   if (nameLower.includes("salad")) {
-    return "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80";
+    return "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80";
   }
   if (nameLower.includes("papad")) {
-    return "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=800&q=80";
+    return "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80";
   }
   if (nameLower.includes("peanut")) {
-    return "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=800&q=80";
+    return "https://images.unsplash.com/photo-1536521642388-441263f88a61?auto=format&fit=crop&w=800&q=80";
   }
   if (nameLower.includes("brownie")) {
     return "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("choice of ice cream") || (nameLower.includes("ice cream") && !nameLower.includes("brownie"))) {
+    return "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=800&q=80";
   }
   if (nameLower.includes("lollipop") || nameLower.includes("lolypop")) {
     return "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=800&q=80";
@@ -92,11 +170,17 @@ export function getMenuItemImage(item: any, categoryName?: string, categorySlug?
   if (nameLower.includes("neer dosa")) {
     return "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?auto=format&fit=crop&w=800&q=80";
   }
+  if (nameLower.includes("cheese garlic naan")) {
+    return "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=800&q=80";
+  }
   if (nameLower.includes("garlic naan")) {
     return "https://images.unsplash.com/photo-1697155406014-04dc649b0953?auto=format&fit=crop&w=800&q=80";
   }
+  if (nameLower.includes("stuffed kulcha")) {
+    return "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80";
+  }
   if (nameLower.includes("kulcha")) {
-    return "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80";
+    return "https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=800&q=80";
   }
   if (nameLower.includes("roti")) {
     return "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80";
@@ -107,8 +191,11 @@ export function getMenuItemImage(item: any, categoryName?: string, categorySlug?
   if (nameLower.includes("dal makhani")) {
     return "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80";
   }
-  if (nameLower.includes("dal tadka") || nameLower.includes("dal")) {
+  if (nameLower.includes("dal tadka") || nameLower.includes("dal fry") || nameLower.includes("dal")) {
     return "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=800&q=80";
+  }
+  if (nameLower.includes("kadai paneer")) {
+    return "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=800&q=80";
   }
   if (nameLower.includes("paneer")) {
     return "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=800&q=80";

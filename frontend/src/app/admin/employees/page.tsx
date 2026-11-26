@@ -176,6 +176,8 @@ export default function StaffManagementPage() {
 
   // Temporary password display modal
   const [tempPasswordModal, setTempPasswordModal] = useState<{ empName: string; tempPass: string } | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   // Fetch staff
   const fetchEmployees = async () => {
@@ -527,24 +529,47 @@ export default function StaffManagementPage() {
             </p>
           </div>
 
-          {/* Biometric Clock-In Widget */}
-          <form onSubmit={handlePinPunch} className="flex items-center gap-2 bg-slate-50 p-2 rounded-2xl border border-slate-200">
-            <KeyRound className="w-4 h-4 text-slate-400 ml-2" />
-            <input
-              type="password"
-              maxLength={6}
-              placeholder="Enter Staff PIN"
-              value={punchPin}
-              onChange={(e) => setPunchPin(e.target.value)}
-              className="w-32 px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs text-center font-mono font-bold tracking-widest text-slate-900 focus:outline-none focus:border-blue-500"
-            />
+          <div className="flex flex-wrap items-center gap-3">
             <button
-              type="submit"
-              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs shadow-xs hover:shadow-blue-500/20 transition-all"
+              onClick={async () => {
+                setIsRefreshing(true);
+                try {
+                  await Promise.all([fetchEmployees(), fetchAttendance(), fetchRoles(), fetchPayroll()]);
+                  setToastMsg("Personnel roster & shifts synced in real time");
+                  setTimeout(() => setToastMsg(null), 2500);
+                } finally {
+                  setTimeout(() => setIsRefreshing(false), 600);
+                }
+              }}
+              disabled={isRefreshing}
+              className={`p-3 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition shadow-xs flex items-center gap-2 ${
+                isRefreshing ? "opacity-75 cursor-not-allowed" : "cursor-pointer active:scale-95"
+              }`}
+              title="Refresh personnel & shifts"
             >
-              Clock In
+              <RefreshCw className={`w-4 h-4 text-blue-600 transition-transform ${isRefreshing ? "animate-spin" : ""}`} />
+              <span className="text-xs font-semibold hidden sm:inline">{isRefreshing ? "Syncing..." : "Refresh"}</span>
             </button>
-          </form>
+
+            {/* Biometric Clock-In Widget */}
+            <form onSubmit={handlePinPunch} className="flex items-center gap-2 bg-slate-50 p-2 rounded-2xl border border-slate-200">
+              <KeyRound className="w-4 h-4 text-slate-400 ml-2" />
+              <input
+                type="password"
+                maxLength={6}
+                placeholder="Enter Staff PIN"
+                value={punchPin}
+                onChange={(e) => setPunchPin(e.target.value)}
+                className="w-32 px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs text-center font-mono font-bold tracking-widest text-slate-900 focus:outline-none focus:border-blue-500"
+              />
+              <button
+                type="submit"
+                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs shadow-xs hover:shadow-blue-500/20 transition-all"
+              >
+                Clock In
+              </button>
+            </form>
+          </div>
         </div>
 
         {/* Punch Notification Feedback */}
@@ -1760,6 +1785,13 @@ export default function StaffManagementPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {toastMsg && (
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 bg-slate-900/95 text-white text-xs font-semibold rounded-2xl shadow-2xl flex items-center gap-2.5 border border-slate-700 backdrop-blur-md animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{toastMsg}</span>
         </div>
       )}
     </div>

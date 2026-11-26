@@ -7,6 +7,7 @@ import {
   Plus, Minus, Trash2, Printer, CheckCircle2, Split, Clock,
   Search, ShieldCheck, Utensils, Wine
 } from "lucide-react";
+import { LiveClock } from "@/components/LiveClock";
 
 interface PosTable {
   id: string;
@@ -199,13 +200,18 @@ export default function PosPage() {
                 Restaurant & Bar Dining Tables
               </h2>
             </div>
-            <div className="flex items-center gap-2 text-xs">
-              <span className="flex items-center gap-1.5 text-emerald-400 font-semibold bg-emerald-950/80 px-2.5 py-1 rounded-full border border-emerald-500/40">
-                <span className="w-2 h-2 rounded-full bg-emerald-400"></span> Available
-              </span>
-              <span className="flex items-center gap-1.5 text-amber-300 font-semibold bg-amber-950/80 px-2.5 py-1 rounded-full border border-amber-500/40">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Occupied (Billing)
-              </span>
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center">
+                <LiveClock variant="digital" className="bg-[#070E1A] border-[#38BDF8]/30 text-cyan-300 py-1" showSeconds={true} showDate={true} />
+              </div>
+              <div className="flex items-center gap-2 text-xs">
+                <span className="flex items-center gap-1.5 text-emerald-400 font-semibold bg-emerald-950/80 px-2.5 py-1 rounded-full border border-emerald-500/40">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span> Available
+                </span>
+                <span className="flex items-center gap-1.5 text-amber-300 font-semibold bg-amber-950/80 px-2.5 py-1 rounded-full border border-amber-500/40">
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Occupied (Billing)
+                </span>
+              </div>
             </div>
           </div>
 
@@ -447,6 +453,15 @@ export default function PosPage() {
                 <div className="flex justify-between">
                   <span className="text-slate-400">Invoice Number:</span>
                   <span className="font-bold text-white">{lastBill.bill_number}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Bill Date & Time:</span>
+                  <span className="font-bold text-[#38BDF8]">
+                    {new Date(lastBill.settled_at || Date.now()).toLocaleString("en-IN", {
+                      dateStyle: "medium",
+                      timeStyle: "medium",
+                    })}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Table:</span>

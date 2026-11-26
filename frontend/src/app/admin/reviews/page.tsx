@@ -33,6 +33,8 @@ export default function AdminReviewsPage() {
   });
   const [totalCount, setTotalCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [search, setSearch] = useState<string>("");
   const [ratingFilter, setRatingFilter] = useState<number | null>(null);
 
@@ -113,11 +115,23 @@ export default function AdminReviewsPage() {
           </div>
 
           <button
-            onClick={fetchReviews}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
+            onClick={async () => {
+              setIsRefreshing(true);
+              try {
+                await fetchReviews();
+                setToastMsg("Dining reviews refreshed");
+                setTimeout(() => setToastMsg(null), 2500);
+              } finally {
+                setTimeout(() => setIsRefreshing(false), 600);
+              }
+            }}
+            disabled={isRefreshing}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs ${
+              isRefreshing ? "opacity-75 cursor-not-allowed" : "cursor-pointer active:scale-95"
+            }`}
           >
-            <RefreshCw className="w-3.5 h-3.5 text-blue-600" />
-            <span>Refresh Reviews</span>
+            <RefreshCw className={`w-3.5 h-3.5 text-blue-600 transition-transform ${isRefreshing ? "animate-spin" : ""}`} />
+            <span>{isRefreshing ? "Refreshing..." : "Refresh Reviews"}</span>
           </button>
         </div>
 
@@ -297,6 +311,13 @@ export default function AdminReviewsPage() {
           </div>
         )}
       </div>
+
+      {toastMsg && (
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 bg-slate-900/95 text-white text-xs font-semibold rounded-2xl shadow-2xl flex items-center gap-2.5 border border-slate-700 backdrop-blur-md animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{toastMsg}</span>
+        </div>
+      )}
     </div>
   );
 }

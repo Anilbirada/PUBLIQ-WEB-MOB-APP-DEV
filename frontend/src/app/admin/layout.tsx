@@ -8,9 +8,10 @@ import {
   Package, Beer, BookOpen, UtensilsCrossed, Users, Truck,
   Receipt, TrendingUp, Store, ChevronRight, LogOut, ArrowLeft,
   Bell, CheckCircle2, Film, Bot, Calendar, PartyPopper, Image as ImageIcon,
-  ShieldCheck, Star, Key, RefreshCw
+  ShieldCheck, Star, Key, RefreshCw, Clock
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { LiveClock } from "@/components/LiveClock";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -98,6 +99,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       title: "OPERATIONS",
       items: [
         { name: "Executive Dashboard", href: "/admin", icon: LayoutDashboard, roles: ["SUPER_ADMIN"] },
+        { name: "Live Order Workflow", href: "/admin/orders", icon: Clock, badge: "REALTIME", badgeColor: "from-blue-600 to-indigo-600", roles: ["SUPER_ADMIN", "FOOD_ADMIN", "BAR_ADMIN", "CASHIER"] },
+        { name: "Waiter Floor Terminal", href: "/waiter", icon: UtensilsCrossed, badge: "FLOOR", badgeColor: "from-emerald-500 to-teal-600", roles: ["SUPER_ADMIN", "WAITER"] },
         { name: "Restaurant & Bar POS", href: "/admin/pos", icon: ShoppingCart, roles: ["SUPER_ADMIN", "CASHIER"] },
         { name: "Kitchen Display (KDS)", href: "/admin/kot", icon: Flame, badge: "LIVE", badgeColor: "from-amber-500 to-orange-500", roles: ["SUPER_ADMIN", "FOOD_ADMIN", "EXECUTIVE_CHEF"] },
         { name: "Bar Dispense Station", href: "/admin/bar", icon: Wine, badgeColor: "from-cyan-500 to-blue-600", roles: ["SUPER_ADMIN", "BAR_ADMIN"] },
@@ -373,6 +376,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <span className="text-xs text-slate-500 font-medium hidden sm:inline">
               5% GST Non-ITC Composition Mode (SAC 996331)
             </span>
+          </div>
+
+          {/* Real-Time Live Date & Time Clock (Simultaneously & Automatically Updated) */}
+          <div className="hidden md:flex items-center">
+            <LiveClock variant="header" />
           </div>
 
           <div className="flex items-center gap-4">

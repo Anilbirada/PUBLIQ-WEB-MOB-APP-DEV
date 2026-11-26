@@ -4,9 +4,10 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { 
   CheckCircle2, Sparkles, Clock, ArrowRight, 
-  MapPin, Utensils, Receipt, PhoneCall 
+  MapPin, Utensils, Receipt, PhoneCall, Calendar
 } from "lucide-react";
 import { api } from "../../../lib/api";
+import { LiveClock } from "@/components/LiveClock";
 
 export default function OrderConfirmationPage() {
   const params = useParams();
@@ -75,6 +76,9 @@ export default function OrderConfirmationPage() {
             <p className="text-xs text-slate-600 mt-1.5 font-normal">
               Your order has been queued directly into the PUBLIQ kitchen &amp; bar display system.
             </p>
+            <div className="mt-3 flex items-center justify-center">
+              <LiveClock variant="badge" showSeconds={true} showDate={true} className="bg-emerald-50 text-emerald-800 border-emerald-200 font-semibold shadow-xs" />
+            </div>
           </div>
 
           {/* Key Reference Card */}
@@ -87,9 +91,37 @@ export default function OrderConfirmationPage() {
             </div>
 
             <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+              <span className="text-slate-600 font-semibold flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                Bill Generated Date &amp; Time:
+              </span>
+              <span className="font-mono font-bold text-xs text-blue-700 bg-white px-2 py-0.5 rounded border border-blue-200">
+                {order.created_at
+                  ? new Date(order.created_at).toLocaleString("en-US", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                      hour12: true,
+                    })
+                  : new Date().toLocaleString("en-US", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                      hour12: true,
+                    })}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200">
               <span className="text-slate-600 font-semibold">Dining Location:</span>
               <span className="font-bold text-slate-900">
-                {order.table_number ? `Dine-In • Table ${order.table_number}` : "Takeaway / Delivery"}
+                {order.table_number ? `Dine-In • Table ${order.table_number}` : "Dine-In Table Service"}
               </span>
             </div>
 

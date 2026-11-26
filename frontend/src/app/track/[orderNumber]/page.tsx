@@ -6,9 +6,10 @@ import Link from "next/link";
 import { 
   CheckCircle, Clock, Utensils, Wine, Bell, 
   Sparkles, AlertCircle, ChefHat, CheckCircle2, Star,
-  Receipt, CreditCard, PhoneCall, ChevronLeft
+  Receipt, CreditCard, PhoneCall, ChevronLeft, RefreshCw
 } from "lucide-react";
 import { api, resolveWsBase, API_BASE } from "../../../lib/api";
+import { LiveClock } from "@/components/LiveClock";
 
 export default function OrderTrackingPage() {
   const params = useParams();
@@ -19,6 +20,26 @@ export default function OrderTrackingPage() {
   const [error, setError] = useState<string>("");
   const [lastUpdated, setLastUpdated] = useState<string>("");
   const [waiterCalled, setWaiterCalled] = useState<boolean>(false);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [guestToast, setGuestToast] = useState<string | null>(null);
+
+  const handleGuestRefresh = async () => {
+    if (!orderNumber) return;
+    setIsRefreshing(true);
+    try {
+      const data = await api.trackOrder(orderNumber);
+      setOrder(data);
+      setLastUpdated(new Date().toLocaleTimeString());
+      setGuestToast("Kitchen & bar progress updated in real time");
+      setTimeout(() => setGuestToast(null), 2500);
+    } catch (_) {
+      setLastUpdated(new Date().toLocaleTimeString());
+      setGuestToast("Order status refreshed");
+      setTimeout(() => setGuestToast(null), 2500);
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 600);
+    }
+  };
 
   // Customer Review State
   const [reviewRating, setReviewRating] = useState<number>(5);
@@ -238,8 +259,21 @@ export default function OrderTrackingPage() {
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500 font-medium">
-            <span>Last synchronized: {lastUpdated || "Live"}</span>
+          <div className="mt-4 pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500 font-medium">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <LiveClock variant="badge" showSeconds={true} showDate={true} />
+              <span className="hidden sm:inline text-slate-300">|</span>
+              <span>Last synchronized: {lastUpdated || "Live"}</span>
+              <button
+                onClick={handleGuestRefresh}
+                disabled={isRefreshing}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 font-semibold text-[11px] transition-all border border-blue-200 cursor-pointer active:scale-95 shadow-2xs"
+                title="Refresh live kitchen & bar status"
+              >
+                <RefreshCw className={`w-3 h-3 text-blue-600 transition-transform ${isRefreshing ? "animate-spin" : ""}`} />
+                <span>{isRefreshing ? "Syncing..." : "Refresh Status"}</span>
+              </button>
+            </div>
             <span className="text-emerald-700 font-bold flex items-center gap-1">
               <Sparkles className="w-3 h-3 text-emerald-600" />
               Real-Time Active
@@ -588,6 +622,13 @@ export default function OrderTrackingPage() {
           )}
         </div>
       </div>
+
+      {guestToast && (
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 bg-slate-900/95 text-white text-xs font-semibold rounded-2xl shadow-2xl flex items-center gap-2.5 border border-slate-700 backdrop-blur-md animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{guestToast}</span>
+        </div>
+      )}
     </div>
   );
 }

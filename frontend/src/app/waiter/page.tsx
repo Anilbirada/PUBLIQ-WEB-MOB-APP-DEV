@@ -10,6 +10,7 @@ import {
   Receipt, FileText, Check, ChevronRight, Hash, Printer, Eye, LogOut
 } from "lucide-react";
 import { API_BASE } from "@/lib/api";
+import { LiveClock } from "@/components/LiveClock";
 
 export default function WaiterMobileApp() {
   const router = useRouter();
@@ -84,6 +85,19 @@ export default function WaiterMobileApp() {
   const [showManagerModal, setShowManagerModal] = useState<boolean>(false);
   const [managerReason, setManagerReason] = useState<string>("VIP Guest assistance requested");
   const [managerNotice, setManagerNotice] = useState<string>("");
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [waiterToast, setWaiterToast] = useState<string | null>(null);
+
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await fetchData();
+      setWaiterToast("Floor data synced with kitchen & bar");
+      setTimeout(() => setWaiterToast(null), 2500);
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 600);
+    }
+  };
 
   // Polling data
   const fetchData = async () => {
@@ -826,6 +840,10 @@ export default function WaiterMobileApp() {
             </div>
           </div>
 
+          <div className="hidden sm:flex items-center">
+            <LiveClock variant="badge" showSeconds={true} showDate={true} className="bg-slate-900 border-slate-700 text-slate-200" />
+          </div>
+
           <div className="flex items-center gap-2">
             <button
               onClick={() => setActiveTab("scan")}
@@ -998,8 +1016,9 @@ export default function WaiterMobileApp() {
                   </h2>
                   <p className="text-[10px] text-slate-400">All venue tables synced in real time</p>
                 </div>
-                <button onClick={fetchData} className="text-xs text-slate-400 flex items-center gap-1 hover:text-white">
-                  <RefreshCw className="w-3 h-3" /> Refresh
+                <button onClick={handleManualRefresh} disabled={isRefreshing} className="text-xs text-slate-400 flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
+                  <RefreshCw className={`w-3.5 h-3.5 text-[#D4AF37] ${isRefreshing ? "animate-spin" : ""}`} /> 
+                  <span>{isRefreshing ? "Syncing..." : "Refresh"}</span>
                 </button>
               </div>
 
@@ -1355,8 +1374,9 @@ export default function WaiterMobileApp() {
                   </h2>
                   <p className="text-[10px] text-slate-400">Orders placed by guests requiring steward confirmation</p>
                 </div>
-                <button onClick={fetchData} className="text-xs text-slate-400 flex items-center gap-1 hover:text-white">
-                  <RefreshCw className="w-3 h-3" /> Refresh
+                <button onClick={handleManualRefresh} disabled={isRefreshing} className="text-xs text-slate-400 flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
+                  <RefreshCw className={`w-3.5 h-3.5 text-[#D4AF37] ${isRefreshing ? "animate-spin" : ""}`} /> 
+                  <span>{isRefreshing ? "Syncing..." : "Refresh"}</span>
                 </button>
               </div>
 
@@ -1520,8 +1540,9 @@ export default function WaiterMobileApp() {
                   </h2>
                   <p className="text-[10px] text-slate-400">Kitchen KDS & Bar dispense monitoring</p>
                 </div>
-                <button onClick={fetchData} className="text-xs text-slate-400 flex items-center gap-1 hover:text-white">
-                  <RefreshCw className="w-3 h-3" /> Refresh
+                <button onClick={handleManualRefresh} disabled={isRefreshing} className="text-xs text-slate-400 flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
+                  <RefreshCw className={`w-3.5 h-3.5 text-[#D4AF37] ${isRefreshing ? "animate-spin" : ""}`} /> 
+                  <span>{isRefreshing ? "Syncing..." : "Refresh"}</span>
                 </button>
               </div>
 
@@ -1736,8 +1757,9 @@ export default function WaiterMobileApp() {
                   </h2>
                   <p className="text-[10px] text-slate-400">Generate GST invoices, dynamic UPI QR and payments</p>
                 </div>
-                <button onClick={fetchData} className="text-xs text-slate-400 flex items-center gap-1 hover:text-white">
-                  <RefreshCw className="w-3 h-3" /> Refresh
+                <button onClick={handleManualRefresh} disabled={isRefreshing} className="text-xs text-slate-400 flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer">
+                  <RefreshCw className={`w-3.5 h-3.5 text-[#D4AF37] ${isRefreshing ? "animate-spin" : ""}`} /> 
+                  <span>{isRefreshing ? "Syncing..." : "Refresh"}</span>
                 </button>
               </div>
 
@@ -2357,6 +2379,14 @@ export default function WaiterMobileApp() {
                 DISPATCH MANAGER ALERT
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Real-time Waiter Refresh Toast */}
+        {waiterToast && (
+          <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 px-4 py-3 bg-slate-900/95 text-white text-xs font-semibold rounded-2xl shadow-2xl flex items-center gap-2.5 border border-[#D4AF37]/50 backdrop-blur-md animate-in fade-in slide-in-from-bottom-2">
+            <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0" />
+            <span>{waiterToast}</span>
           </div>
         )}
 

@@ -128,6 +128,7 @@ export default function RestaurantRawMaterialsPage() {
   const [quantity, setQuantity] = useState<number>(5);
   const [reason, setReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState("");
 
   const fetchMaterials = async () => {
@@ -223,10 +224,22 @@ export default function RestaurantRawMaterialsPage() {
         </div>
         <div className="flex items-center gap-3">
           <button 
-            onClick={fetchMaterials}
-            className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-[#D4AF37] to-[#E5C378] text-[#070B12] rounded-2xl hover:brightness-110 transition-all shadow-md"
+            onClick={async () => {
+              setIsRefreshing(true);
+              try {
+                await fetchMaterials();
+                setFeedbackMsg("Kitchen dry store inventory synced in real time");
+              } finally {
+                setTimeout(() => setIsRefreshing(false), 600);
+              }
+            }}
+            disabled={isRefreshing}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-[#D4AF37] to-[#E5C378] text-[#070B12] rounded-2xl hover:brightness-110 transition-all shadow-md ${
+              isRefreshing ? "opacity-75 cursor-not-allowed" : "cursor-pointer active:scale-95"
+            }`}
           >
-            <RotateCcw className="w-3.5 h-3.5" /> Refresh Store
+            <RotateCcw className={`w-3.5 h-3.5 transition-transform ${isRefreshing ? "animate-spin" : ""}`} /> 
+            <span>{isRefreshing ? "Syncing..." : "Refresh Store"}</span>
           </button>
         </div>
       </div>

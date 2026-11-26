@@ -2458,5 +2458,77 @@
     "subcategory": "BIRYANI",
     "description": "SUBZ SAFFRON TAWA BIRYANI",
     "lane1_mrp": 480
+  },
+  {
+    "category": "FOOD",
+    "subcategory": "VEG STARTER TANDOOR",
+    "description": "TANDOORI MALAI SOYA CHAAP",
+    "lane1_mrp": 275
+  },
+  {
+    "category": "FOOD",
+    "subcategory": "VEG STARTER TANDOOR",
+    "description": "CRISPY LOTUS STEM HONEY CHILLI",
+    "lane1_mrp": 295
+  },
+  {
+    "category": "FOOD",
+    "subcategory": "VEG STARTER TANDOOR",
+    "description": "TRUFFLE DAHI KE KEBAB",
+    "lane1_mrp": 315
+  },
+  {
+    "category": "FOOD",
+    "subcategory": "VEG STARTER TANDOOR",
+    "description": "CORN & CHEESE KURKURE CIGARS",
+    "lane1_mrp": 285
+  },
+  {
+    "category": "FOOD",
+    "subcategory": "VEG STARTER TANDOOR",
+    "description": "PANEER TIKKA SHASHLIK",
+    "lane1_mrp": 325
+  },
+  {
+    "category": "FOOD",
+    "subcategory": "NON VEG STARTER TANDOOR",
+    "description": "BHATTI KA MURGH TIKKA",
+    "lane1_mrp": 365
+  },
+  {
+    "category": "FOOD",
+    "subcategory": "NON VEG STARTER TANDOOR",
+    "description": "KASTURI MURGH MALAI TIKKA",
+    "lane1_mrp": 375
+  },
+  {
+    "category": "FOOD",
+    "subcategory": "NON VEG STARTER TANDOOR",
+    "description": "TANGDI KEBAB LAZEEZ",
+    "lane1_mrp": 395
+  },
+  {
+    "category": "FOOD",
+    "subcategory": "NON VEG STARTER TANDOOR",
+    "description": "AMRITSARI AJWAINI FISH TIKKA",
+    "lane1_mrp": 425
+  },
+  {
+    "category": "FOOD",
+    "subcategory": "NON VEG STARTER TANDOOR",
+    "description": "GILAFI MUTTON SEEKH KEBAB",
+    "lane1_mrp": 445
+  },
+  {
+    "category": "FOOD",
+    "subcategory": "NON VEG STARTER TANDOOR",
+    "description": "GALOUTI KEBAB ON ULTE TAWE KA PARATHA",
+    "lane1_mrp": 465
+  },
+  {
+    "category": "FOOD",
+    "subcategory": "NON VEG STARTER TANDOOR",
+    "description": "GHEE ROAST TIGER PRAWNS SKEWER",
+    "lane1_mrp": 485
   }
 ]

@@ -7,6 +7,7 @@ import {
   ExternalLink, FileText, ArrowUpDown, AlertCircle, Sparkles
 } from "lucide-react";
 import { API_BASE } from "@/lib/api";
+import { LiveClock } from "@/components/LiveClock";
 
 interface InvoiceItem {
   name: string;
@@ -44,6 +45,8 @@ interface InvoiceRecord {
 export default function AdminInvoicesPage() {
   const [invoices, setInvoices] = useState<InvoiceRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [departmentFilter, setDepartmentFilter] = useState<string>("ALL");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [searchTerm, setSearchTerm] = useState("");
@@ -184,12 +187,25 @@ export default function AdminInvoicesPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <LiveClock variant="header" className="hidden sm:inline-flex" />
             <button
-              onClick={fetchInvoices}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 text-xs font-bold shadow-xs transition-colors"
+              onClick={async () => {
+                setIsRefreshing(true);
+                try {
+                  await fetchInvoices();
+                  setToastMsg("Tax invoices synced in real time");
+                  setTimeout(() => setToastMsg(null), 2500);
+                } finally {
+                  setTimeout(() => setIsRefreshing(false), 600);
+                }
+              }}
+              disabled={isRefreshing}
+              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 text-xs font-bold shadow-xs transition-colors ${
+                isRefreshing ? "opacity-75 cursor-not-allowed" : "cursor-pointer active:scale-95"
+              }`}
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-blue-600" : ""}`} />
-              Refresh
+              <RefreshCw className={`w-3.5 h-3.5 text-blue-600 transition-transform ${isRefreshing || loading ? "animate-spin" : ""}`} />
+              <span>{isRefreshing ? "Refreshing..." : "Refresh"}</span>
             </button>
           </div>
         </div>
@@ -586,6 +602,13 @@ export default function AdminInvoicesPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {toastMsg && (
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 bg-slate-900/95 text-white text-xs font-semibold rounded-2xl shadow-2xl flex items-center gap-2.5 border border-slate-700 backdrop-blur-md animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{toastMsg}</span>
         </div>
       )}
     </div>

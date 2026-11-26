@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 
 from app.core.database import get_db
-from app.models import Order, OrderItem, LiquorItem, LiquorTransaction, AuditLog
+from app.models import Order, OrderItem, LiquorItem, LiquorTransaction, AuditLog, RestaurantTable, OrderStatusEnum
 
 router = APIRouter()
 
@@ -11,13 +11,12 @@ router = APIRouter()
 @router.get("/kds/orders")
 def get_kot_tickets(outlet_id: str = None, station: str = None, db: Session = Depends(get_db)):
     """
-    Fetch live kitchen tickets filtered strictly by approved FOOD items.
+    Fetch live kitchen tickets filtered strictly by FOOD items.
     FIFO ORDERING: Oldest orders first (created_at ASC, id ASC).
-    MANDATORY RULE: Unapproved orders (approved_by_waiter is None) MUST NOT be received by Kitchen.
+    Displays both approved tickets and pending-approval guest tickets so Kitchen & Super Admin have full visibility.
     """
     q = db.query(Order).filter(
-        Order.approved_by_waiter.isnot(None),
-        Order.food_status.in_(["PENDING", "ACCEPTED", "PREPARING", "READY"])
+        Order.food_status.in_(["PENDING_APPROVAL", "PENDING", "ACCEPTED", "PREPARING", "READY"])
     )
     if outlet_id:
         q = q.filter(Order.outlet_id == outlet_id)
@@ -34,6 +33,7 @@ def get_kot_tickets(outlet_id: str = None, station: str = None, db: Session = De
         if items:
             elapsed_minutes = int((datetime.now(timezone.utc) - ord.created_at.replace(tzinfo=timezone.utc)).total_seconds() / 60) if ord.created_at else 0
             is_delayed = elapsed_minutes > (ord.estimated_prep_time_minutes or 20)
+            is_approved = bool(ord.approved_by_waiter)
 
             tickets.append({
                 "order_id": ord.id,
@@ -44,6 +44,7 @@ def get_kot_tickets(outlet_id: str = None, station: str = None, db: Session = De
                 "waiter_name": ord.approved_by_waiter or ord.waiter_name or "Service Steward",
                 "status": ord.order_status.value if hasattr(ord.order_status, "value") else ord.order_status,
                 "food_status": ord.food_status or "Queued",
+                "is_approved": is_approved,
                 "special_instructions": ord.special_instructions,
                 "elapsed_minutes": elapsed_minutes,
                 "is_delayed": is_delayed,
@@ -104,13 +105,12 @@ def bump_kot_status(payload: dict, db: Session = Depends(get_db)):
 @router.get("/bar/tickets")
 def get_bar_tickets(outlet_id: str = None, db: Session = Depends(get_db)):
     """
-    Fetch live drink and cocktail tickets for bartender station (strictly approved BEVERAGE items).
+    Fetch live drink and cocktail tickets for bartender station.
     FIFO ORDERING: Oldest orders first (created_at ASC, id ASC).
-    MANDATORY RULE: Unapproved orders (approved_by_waiter is None) MUST NOT be received by Bar.
+    Displays both approved tickets and pending-approval guest beverage orders.
     """
     q = db.query(Order).filter(
-        Order.approved_by_waiter.isnot(None),
-        Order.beverage_status.in_(["PENDING", "ACCEPTED", "PREPARING", "READY"])
+        Order.beverage_status.in_(["PENDING_APPROVAL", "PENDING", "ACCEPTED", "PREPARING", "READY"])
     )
     if outlet_id:
         q = q.filter(Order.outlet_id == outlet_id)
@@ -126,6 +126,7 @@ def get_bar_tickets(outlet_id: str = None, db: Session = Depends(get_db)):
 
         if bar_items:
             elapsed_minutes = int((datetime.now(timezone.utc) - ord.created_at.replace(tzinfo=timezone.utc)).total_seconds() / 60) if ord.created_at else 0
+            is_approved = bool(ord.approved_by_waiter)
             bar_tickets.append({
                 "order_id": ord.id,
                 "order_number": ord.order_number,
@@ -135,6 +136,7 @@ def get_bar_tickets(outlet_id: str = None, db: Session = Depends(get_db)):
                 "waiter_name": ord.approved_by_waiter or ord.waiter_name or "Head Mixologist",
                 "status": ord.order_status.value if hasattr(ord.order_status, "value") else ord.order_status,
                 "beverage_status": ord.beverage_status or "Bar Ticket Active",
+                "is_approved": is_approved,
                 "elapsed_minutes": elapsed_minutes,
                 "created_at": ord.created_at.isoformat() if ord.created_at else None,
                 "order_time": ord.created_at.isoformat() if ord.created_at else None,
@@ -309,4 +311,242 @@ def reject_order_item(item_id: str, payload: dict, db: Session = Depends(get_db)
         "rejection_reason": reason,
         "new_subtotal": order.subtotal,
         "new_final_amount": order.final_amount
+    }
+
+# -----------------------------------------------------------------------------
+# SUPER ADMIN LIVE ORDER WORKFLOW & MANUAL PROGRESSION
+# -----------------------------------------------------------------------------
+
+@router.get("/orders/live-workflow")
+def get_live_order_workflow(outlet_id: str = None, db: Session = Depends(get_db)):
+    """
+    Super Admin Live Orders Workflow Center.
+    Returns every order on the floor categorized by operational stage with full details
+    and actionable manual progression triggers.
+    """
+    q = db.query(Order)
+    if outlet_id:
+        q = q.filter(Order.outlet_id == outlet_id)
+
+    all_orders = q.order_by(Order.created_at.desc()).limit(100).all()
+
+    stages = {
+        "pending_approval": [],
+        "preparing": [],
+        "ready": [],
+        "served": [],
+        "payment_pending": [],
+        "completed": []
+    }
+
+    formatted_orders = []
+
+    for ord in all_orders:
+        items = db.query(OrderItem).filter(OrderItem.order_id == ord.id).all()
+        elapsed_min = int((datetime.now(timezone.utc) - ord.created_at.replace(tzinfo=timezone.utc)).total_seconds() / 60) if ord.created_at else 0
+
+        status_str = ord.order_status.value if hasattr(ord.order_status, "value") else str(ord.order_status)
+        pay_str = ord.payment_status.value if hasattr(ord.payment_status, "value") else str(ord.payment_status)
+        is_appr = bool(ord.approved_by_waiter)
+
+        order_dict = {
+            "id": ord.id,
+            "order_number": ord.order_number,
+            "table_number": ord.table_number or "Dine-In",
+            "customer_name": ord.customer_name or "Dine-in Guest",
+            "customer_phone": ord.customer_phone or "",
+            "order_status": status_str,
+            "payment_status": pay_str,
+            "payment_method": ord.payment_method.value if hasattr(ord.payment_method, "value") else str(ord.payment_method),
+            "food_status": ord.food_status or "NOT_ORDERED",
+            "beverage_status": ord.beverage_status or "NOT_ORDERED",
+            "is_approved": is_appr,
+            "approved_by": ord.approved_by_waiter,
+            "approved_at": ord.approved_at.isoformat() if ord.approved_at else None,
+            "waiter_name": ord.waiter_name or ord.approved_by_waiter or "Unassigned",
+            "subtotal": ord.subtotal,
+            "cgst": ord.cgst,
+            "sgst": ord.sgst,
+            "final_amount": ord.final_amount,
+            "created_at": ord.created_at.isoformat() if ord.created_at else None,
+            "elapsed_minutes": elapsed_min,
+            "items_count": len(items),
+            "items": [
+                {
+                    "id": it.id,
+                    "item_name": it.item_name,
+                    "quantity": it.quantity,
+                    "variant_name": it.variant_name,
+                    "department": it.department or "FOOD",
+                    "unit_price": it.unit_price,
+                    "total_price": it.total_price,
+                    "item_status": it.item_status or "ACCEPTED"
+                }
+                for it in items
+            ]
+        }
+
+        formatted_orders.append(order_dict)
+
+        # Categorize into workflow buckets
+        if not is_appr or ord.food_status == "PENDING_APPROVAL" or ord.beverage_status == "PENDING_APPROVAL" or status_str == "PLACED":
+            stages["pending_approval"].append(order_dict)
+        elif status_str in ["ACCEPTED", "PREPARING"] or ord.food_status in ["ACCEPTED", "PREPARING"] or ord.beverage_status in ["ACCEPTED", "PREPARING"]:
+            stages["preparing"].append(order_dict)
+        elif status_str == "READY" or ord.food_status == "READY" or ord.beverage_status == "READY":
+            stages["ready"].append(order_dict)
+        elif status_str == "SERVED" and pay_str not in ["PAID"]:
+            stages["served"].append(order_dict)
+        elif pay_str in ["PENDING", "PAY_AT_COUNTER"] and status_str not in ["CANCELLED", "COMPLETED"]:
+            stages["payment_pending"].append(order_dict)
+        elif status_str == "COMPLETED" or pay_str == "PAID":
+            stages["completed"].append(order_dict)
+
+    return {
+        "status": "success",
+        "counts": {
+            "total_active": len(stages["pending_approval"]) + len(stages["preparing"]) + len(stages["ready"]) + len(stages["served"]),
+            "pending_approval": len(stages["pending_approval"]),
+            "preparing": len(stages["preparing"]),
+            "ready": len(stages["ready"]),
+            "served": len(stages["served"]),
+            "payment_pending": len(stages["payment_pending"]),
+            "completed": len(stages["completed"])
+        },
+        "stages": stages,
+        "all_orders": formatted_orders[:50]
+    }
+
+@router.post("/orders/{order_id}/super-admin-approve")
+def super_admin_approve_order(order_id: str, payload: dict = Body(default={}), db: Session = Depends(get_db)):
+    """
+    Super Admin Manual Approval Override.
+    Instantly approves both Food and Beverage departments, routes to Kitchen & Bar KDS,
+    and assigns order to table.
+    """
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    admin_name = (payload or {}).get("admin_name", "Super Admin (GM)")
+    now_utc = datetime.now(timezone.utc)
+
+    order.approved_by_waiter = admin_name
+    order.approved_at = now_utc
+    order.waiter_name = order.waiter_name or admin_name
+
+    if order.food_status in ["PENDING_APPROVAL", "PENDING", None]:
+        order.food_status = "ACCEPTED"
+    if order.beverage_status in ["PENDING_APPROVAL", "PENDING", None]:
+        order.beverage_status = "ACCEPTED"
+    order.order_status = OrderStatusEnum.ACCEPTED
+
+    # Approve all items
+    items = db.query(OrderItem).filter(OrderItem.order_id == order.id).all()
+    for it in items:
+        if it.item_status != "REJECTED":
+            it.item_status = "ACCEPTED"
+
+    # Mark table occupied
+    if order.table_number:
+        cands = [order.table_number, order.table_number.replace("T-", "").replace("T", "").strip()]
+        tbl = db.query(RestaurantTable).filter(RestaurantTable.table_number.in_(cands)).first()
+        if tbl:
+            tbl.is_occupied = True
+            tbl.current_order_id = order.id
+
+    audit = AuditLog(
+        entity_type="ORDER",
+        entity_id=order.id,
+        action="SUPER_ADMIN_MANUAL_APPROVAL",
+        details={"approved_by": admin_name, "order_number": order.order_number, "timestamp": now_utc.isoformat()}
+    )
+    db.add(audit)
+    db.commit()
+
+    return {
+        "success": True,
+        "message": f"Order {order.order_number} approved manually by {admin_name}",
+        "order_status": "ACCEPTED",
+        "food_status": order.food_status,
+        "beverage_status": order.beverage_status
+    }
+
+@router.post("/orders/{order_id}/manual-transition")
+def super_admin_manual_transition(order_id: str, payload: dict = Body(default={}), db: Session = Depends(get_db)):
+    """
+    Super Admin Manual Workflow Transition.
+    Manually advances or transitions order to any stage:
+    ACCEPTED -> PREPARING -> READY -> SERVED -> COMPLETED (or CANCELLED)
+    """
+    order = db.query(Order).filter(Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    target_status = str(payload.get("status", "")).strip().upper()
+    admin_name = str(payload.get("admin_name", "Super Admin")).strip()
+    notes = payload.get("notes", "Manual workflow action by Super Admin")
+    now_utc = datetime.now(timezone.utc)
+
+    valid_statuses = ["ACCEPTED", "PREPARING", "READY", "SERVED", "COMPLETED", "CANCELLED"]
+    if target_status not in valid_statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid target status. Must be one of {valid_statuses}")
+
+    # Auto-approve if transitioning from unapproved
+    if not order.approved_by_waiter:
+        order.approved_by_waiter = admin_name
+        order.approved_at = now_utc
+
+    if target_status == "ACCEPTED":
+        order.order_status = OrderStatusEnum.ACCEPTED
+        if order.food_status != "NOT_ORDERED": order.food_status = "ACCEPTED"
+        if order.beverage_status != "NOT_ORDERED": order.beverage_status = "ACCEPTED"
+    elif target_status == "PREPARING":
+        order.order_status = OrderStatusEnum.PREPARING
+        if order.food_status != "NOT_ORDERED": order.food_status = "PREPARING"
+        if order.beverage_status != "NOT_ORDERED": order.beverage_status = "PREPARING"
+    elif target_status == "READY":
+        order.order_status = OrderStatusEnum.READY
+        if order.food_status != "NOT_ORDERED": order.food_status = "READY"
+        if order.beverage_status != "NOT_ORDERED": order.beverage_status = "READY"
+    elif target_status == "SERVED":
+        order.order_status = OrderStatusEnum.SERVED
+        if order.food_status != "NOT_ORDERED": order.food_status = "SERVED"
+        if order.beverage_status != "NOT_ORDERED": order.beverage_status = "SERVED"
+    elif target_status == "COMPLETED":
+        order.order_status = OrderStatusEnum.COMPLETED
+        order.payment_status = "PAID"
+        # Free table
+        if order.table_number:
+            cands = [order.table_number, order.table_number.replace("T-", "").replace("T", "").strip()]
+            tbl = db.query(RestaurantTable).filter(RestaurantTable.table_number.in_(cands)).first()
+            if tbl and tbl.current_order_id == order.id:
+                tbl.is_occupied = False
+                tbl.current_order_id = None
+    elif target_status == "CANCELLED":
+        order.order_status = OrderStatusEnum.CANCELLED
+        # Free table
+        if order.table_number:
+            cands = [order.table_number, order.table_number.replace("T-", "").replace("T", "").strip()]
+            tbl = db.query(RestaurantTable).filter(RestaurantTable.table_number.in_(cands)).first()
+            if tbl and tbl.current_order_id == order.id:
+                tbl.is_occupied = False
+                tbl.current_order_id = None
+
+    audit = AuditLog(
+        entity_type="ORDER",
+        entity_id=order.id,
+        action=f"SUPER_ADMIN_TRANSITION_{target_status}",
+        details={"transitioned_by": admin_name, "notes": notes, "order_number": order.order_number}
+    )
+    db.add(audit)
+    db.commit()
+
+    return {
+        "success": True,
+        "message": f"Order {order.order_number} transitioned to {target_status}",
+        "order_status": target_status,
+        "food_status": order.food_status,
+        "beverage_status": order.beverage_status,
+        "payment_status": str(order.payment_status)
     }

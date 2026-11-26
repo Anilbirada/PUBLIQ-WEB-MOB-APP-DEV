@@ -4,7 +4,7 @@ function resolveApiBase(): string {
     if (typeof window !== "undefined" && window.location.hostname.includes("onrender.com")) {
       return "https://publiq-backend-5oyh.onrender.com/api/v1";
     }
-    return "http://localhost:8001/api/v1";
+    return "http://localhost:8000/api/v1";
   }
 
   // If provided as a host slug like "publiq-backend-5oyh" or "publiq-backend-5oyh.onrender.com"
@@ -15,6 +15,15 @@ function resolveApiBase(): string {
       raw = `https://${raw}.onrender.com`;
     } else if (!raw.startsWith("/")) {
       raw = `https://${raw}`;
+    }
+  }
+
+  if (typeof window !== "undefined") {
+    if (window.location.hostname.includes("onrender.com")) {
+      return "https://publiq-backend-5oyh.onrender.com/api/v1";
+    }
+    if ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") && raw.includes(":8001")) {
+      raw = raw.replace(":8001", ":8000");
     }
   }
 

@@ -115,6 +115,7 @@ def run_import(db: Session):
         "FOOD_NONVEG_MAIN": ("Non-Veg Main Course", "non-veg-main", False, 6, "Butter chicken, mutton curries and rich gravies"),
         "FOOD_VEG_MAIN": ("Veg Main Course", "veg-main", False, 7, "Dal makhani, paneer gravies and regional vegetarian curries"),
         "FOOD_BREADS": ("Assorted Breads & Roti", "breads", False, 8, "Butter naan, garlic naan, rotis and parathas"),
+        "FOOD_BIRYANI": ("Biryani & Rice", "biryani", False, 8, "Authentic royal dum-cooked biryanis layered with saffron basmati rice"),
         "FOOD_LITE_BITES": ("Lite Bites & Bar Snacks", "lite-bites", False, 9, "Cashew fry, cheese cherry pineapple and chakna snacks"),
         "FOOD_SOUP": ("Soups", "soups", False, 20, "Hot & sour, clear soups and cream broths"),
         "FOOD_MOCKTAIL": ("Mocktails & Iced Teas", "mocktails", False, 21, "Refreshing mocktails, coolers and crafted iced teas"),
@@ -147,14 +148,21 @@ def run_import(db: Session):
     products_grouped = {}
 
     for row_dict in rows:
-        cat_cell = row_dict["category"].upper()
-        subcat_cell = row_dict["subcategory"].upper()
-        desc_cell = row_dict["description"]
-        price = float(row_dict["lane1_mrp"])
+        if not isinstance(row_dict, dict) or "category" not in row_dict:
+            continue
+        cat_cell = str(row_dict.get("category", "")).upper()
+        subcat_cell = str(row_dict.get("subcategory", "")).upper()
+        desc_cell = str(row_dict.get("description", ""))
+        try:
+            price = float(row_dict.get("lane1_mrp", 0))
+        except (ValueError, TypeError):
+            price = 0.0
 
         # Map to category config key
         cat_key = None
-        if cat_cell == "BEER":
+        if "BIRYANI" in subcat_cell or "BIRYANI" in cat_cell or "BIRYANI" in desc_cell.upper():
+            cat_key = "FOOD_BIRYANI"
+        elif cat_cell == "BEER":
             cat_key = "BEER"
         elif cat_cell == "IML":
             if "WHISKY" in subcat_cell:

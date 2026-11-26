@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useTableSession } from "../context/TableSessionContext";
 import { useCart } from "../context/CartContext";
+import { LiveClock } from "./LiveClock";
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -57,6 +58,24 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
+      {/* Real-Time Live Restaurant Clock & Operations Bar */}
+      <div className="bg-slate-900 text-slate-300 py-1.5 px-3 sm:px-4 border-b border-slate-800 text-[11px] font-medium block">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-1.5 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="flex items-center gap-1.5 text-emerald-400 font-bold text-[10px] sm:text-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              LIVE RESTAURANT SERVICE • Dine-In &amp; Resto-Bar
+            </span>
+            <span className="text-slate-600 hidden md:inline">|</span>
+            <span className="text-slate-400 hidden md:inline text-[10px]">Haragadde, Anekal Main Road, Bengaluru</span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="text-[9px] sm:text-[10px] uppercase font-bold text-slate-400">Live Clock:</span>
+            <LiveClock variant="digital" showSeconds={true} showDate={true} className="py-0.5 px-2 sm:px-2.5 bg-slate-800/90 border-slate-700 text-[10px] sm:text-xs" />
+          </div>
+        </div>
+      </div>
+
       {/* Main Luxury Header (Pure White Background with Soft Shadow) */}
       <header 
         className={`sticky top-0 z-40 transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-slate-200/90 ${
@@ -166,14 +185,17 @@ export const Navbar: React.FC = () => {
               />
             </a>
 
-            <button
-              onClick={() => setDrawerOpen(false)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-900 bg-slate-50 transition-all cursor-pointer shadow-xs"
-              aria-label="Close Navigation"
-            >
-              <X className="w-5 h-5 text-slate-700" />
-              <span className="font-bold text-xs tracking-wider">CLOSE</span>
-            </button>
+            <div className="flex items-center gap-3">
+              <LiveClock variant="header" className="hidden sm:inline-flex" />
+              <button
+                onClick={() => setDrawerOpen(false)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-900 bg-slate-50 transition-all cursor-pointer shadow-xs"
+                aria-label="Close Navigation"
+              >
+                <X className="w-5 h-5 text-slate-700" />
+                <span className="font-bold text-xs tracking-wider">CLOSE</span>
+              </button>
+            </div>
           </div>
 
           {/* Drawer Body: Core Editorial Links + Hospitality Showcase */}

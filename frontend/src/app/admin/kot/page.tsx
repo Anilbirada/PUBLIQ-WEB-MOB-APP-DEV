@@ -6,11 +6,14 @@ import {
   Flame, Clock, CheckCircle2, AlertTriangle, ArrowRight,
   RefreshCw, ChefHat, Timer, Bell, User, Utensils, Sparkles
 } from "lucide-react";
+import { LiveClock } from "@/components/LiveClock";
 
 export default function KotPage() {
   const [tickets, setTickets] = useState<any[]>([]);
   const [activeStation, setActiveStation] = useState<string>("ALL");
   const [loading, setLoading] = useState<boolean>(true);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const fetchTickets = async () => {
     try {
@@ -74,11 +77,37 @@ export default function KotPage() {
     }
   };
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await fetchTickets();
+      setToastMsg("Kitchen tickets synced in real time");
+      setTimeout(() => setToastMsg(null), 2500);
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 600);
+    }
+  };
+
   useEffect(() => {
     fetchTickets();
     const interval = setInterval(fetchTickets, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleApproveOrder = async (orderId: string) => {
+    try {
+      await fetch(`${API_BASE}/admin/operations/orders/${orderId}/super-admin-approve`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ admin_name: "Kitchen Head / Super Admin" }),
+      });
+      setToastMsg("Order approved & dispatched to live cook stations");
+      setTimeout(() => setToastMsg(null), 2500);
+      await fetchTickets();
+    } catch (_) {
+      handleBump(orderId, "PLACED");
+    }
+  };
 
   const handleBump = async (orderId: string, currentStatus: string) => {
     try {
@@ -149,8 +178,13 @@ export default function KotPage() {
           </p>
         </div>
 
-        {/* Live Counters */}
+        {/* Live Counters & Real-Time Clock */}
         <div className="flex items-center gap-3 shrink-0">
+          <div className="hidden sm:flex flex-col items-center justify-center px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 shadow-xs">
+            <span className="text-[9px] uppercase font-bold tracking-widest text-slate-400 mb-0.5">Kitchen Real-Time Clock</span>
+            <LiveClock variant="digital" className="bg-transparent border-0 p-0 shadow-none" showSeconds={true} showDate={true} />
+          </div>
+
           <div className="px-5 py-3 rounded-xl bg-slate-50 border border-slate-200 text-center shadow-xs">
             <p className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Active Tickets</p>
             <p className="text-2xl font-serif font-black text-blue-700">{activeCount}</p>
@@ -162,11 +196,14 @@ export default function KotPage() {
             <p className="text-2xl font-serif font-black text-rose-600">{delayedCount}</p>
           </div>
           <button
-            onClick={fetchTickets}
-            className="p-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 transition shadow-xs"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className={`p-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 transition shadow-xs flex items-center justify-center ${
+              isRefreshing ? "opacity-75 cursor-not-allowed" : "cursor-pointer active:scale-95"
+            }`}
             title="Refresh tickets"
           >
-            <RefreshCw className="w-4 h-4 text-blue-600" />
+            <RefreshCw className={`w-4 h-4 text-blue-600 transition-transform ${isRefreshing ? "animate-spin" : ""}`} />
           </button>
         </div>
       </div>
@@ -312,28 +349,45 @@ export default function KotPage() {
 
               {/* Action Bump Button */}
               <div className="p-4 bg-slate-50/70 border-t border-slate-100">
-                <button
-                  onClick={() => handleBump(t.order_id, t.status)}
-                  className={`w-full py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-2 ${
-                    isPlaced
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-500/20 hover:shadow-md"
-                      : isAccepted
-                      ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-amber-500/20 hover:shadow-md"
-                      : isPreparing
-                      ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-emerald-500/20 hover:shadow-md"
-                      : "bg-slate-800 hover:bg-slate-900 text-white"
-                  }`}
-                >
-                  {isPlaced && "✓ Accept Ticket & Print KOT"}
-                  {isAccepted && "🔥 Mark Cooking in Tandoor"}
-                  {isPreparing && "✓ Mark Cooked & Ready for Runner"}
-                  {isReady && "✓ Order Delivered & Completed"}
-                </button>
+                {t.is_approved === false ? (
+                  <button
+                    onClick={() => handleApproveOrder(t.order_id)}
+                    className="w-full py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <span>⚡ Quick Approve (Send to Cook Stations)</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleBump(t.order_id, t.status)}
+                    className={`w-full py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-xs flex items-center justify-center gap-2 ${
+                      isPlaced
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-500/20 hover:shadow-md"
+                        : isAccepted
+                        ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-amber-500/20 hover:shadow-md"
+                        : isPreparing
+                        ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-emerald-500/20 hover:shadow-md"
+                        : "bg-slate-800 hover:bg-slate-900 text-white"
+                    }`}
+                  >
+                    {isPlaced && "✓ Accept Ticket & Print KOT"}
+                    {isAccepted && "🔥 Mark Cooking in Tandoor"}
+                    {isPreparing && "✓ Mark Cooked & Ready for Runner"}
+                    {isReady && "✓ Order Delivered & Completed"}
+                  </button>
+                )}
               </div>
             </div>
           );
         })}
       </div>
+
+      {/* Real-time Refresh Toast Notification */}
+      {toastMsg && (
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 bg-slate-900/95 text-white text-xs font-semibold rounded-2xl shadow-2xl flex items-center gap-2.5 border border-slate-700 backdrop-blur-md animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{toastMsg}</span>
+        </div>
+      )}
     </div>
   );
 }

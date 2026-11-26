@@ -148,6 +148,7 @@ export default function LiquorInventoryPage() {
   const [txVolume, setTxVolume] = useState<number>(30);
   const [txNotes, setTxNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState("");
 
   const fetchLiquor = async () => {
@@ -266,10 +267,22 @@ export default function LiquorInventoryPage() {
         </div>
         <div className="flex items-center gap-3">
           <button 
-            onClick={fetchLiquor}
-            className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-[#D4AF37] to-[#E5C378] text-[#070B12] rounded-2xl hover:brightness-110 transition-all shadow-md"
+            onClick={async () => {
+              setIsRefreshing(true);
+              try {
+                await fetchLiquor();
+                setFeedbackMsg("Liquor cellar inventory synced in real time");
+              } finally {
+                setTimeout(() => setIsRefreshing(false), 600);
+              }
+            }}
+            disabled={isRefreshing}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-[#D4AF37] to-[#E5C378] text-[#070B12] rounded-2xl hover:brightness-110 transition-all shadow-md ${
+              isRefreshing ? "opacity-75 cursor-not-allowed" : "cursor-pointer active:scale-95"
+            }`}
           >
-            <RotateCcw className="w-3.5 h-3.5" /> Refresh Cellar
+            <RotateCcw className={`w-3.5 h-3.5 transition-transform ${isRefreshing ? "animate-spin" : ""}`} /> 
+            <span>{isRefreshing ? "Syncing..." : "Refresh Cellar"}</span>
           </button>
         </div>
       </div>

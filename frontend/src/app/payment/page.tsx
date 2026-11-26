@@ -7,10 +7,11 @@ import {
   Sparkles, CheckCircle2, AlertCircle, ArrowLeft,
   Copy, Check, Lock, QrCode, RefreshCw, Search,
   UtensilsCrossed, Wine, ChevronRight, ArrowRight,
-  Building2, KeyRound, Clock
+  Building2, KeyRound, Clock, Calendar
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { LiveClock } from "@/components/LiveClock";
 import { api } from "../../lib/api";
 import { useCart } from "../../context/CartContext";
 import { 
@@ -32,7 +33,7 @@ function PaymentContent() {
   const [isLoadingOrder, setIsLoadingOrder] = useState<boolean>(false);
   const [orderError, setOrderError] = useState<string>("");
 
-  const [activeTab, setActiveTab] = useState<"UPI" | "CARD" | "COUNTER">("UPI");
+  const [activeTab, setActiveTab] = useState<"COUNTER" | "UPI" | "CARD">("COUNTER");
   const [copiedUpi, setCopiedUpi] = useState<boolean>(false);
   const [utrNumber, setUtrNumber] = useState<string>("");
 
@@ -358,7 +359,22 @@ function PaymentContent() {
                 <div className="flex justify-between text-slate-600">
                   <span>Destination:</span>
                   <span className="font-semibold text-slate-900">
-                    {order.table_number ? `Table ${order.table_number}` : (order.dining_channel || "Takeaway")}
+                    {order.table_number ? `Table ${order.table_number}` : (order.dining_channel || "Dine-In Table")}
+                  </span>
+                </div>
+                <div className="flex justify-between text-slate-600 border-t border-slate-100 pt-2">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                    Bill Generated:
+                  </span>
+                  <span className="font-semibold text-slate-900">
+                    {order.created_at ? new Date(order.created_at).toLocaleString("en-IN", {
+                      dateStyle: "medium",
+                      timeStyle: "medium",
+                    }) : new Date().toLocaleString("en-IN", {
+                      dateStyle: "medium",
+                      timeStyle: "medium",
+                    })}
                   </span>
                 </div>
               </div>
@@ -434,6 +450,11 @@ function PaymentContent() {
                     </p>
                   </div>
 
+                  <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-800 flex items-center justify-center gap-2">
+                    <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Settled At: <strong>{new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "medium" })}</strong></span>
+                  </div>
+
                   {successTxnRef && (
                     <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs font-mono text-slate-700 inline-block">
                       Transaction Ref: <span className="font-bold text-slate-900">{successTxnRef}</span>
@@ -458,21 +479,45 @@ function PaymentContent() {
                 </div>
               ) : (
                 <>
-                  {/* Payment Tabs */}
-                  <div className="flex border-b border-slate-200 gap-6">
+                  {/* Real-time Payment Settlement Clock Banner */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-slate-50 border border-blue-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 text-xs text-blue-900 font-bold">
+                      <Clock className="w-4 h-4 text-blue-600 animate-pulse" />
+                      <span>Payment Settlement Live Time:</span>
+                    </div>
+                    <LiveClock variant="digital" showSeconds={true} showDate={true} className="self-start sm:self-auto" />
+                  </div>
+
+                  {/* Payment Tabs: Pay at Counter in First Position */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 border-b border-slate-200 pb-1">
+                    <button
+                      onClick={() => {
+                        setActiveTab("COUNTER");
+                        setPaymentError("");
+                      }}
+                      className={`pb-2.5 px-2 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 border-b-2 text-center ${
+                        activeTab === "COUNTER"
+                          ? "border-blue-600 text-blue-700 font-extrabold"
+                          : "border-transparent text-slate-500 hover:text-slate-900"
+                      }`}
+                    >
+                      <Banknote className="w-4 h-4 shrink-0" />
+                      <span className="truncate">1. Pay at Counter</span>
+                    </button>
+
                     <button
                       onClick={() => {
                         setActiveTab("UPI");
                         setPaymentError("");
                       }}
-                      className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
+                      className={`pb-2.5 px-2 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 border-b-2 text-center ${
                         activeTab === "UPI"
-                          ? "border-blue-600 text-blue-700"
+                          ? "border-blue-600 text-blue-700 font-extrabold"
                           : "border-transparent text-slate-500 hover:text-slate-900"
                       }`}
                     >
-                      <Smartphone className="w-4 h-4" />
-                      <span>Instant UPI QR</span>
+                      <Smartphone className="w-4 h-4 shrink-0" />
+                      <span className="truncate">2. Instant UPI</span>
                     </button>
 
                     <button
@@ -480,29 +525,14 @@ function PaymentContent() {
                         setActiveTab("CARD");
                         setPaymentError("");
                       }}
-                      className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
+                      className={`pb-2.5 px-2 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 border-b-2 text-center ${
                         activeTab === "CARD"
-                          ? "border-blue-600 text-blue-700"
+                          ? "border-blue-600 text-blue-700 font-extrabold"
                           : "border-transparent text-slate-500 hover:text-slate-900"
                       }`}
                     >
-                      <CreditCard className="w-4 h-4" />
-                      <span>Credit / Debit Card</span>
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setActiveTab("COUNTER");
-                        setPaymentError("");
-                      }}
-                      className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 border-b-2 ${
-                        activeTab === "COUNTER"
-                          ? "border-blue-600 text-blue-700"
-                          : "border-transparent text-slate-500 hover:text-slate-900"
-                      }`}
-                    >
-                      <Banknote className="w-4 h-4" />
-                      <span>Pay at Counter</span>
+                      <CreditCard className="w-4 h-4 shrink-0" />
+                      <span className="truncate">3. Card Payment</span>
                     </button>
                   </div>
 
@@ -853,8 +883,7 @@ function PaymentContent() {
 
 export default function PaymentPage() {
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-between">
-      <Navbar />
+    <div className="min-h-screen bg-[#F8FAFC] py-8">
       <Suspense fallback={
         <div className="min-h-[60vh] flex items-center justify-center">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
@@ -862,7 +891,6 @@ export default function PaymentPage() {
       }>
         <PaymentContent />
       </Suspense>
-      <Footer />
     </div>
   );
 }

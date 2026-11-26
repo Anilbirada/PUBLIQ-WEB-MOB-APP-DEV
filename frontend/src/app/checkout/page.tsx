@@ -6,7 +6,8 @@ import {
   CreditCard, Smartphone, Banknote, ShieldCheck, 
   Sparkles, CheckCircle2, AlertCircle, ArrowLeft,
   Copy, Check, Lock, QrCode, RefreshCw, Clock, 
-  ExternalLink, Building2, KeyRound, ChevronRight, X, AlertTriangle
+  ExternalLink, Building2, KeyRound, ChevronRight, X, AlertTriangle,
+  UtensilsCrossed
 } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 import { useTableSession } from "../../context/TableSessionContext";
@@ -29,16 +30,21 @@ export default function CheckoutPage() {
   const { tableNumber, outletId, outletName, isDineInActive, sessionToken, clearTableSession } = useTableSession();
   const { user, ensureGuestSession } = useAuth();
 
-  // Form states
-  const [deliveryType, setDeliveryType] = useState<"TAKEAWAY" | "DELIVERY">("TAKEAWAY");
-  const [deliveryAddress, setDeliveryAddress] = useState<string>("");
+  // Form states - Exclusive Dine-In Restaurant Service
+  const [selectedTable, setSelectedTable] = useState<string>(tableNumber || "01");
   const [customerName, setCustomerName] = useState<string>("");
   const [customerPhone, setCustomerPhone] = useState<string>("");
   const [specialInstructions, setSpecialInstructions] = useState<string>("");
-  const [paymentMethod, setPaymentMethod] = useState<"UPI" | "CARD" | "COUNTER_BILLING">("UPI");
+  const [paymentMethod, setPaymentMethod] = useState<"UPI" | "CARD" | "COUNTER_BILLING">("COUNTER_BILLING");
   const [ageConfirmed, setAgeConfirmed] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+
+  useEffect(() => {
+    if (tableNumber) {
+      setSelectedTable(tableNumber);
+    }
+  }, [tableNumber]);
 
   // Gateway Modal State - NEVER auto-completes payment!
   const [showGatewayModal, setShowGatewayModal] = useState<boolean>(false);
@@ -129,26 +135,23 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!isDineInActive && deliveryType === "DELIVERY" && !deliveryAddress.trim()) {
-      setErrorMessage("Please enter your Delivery Address for doorstep delivery.");
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       // Ensure guest session
       await ensureGuestSession();
 
+      const activeTable = tableNumber || selectedTable || "01";
+
       // Submit Order to backend (DB creates order with status PLACED and PENDING payment)
       const orderPayload = {
         session_id: sessionId,
         outlet_id: outletId || "default-outlet",
-        dining_channel: isDineInActive ? "DINE_IN" : deliveryType,
-        table_number: isDineInActive ? tableNumber : null,
+        dining_channel: "DINE_IN",
+        table_number: activeTable,
         qr_session_id: sessionToken || null,
         customer_name: customerName.trim(),
         customer_phone: `+91${cleanPhone}`,
-        delivery_address: (!isDineInActive && deliveryType === "DELIVERY") ? deliveryAddress.trim() : null,
+        delivery_address: null,
         special_instructions: specialInstructions.trim() || null,
         payment_method: paymentMethod,
         age_verified: ageConfirmed,
@@ -356,80 +359,76 @@ export default function CheckoutPage() {
 
         <form onSubmit={handleProceedToGateway} className="space-y-6">
           
-          {/* 1. Dining Destination Card */}
+          {/* 1. Dining Destination Card - EXCLUSIVE DINE-IN SERVICE */}
           <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
             <h2 className="font-serif text-lg font-bold text-slate-900 flex items-center justify-between">
               <span>Dining Destination</span>
-              {isDineInActive ? (
-                <span className="text-xs font-bold text-blue-700 bg-blue-50 px-3.5 py-1 rounded-full border border-blue-200">
-                  Dine-In Active
-                </span>
-              ) : (
-                <span className="text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
-                  Takeaway &amp; Delivery
-                </span>
-              )}
+              <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3.5 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5 shadow-2xs">
+                <UtensilsCrossed className="w-3.5 h-3.5 text-emerald-600" />
+                Dine-In Table Service
+              </span>
             </h2>
 
-            {isDineInActive ? (
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+            {tableNumber ? (
+              <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-blue-50/80 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <span className="text-xs uppercase tracking-widest text-blue-700 font-bold block">
-                    {outletName || "PUBLIQ Bar & Restaurant"}
+                  <span className="text-[11px] uppercase tracking-widest text-blue-700 font-bold block">
+                    {outletName || "PUBLIQ Bar & Restaurant • Haragadde, Bengaluru"}
                   </span>
-                  <span className="font-serif text-xl font-bold text-slate-900">
+                  <span className="font-serif text-2xl font-bold text-slate-900 block mt-0.5">
                     Table {tableNumber}
                   </span>
+                  <span className="text-xs text-slate-500 block mt-0.5">
+                    Dine-In Table Service • Freshly served directly to your table
+                  </span>
                 </div>
-                <div className="text-right text-[11px] text-slate-500">
-                  Culinary creations delivered <br /> directly to your table
+                <div className="px-3.5 py-2 rounded-xl bg-white border border-emerald-200 text-emerald-700 font-bold text-xs flex items-center gap-2 shadow-2xs self-start sm:self-center">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>Table QR Verified</span>
                 </div>
               </div>
             ) : (
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => setDeliveryType("TAKEAWAY")}
-                    className={`p-3 rounded-xl border text-left transition-all ${
-                      deliveryType === "TAKEAWAY"
-                        ? "border-blue-600 bg-blue-50/70 text-blue-900 font-bold ring-1 ring-blue-600"
-                        : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                    }`}
-                  >
-                    <span className="block font-bold">🥡 Self Takeaway</span>
-                    <span className="text-[11px] font-normal text-slate-500">Pickup hot food at main counter</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setDeliveryType("DELIVERY")}
-                    className={`p-3 rounded-xl border text-left transition-all ${
-                      deliveryType === "DELIVERY"
-                        ? "border-blue-600 bg-blue-50/70 text-blue-900 font-bold ring-1 ring-blue-600"
-                        : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                    }`}
-                  >
-                    <span className="block font-bold">🛵 Doorstep Delivery</span>
-                    <span className="text-[11px] font-normal text-slate-500">Delivered directly to your address</span>
-                  </button>
+              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/80 pb-3">
+                  <div>
+                    <span className="text-[11px] uppercase tracking-widest text-blue-700 font-bold block">
+                      PUBLIQ Dine-In Table Selection
+                    </span>
+                    <p className="text-xs text-slate-600 font-medium mt-0.5">
+                      Select your seated dining table to receive direct steward table service.
+                    </p>
+                  </div>
+                  <span className="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-lg border border-blue-200 self-start sm:self-center">
+                    Table Service
+                  </span>
                 </div>
 
-                {deliveryType === "DELIVERY" && (
-                  <div className="pt-2 text-xs">
-                    <label className="font-semibold text-slate-700 block mb-1">
-                      Delivery Address <span className="text-amber-600 font-bold">* (Required)</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={deliveryAddress}
-                      onChange={(e) => setDeliveryAddress(e.target.value)}
-                      placeholder="Building, Street, Area, Landmark..."
-                      className="w-full p-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:bg-white"
-                    />
-                  </div>
-                )}
+                <div>
+                  <label className="font-semibold text-slate-700 block mb-1.5 text-xs">
+                    Choose Your Dining Table <span className="text-amber-600 font-bold">* (Required)</span>
+                  </label>
+                  <select
+                    value={selectedTable}
+                    onChange={(e) => setSelectedTable(e.target.value)}
+                    className="w-full p-3 rounded-xl bg-white border border-slate-300 text-slate-900 font-bold text-sm focus:outline-none focus:border-blue-600 shadow-xs"
+                  >
+                    <option value="01">Table 01 — Open-Air Lush Garden (4 Seats)</option>
+                    <option value="02">Table 02 — Open-Air Lush Garden (4 Seats)</option>
+                    <option value="03">Table 03 — Open-Air Lush Garden (6 Seats)</option>
+                    <option value="04">Table 04 — Open-Air Lush Garden (4 Seats)</option>
+                    <option value="05">Table 05 — Open-Air Lush Garden (2 Seats)</option>
+                    <option value="06">Table 06 — Open-Air Lush Garden (8 Seats)</option>
+                    <option value="07">Table 07 — Open-Air Lush Garden (4 Seats)</option>
+                    <option value="08">Table 08 — Open-Air Lush Garden (4 Seats)</option>
+                    <option value="CABANA-01">Cabana 01 — Private Luxury Cabanas (8 Seats)</option>
+                    <option value="CABANA-02">Cabana 02 — Private Luxury Cabanas (8 Seats)</option>
+                    <option value="BAR-01">Bar 01 — Resto-Bar & Cocktail Counter (2 Seats)</option>
+                    <option value="BAR-02">Bar 02 — Resto-Bar & Cocktail Lounge (4 Seats)</option>
+                    <option value="HALL-01">Hall 01 — Family Dining Pavilion (6 Seats)</option>
+                    <option value="HALL-02">Hall 02 — Family Dining Pavilion (8 Seats)</option>
+                    <option value="TERRACE-01">Terrace 01 — Rooftop Terrace (4 Seats)</option>
+                  </select>
+                </div>
               </div>
             )}
           </div>
@@ -524,7 +523,38 @@ export default function CheckoutPage() {
             </h2>
 
             <div className="space-y-3">
-              {/* Option 1: Instant UPI */}
+              {/* Option 1: Pay at Counter / Staff billing (Primary/Default) */}
+              <label
+                onClick={() => setPaymentMethod("COUNTER_BILLING")}
+                className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
+                  paymentMethod === "COUNTER_BILLING"
+                    ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
+                    : "border-slate-200 bg-white hover:border-slate-300"
+                }`}
+              >
+                <div className="flex items-center gap-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center">
+                    <Banknote className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="font-bold text-sm text-slate-900 block">
+                      Pay at Counter / Table Staff Billing
+                    </span>
+                    <span className="text-[11px] text-slate-500">
+                      Settle your bill after enjoying your culinary experience (Cash / In-person POS Terminal)
+                    </span>
+                  </div>
+                </div>
+                <input
+                  type="radio"
+                  name="payment"
+                  checked={paymentMethod === "COUNTER_BILLING"}
+                  onChange={() => setPaymentMethod("COUNTER_BILLING")}
+                  className="text-blue-600 focus:ring-blue-600 accent-blue-600"
+                />
+              </label>
+
+              {/* Option 2: Instant UPI */}
               <label
                 onClick={() => setPaymentMethod("UPI")}
                 className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
@@ -555,7 +585,7 @@ export default function CheckoutPage() {
                 />
               </label>
 
-              {/* Option 2: Debit/Credit Card */}
+              {/* Option 3: Debit/Credit Card */}
               <label
                 onClick={() => setPaymentMethod("CARD")}
                 className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
@@ -582,37 +612,6 @@ export default function CheckoutPage() {
                   name="payment"
                   checked={paymentMethod === "CARD"}
                   onChange={() => setPaymentMethod("CARD")}
-                  className="text-blue-600 focus:ring-blue-600 accent-blue-600"
-                />
-              </label>
-
-              {/* Option 3: Pay at Counter / Staff billing */}
-              <label
-                onClick={() => setPaymentMethod("COUNTER_BILLING")}
-                className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${
-                  paymentMethod === "COUNTER_BILLING"
-                    ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
-                    : "border-slate-200 bg-white hover:border-slate-300"
-                }`}
-              >
-                <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center">
-                    <Banknote className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <span className="font-bold text-sm text-slate-900 block">
-                      Pay at Counter / Table Staff Billing
-                    </span>
-                    <span className="text-[11px] text-slate-500">
-                      Settle your bill after enjoying your culinary experience (Cash / In-person POS Terminal)
-                    </span>
-                  </div>
-                </div>
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={paymentMethod === "COUNTER_BILLING"}
-                  onChange={() => setPaymentMethod("COUNTER_BILLING")}
                   className="text-blue-600 focus:ring-blue-600 accent-blue-600"
                 />
               </label>

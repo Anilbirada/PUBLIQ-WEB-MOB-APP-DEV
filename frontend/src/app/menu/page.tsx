@@ -5,7 +5,7 @@ import {
   Search, Filter, Sparkles, Flame, Clock, Wine, 
   UtensilsCrossed, AlertCircle, ShoppingBag, Plus, Minus, Check,
   Leaf, Coffee, GlassWater, Beer, ArrowRight, Download, Printer,
-  Star, ChevronRight, X, Heart, Award, ShieldCheck
+  Star, ChevronRight, X, Heart, Award, ShieldCheck, RefreshCw
 } from "lucide-react";
 import { api } from "../../lib/api";
 import { useTableSession } from "../../context/TableSessionContext";
@@ -52,7 +52,52 @@ export default function MenuPage() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [addedNotice, setAddedNotice] = useState<string | null>(null);
+
+  // Load menu data from backend or fallback (Always preserves full 310+ item master catalogue)
+  const loadMenu = async (manual = false) => {
+    if (manual) setIsRefreshing(true);
+    try {
+      const data = await api.getMenu({
+        include_unavailable: true, // Fetch complete data with availability flags
+      });
+      if (data && data.length > 0) {
+        // Robust merge: Never discard fallback categories that have items!
+        const merged = [...FALLBACK_MENU_CATEGORIES];
+        data.forEach((serverCat: any) => {
+          if (!serverCat.items || serverCat.items.length === 0) return;
+          const idx = merged.findIndex(m => m.slug === serverCat.slug || m.id === serverCat.id);
+          if (idx !== -1) {
+            const existingItems = [...(merged[idx].items || [])];
+            serverCat.items.forEach((sItem: any) => {
+              const itemIdx = existingItems.findIndex(e => e.id === sItem.id || (e.name && sItem.name && e.name.toLowerCase() === sItem.name.toLowerCase()));
+              if (itemIdx !== -1) {
+                existingItems[itemIdx] = { ...existingItems[itemIdx], ...sItem };
+              } else {
+                existingItems.push(sItem);
+              }
+            });
+            merged[idx] = { ...merged[idx], ...serverCat, items: existingItems };
+          } else {
+            merged.push(serverCat);
+          }
+        });
+        setCategories(merged);
+      } else {
+        setCategories(FALLBACK_MENU_CATEGORIES);
+      }
+    } catch (err) {
+      setCategories(FALLBACK_MENU_CATEGORIES);
+    } finally {
+      setIsLoading(false);
+      if (manual) {
+        setAddedNotice("Live menu catalog synchronized");
+        setTimeout(() => setAddedNotice(null), 2500);
+        setTimeout(() => setIsRefreshing(false), 600);
+      }
+    }
+  };
 
   // Sync URL ?category=, ?tab= query parameters (No automatic table selection)
   useEffect(() => {
@@ -74,45 +119,8 @@ export default function MenuPage() {
     }
   }, [tableNumber, setTableSession]);
 
-  // Load menu data from backend or fallback (Always preserves full 310+ item master catalogue)
   useEffect(() => {
-    async function loadMenu() {
-      try {
-        const data = await api.getMenu({
-          include_unavailable: true, // Fetch complete data with availability flags
-        });
-        if (data && data.length > 0) {
-          // Robust merge: Never discard fallback categories that have items!
-          const merged = [...FALLBACK_MENU_CATEGORIES];
-          data.forEach((serverCat: any) => {
-            if (!serverCat.items || serverCat.items.length === 0) return;
-            const idx = merged.findIndex(m => m.slug === serverCat.slug || m.id === serverCat.id);
-            if (idx !== -1) {
-              const existingItems = [...(merged[idx].items || [])];
-              serverCat.items.forEach((sItem: any) => {
-                const itemIdx = existingItems.findIndex(e => e.id === sItem.id || (e.name && sItem.name && e.name.toLowerCase() === sItem.name.toLowerCase()));
-                if (itemIdx !== -1) {
-                  existingItems[itemIdx] = { ...existingItems[itemIdx], ...sItem };
-                } else {
-                  existingItems.push(sItem);
-                }
-              });
-              merged[idx] = { ...merged[idx], ...serverCat, items: existingItems };
-            } else {
-              merged.push(serverCat);
-            }
-          });
-          setCategories(merged);
-        } else {
-          setCategories(FALLBACK_MENU_CATEGORIES);
-        }
-      } catch (err) {
-        setCategories(FALLBACK_MENU_CATEGORIES);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadMenu();
+    loadMenu(false);
   }, []);
 
   // Handle Quick Add to Cart (Strict availability enforcement)
@@ -338,6 +346,18 @@ export default function MenuPage() {
                   <Download className="w-3.5 h-3.5 text-amber-400" />
                   <span>Download Complete Menu PDF</span>
                 </a>
+
+                <button
+                  onClick={() => loadMenu(true)}
+                  disabled={isRefreshing}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold transition-all shadow-xs ${
+                    isRefreshing ? "opacity-75 cursor-not-allowed" : "cursor-pointer active:scale-95"
+                  }`}
+                  title="Sync live menu availability with kitchen & bar"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 text-blue-600 transition-transform ${isRefreshing ? "animate-spin" : ""}`} />
+                  <span>{isRefreshing ? "Syncing..." : "Sync Menu"}</span>
+                </button>
 
                 {isDineInActive && tableNumber && (
                   <span className="px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-1.5 shadow-xs">

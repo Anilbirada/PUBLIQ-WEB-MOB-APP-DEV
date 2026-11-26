@@ -45,6 +45,8 @@ export default function QrManagementPage() {
   const [customSection, setCustomSection] = useState<string>("");
   const [newCapacity, setNewCapacity] = useState<number>(4);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [regeneratingId, setRegeneratingId] = useState<string | null>(null);
   const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   const showNotification = (type: "success" | "error", message: string) => {
@@ -113,6 +115,7 @@ export default function QrManagementPage() {
   };
 
   const handleRegenerate = async (tableId: string, tableNumber: string) => {
+    setRegeneratingId(tableId);
     try {
       const res = await fetch(`${API_BASE}/admin/management/qr/regenerate`, {
         method: "POST",
@@ -127,6 +130,8 @@ export default function QrManagementPage() {
       }
     } catch (_) {
       showNotification("success", `New HMAC token activated for Table ${tableNumber}!`);
+    } finally {
+      setTimeout(() => setRegeneratingId(null), 600);
     }
   };
 
@@ -275,6 +280,26 @@ export default function QrManagementPage() {
             <Printer className="w-4 h-4 text-slate-500" />
             <span>Print All Plaques</span>
           </button>
+
+          <button
+            onClick={async () => {
+              setIsRefreshing(true);
+              try {
+                await fetchQRs();
+                showNotification("success", "Table QR tokens and links synced in real time!");
+              } finally {
+                setTimeout(() => setIsRefreshing(false), 600);
+              }
+            }}
+            disabled={isRefreshing}
+            className={`px-4 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs tracking-wider uppercase transition flex items-center gap-2 shadow-xs ${
+              isRefreshing ? "opacity-75 cursor-not-allowed" : "cursor-pointer active:scale-95"
+            }`}
+            title="Refresh Table QRs"
+          >
+            <RefreshCw className={`w-4 h-4 text-blue-600 transition-transform ${isRefreshing ? "animate-spin" : ""}`} />
+            <span>{isRefreshing ? "Syncing..." : "Refresh"}</span>
+          </button>
         </div>
       </div>
 
@@ -409,10 +434,13 @@ export default function QrManagementPage() {
 
                 <button
                   onClick={() => handleRegenerate(t.table_id || t.id, t.table_number)}
-                  className="p-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-800 transition shadow-xs"
+                  disabled={regeneratingId === (t.table_id || t.id)}
+                  className={`p-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-800 transition shadow-xs ${
+                    regeneratingId === (t.table_id || t.id) ? "opacity-75 cursor-not-allowed" : "cursor-pointer active:scale-95"
+                  }`}
                   title="Regenerate Token"
                 >
-                  <RefreshCw className="w-3.5 h-3.5" />
+                  <RefreshCw className={`w-3.5 h-3.5 ${regeneratingId === (t.table_id || t.id) ? "animate-spin text-blue-600" : ""}`} />
                 </button>
               </div>
             </div>

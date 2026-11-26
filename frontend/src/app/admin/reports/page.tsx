@@ -61,6 +61,8 @@ const FALLBACK_DASHBOARD: DashboardData = {
 export default function ReportsAndGSTPage() {
   const [data, setData] = useState<DashboardData>(FALLBACK_DASHBOARD);
   const [selectedPeriod, setSelectedPeriod] = useState<"TODAY" | "THIS_WEEK" | "THIS_MONTH">("TODAY");
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [syncMsg, setSyncMsg] = useState<string | null>(null);
 
   const fetchReports = async () => {
     try {
@@ -110,10 +112,23 @@ export default function ReportsAndGSTPage() {
             <Printer className="w-3.5 h-3.5 text-[#38BDF8]" /> Print Statement
           </button>
           <button
-            onClick={fetchReports}
-            className="flex items-center gap-2 px-4 py-2.5 text-xs bg-gradient-to-r from-[#D4AF37] to-[#E5C378] text-[#070B12] font-bold uppercase tracking-wider rounded-2xl hover:brightness-110 transition-all shadow-md"
+            onClick={async () => {
+              setIsRefreshing(true);
+              try {
+                await fetchReports();
+                setSyncMsg("GST financial reports synced in real time");
+                setTimeout(() => setSyncMsg(null), 2500);
+              } finally {
+                setTimeout(() => setIsRefreshing(false), 600);
+              }
+            }}
+            disabled={isRefreshing}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs bg-gradient-to-r from-[#D4AF37] to-[#E5C378] text-[#070B12] font-bold uppercase tracking-wider rounded-2xl hover:brightness-110 transition-all shadow-md ${
+              isRefreshing ? "opacity-75 cursor-not-allowed" : "cursor-pointer active:scale-95"
+            }`}
           >
-            <RotateCcw className="w-3.5 h-3.5" /> Live Sync
+            <RotateCcw className={`w-3.5 h-3.5 transition-transform ${isRefreshing ? "animate-spin" : ""}`} /> 
+            <span>{isRefreshing ? "Syncing..." : "Live Sync"}</span>
           </button>
         </div>
       </div>
@@ -263,6 +278,13 @@ export default function ReportsAndGSTPage() {
           </div>
         </div>
       </div>
+
+      {syncMsg && (
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 bg-[#0B1528]/95 text-white text-xs font-semibold rounded-2xl shadow-2xl flex items-center gap-2.5 border border-[#38BDF8]/40 backdrop-blur-md animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-4 h-4 text-[#38BDF8] shrink-0" />
+          <span>{syncMsg}</span>
+        </div>
+      )}
     </div>
   );
 }

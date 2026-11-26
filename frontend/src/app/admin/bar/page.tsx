@@ -6,10 +6,12 @@ import {
   Wine, Beer, CheckCircle2, GlassWater, Clock, Sparkles,
   Flame, AlertTriangle, RefreshCw, Check, CheckCircle
 } from "lucide-react";
+import { LiveClock } from "@/components/LiveClock";
 
 export default function BarOrderPage() {
   const [tickets, setTickets] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -130,16 +132,31 @@ export default function BarOrderPage() {
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
+          <div className="hidden sm:flex flex-col items-center justify-center px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 shadow-xs">
+            <span className="text-[9px] uppercase font-bold tracking-widest text-slate-400 mb-0.5">Bar Real-Time Clock</span>
+            <LiveClock variant="digital" className="bg-transparent border-0 p-0 shadow-none text-cyan-300" showSeconds={true} showDate={true} />
+          </div>
           <span className="px-4 py-2 bg-cyan-50 text-xs font-bold text-cyan-700 rounded-xl border border-cyan-200 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
             Bar Counter 01: Active
           </span>
           <button
-            onClick={fetchBarTickets}
-            className="p-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 transition shadow-xs"
+            onClick={async () => {
+              setIsRefreshing(true);
+              try {
+                await fetchBarTickets();
+                showToast("Bar dispense tickets synced in real time");
+              } finally {
+                setTimeout(() => setIsRefreshing(false), 600);
+              }
+            }}
+            disabled={isRefreshing}
+            className={`p-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 transition shadow-xs flex items-center justify-center ${
+              isRefreshing ? "opacity-75 cursor-not-allowed" : "cursor-pointer active:scale-95"
+            }`}
             title="Refresh tickets"
           >
-            <RefreshCw className="w-4 h-4 text-cyan-600" />
+            <RefreshCw className={`w-4 h-4 text-cyan-600 transition-transform ${isRefreshing ? "animate-spin" : ""}`} />
           </button>
         </div>
       </div>
@@ -222,13 +239,33 @@ export default function BarOrderPage() {
             </div>
 
             <div className="pt-4 mt-4 border-t border-slate-100">
-              <button
-                onClick={() => handleDispense(t.order_id, t.items[0]?.item_name || "Beverages")}
-                className="w-full py-3 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md shadow-cyan-500/20 hover:shadow-lg transition-all flex items-center justify-center gap-2"
-              >
-                <GlassWater className="w-4 h-4 text-white" />
-                Dispense & Deduct Liquor Stock
-              </button>
+              {t.is_approved === false ? (
+                <button
+                  onClick={async () => {
+                    try {
+                      await fetch(`${API_BASE}/admin/operations/orders/${t.order_id}/super-admin-approve`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ admin_name: "Bar Head / Super Admin" }),
+                      });
+                      showToast("Bar order approved & ready for mixologist");
+                      fetchBarTickets();
+                    } catch (_) {}
+                  }}
+                  className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Flame className="w-4 h-4 text-white" />
+                  ⚡ Quick Approve (Send to Bar Station)
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleDispense(t.order_id, t.items[0]?.item_name || "Beverages")}
+                  className="w-full py-3 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md shadow-cyan-500/20 hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <GlassWater className="w-4 h-4 text-white" />
+                  Dispense & Deduct Liquor Stock
+                </button>
+              )}
             </div>
           </div>
         ))}

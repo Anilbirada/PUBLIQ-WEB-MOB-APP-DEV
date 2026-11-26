@@ -2442,22 +2442,21 @@
     "lane1_mrp": 10
   },
   {
-    "id": "cat-biryani",
-    "name": "Biryani & Rice",
-    "slug": "biryani",
-    "description": "Royal dum-cooked biryanis layered with saffron basmati rice.",
-    "is_alcohol": false,
-    "display_order": 8,
-    "items": [
-      {
-        "id": "item-hyderabadi-dum-biryani",
-        "name": "Hyderabadi Dum Biryani",
-        "base_price": 520,
-        "is_veg": false,
-        "is_alcohol": false,
-        "image_url": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80",
-        "description": "Signature slow-cooked royal Hyderabadi dum biryani layered with saffron-fragrant basmati rice, tender spiced meat, caramelized onions, fresh mint, and slow-braised on coal embers. Served with mirchi ka salan and burani raita."
-      }
-    ]
+    "category": "FOOD",
+    "subcategory": "BIRYANI",
+    "description": "HYDERABADI DUM BIRYANI",
+    "lane1_mrp": 520
+  },
+  {
+    "category": "FOOD",
+    "subcategory": "BIRYANI",
+    "description": "NIZAMI LAMB DUM BIRYANI",
+    "lane1_mrp": 680
+  },
+  {
+    "category": "FOOD",
+    "subcategory": "BIRYANI",
+    "description": "SUBZ SAFFRON TAWA BIRYANI",
+    "lane1_mrp": 480
   }
 ]

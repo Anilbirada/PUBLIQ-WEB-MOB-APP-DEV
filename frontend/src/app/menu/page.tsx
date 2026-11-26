@@ -74,7 +74,7 @@ export default function MenuPage() {
     }
   }, [tableNumber, setTableSession]);
 
-  // Load menu data from backend or fallback
+  // Load menu data from backend or fallback (Always preserves full 310+ item master catalogue)
   useEffect(() => {
     async function loadMenu() {
       try {
@@ -82,23 +82,27 @@ export default function MenuPage() {
           include_unavailable: true, // Fetch complete data with availability flags
         });
         if (data && data.length > 0) {
-          const hasDrinks = data.some((c: any) => (c.is_alcohol || c.slug === "beer" || c.slug === "cocktails") && c.items?.length > 0);
-          const hasFood = data.some((c: any) => (!c.is_alcohol) && c.items?.length > 0);
-
-          if (hasDrinks && hasFood) {
-            setCategories(data);
-          } else {
-            const merged = [...FALLBACK_MENU_CATEGORIES];
-            data.forEach((serverCat: any) => {
-              const idx = merged.findIndex(m => m.slug === serverCat.slug);
-              if (idx !== -1 && serverCat.items && serverCat.items.length > 0) {
-                merged[idx] = serverCat;
-              } else if (idx === -1 && serverCat.items && serverCat.items.length > 0) {
-                merged.push(serverCat);
-              }
-            });
-            setCategories(merged);
-          }
+          // Robust merge: Never discard fallback categories that have items!
+          const merged = [...FALLBACK_MENU_CATEGORIES];
+          data.forEach((serverCat: any) => {
+            if (!serverCat.items || serverCat.items.length === 0) return;
+            const idx = merged.findIndex(m => m.slug === serverCat.slug || m.id === serverCat.id);
+            if (idx !== -1) {
+              const existingItems = [...(merged[idx].items || [])];
+              serverCat.items.forEach((sItem: any) => {
+                const itemIdx = existingItems.findIndex(e => e.id === sItem.id || (e.name && sItem.name && e.name.toLowerCase() === sItem.name.toLowerCase()));
+                if (itemIdx !== -1) {
+                  existingItems[itemIdx] = { ...existingItems[itemIdx], ...sItem };
+                } else {
+                  existingItems.push(sItem);
+                }
+              });
+              merged[idx] = { ...merged[idx], ...serverCat, items: existingItems };
+            } else {
+              merged.push(serverCat);
+            }
+          });
+          setCategories(merged);
         } else {
           setCategories(FALLBACK_MENU_CATEGORIES);
         }

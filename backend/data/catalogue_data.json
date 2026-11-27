@@ -1311,25 +1311,25 @@
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "ANJAL FISH RAWA FRY",
-    "lane1_mrp": 101
+    "lane1_mrp": 480
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "ANJAL FISH TAWA FRY",
-    "lane1_mrp": 101
+    "lane1_mrp": 490
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "BANGDA FISH RAWA FRY",
-    "lane1_mrp": 101
+    "lane1_mrp": 340
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "BANGDA FISH TAWA FRY",
-    "lane1_mrp": 101
+    "lane1_mrp": 350
   },
   {
     "category": "FOOD",
@@ -1347,7 +1347,7 @@
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "CHICKEN KONDAPURI STYLE GRAVY",
-    "lane1_mrp": 101
+    "lane1_mrp": 420
   },
   {
     "category": "FOOD",
@@ -1425,55 +1425,55 @@
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "POMFRET RAWA FRY",
-    "lane1_mrp": 101
+    "lane1_mrp": 540
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "POMFRET TAWA FRY",
-    "lane1_mrp": 101
+    "lane1_mrp": 550
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "PRAWNS FRY",
-    "lane1_mrp": 101
+    "lane1_mrp": 460
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "PRAWNS GHEE ROAST",
-    "lane1_mrp": 101
+    "lane1_mrp": 520
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "PRAWNS PEPPER FRY",
-    "lane1_mrp": 101
+    "lane1_mrp": 470
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "PRAWNS SUKKA",
-    "lane1_mrp": 101
+    "lane1_mrp": 470
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "SILVER FISH NUGGET FRY",
-    "lane1_mrp": 101
+    "lane1_mrp": 320
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "SILVER FISH RAWA FRY",
-    "lane1_mrp": 101
+    "lane1_mrp": 330
   },
   {
     "category": "FOOD",
     "subcategory": "COASTAL CUISINE",
     "description": "SILVER FISH TAWA FRY",
-    "lane1_mrp": 101
+    "lane1_mrp": 340
   },
   {
     "category": "FOOD",
@@ -1599,7 +1599,7 @@
     "category": "FOOD",
     "subcategory": "MOCKTAIL",
     "description": "COCKTAIL CLASSIC",
-    "lane1_mrp": 101
+    "lane1_mrp": 260
   },
   {
     "category": "FOOD",
@@ -1833,25 +1833,25 @@
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "FISH TIKKA ACHARI",
-    "lane1_mrp": 101
+    "lane1_mrp": 440
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "FISH TIKKA AJWAINI",
-    "lane1_mrp": 101
+    "lane1_mrp": 440
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "FISH TIKKA HARYALI",
-    "lane1_mrp": 101
+    "lane1_mrp": 450
   },
   {
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "FISH TIKKA PAHADI",
-    "lane1_mrp": 101
+    "lane1_mrp": 450
   },
   {
     "category": "FOOD",
@@ -1917,7 +1917,7 @@
     "category": "FOOD",
     "subcategory": "NON VEG STARTER TANDOOR",
     "description": "TANDOORI ZINGHA",
-    "lane1_mrp": 101
+    "lane1_mrp": 560
   },
   {
     "category": "FOOD",
@@ -1965,7 +1965,7 @@
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "BUTTER GARLIC PRAWNS",
-    "lane1_mrp": 101
+    "lane1_mrp": 490
   },
   {
     "category": "FOOD",
@@ -1995,13 +1995,13 @@
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "CHILLY FISH",
-    "lane1_mrp": 101
+    "lane1_mrp": 420
   },
   {
     "category": "FOOD",
     "subcategory": "ORIENTAL NON VEG STARTER",
     "description": "CHILLY PRAWNS",
-    "lane1_mrp": 101
+    "lane1_mrp": 480
   },
   {
     "category": "FOOD",

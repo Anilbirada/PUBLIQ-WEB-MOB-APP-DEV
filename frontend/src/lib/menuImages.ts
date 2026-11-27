@@ -71,7 +71,7 @@ export function getMenuItemImage(item: any, categoryName?: string, categorySlug?
   }
 
   // SPIRITS
-  if (cat.includes("whisky") || cat.includes("scotch")) return "https://images.unsplash.com/photo-1527061011665-3652c757a4d4?auto=format&fit=crop&w=800&q=80";
+  if (cat.includes("whisky") || cat.includes("scotch")) return "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=800&q=80";
   if (cat.includes("rum")) return "https://images.unsplash.com/photo-1614313511387-1436a4480ebb?auto=format&fit=crop&w=800&q=80";
   if (cat.includes("vodka")) return "https://images.unsplash.com/photo-1550985543-f47f38aeee65?auto=format&fit=crop&w=800&q=80";
   if (cat.includes("brandy") || cat.includes("wine")) return "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80";

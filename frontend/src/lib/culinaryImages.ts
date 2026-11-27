@@ -27,7 +27,7 @@ export const CULINARY_IMAGE_PALETTE = {
   beer_wheat_beer: "https://images.unsplash.com/photo-1471421298428-1513ab720a8e?auto=format&fit=crop&w=800&q=80",
 
   // --- SPIRITS (WHISKY, RUM, VODKA, GIN, BRANDY) ---
-  spirit_whisky_scotch: "https://images.unsplash.com/photo-1527061011665-3652c757a4d4?auto=format&fit=crop&w=800&q=80",
+  spirit_whisky_scotch: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=800&q=80",
   spirit_whisky_bourbon: "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?auto=format&fit=crop&w=800&q=80",
   spirit_dark_rum: "https://images.unsplash.com/photo-1614313511387-1436a4480ebb?auto=format&fit=crop&w=800&q=80",
   spirit_white_rum: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80",

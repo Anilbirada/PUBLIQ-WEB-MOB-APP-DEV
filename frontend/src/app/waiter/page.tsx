@@ -750,7 +750,7 @@ export default function WaiterMobileApp() {
           {/* Official PUBLIQ Luxury Crest Logo */}
           <div className="flex items-center justify-center mb-4">
             <img 
-              src="/logo.png?v=6" 
+              src="/logo.png?v=7" 
               alt="PUBLIQ" 
               className="h-16 sm:h-20 w-auto object-contain drop-shadow-sm" 
             />
@@ -827,7 +827,7 @@ export default function WaiterMobileApp() {
         <div className="bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-amber-50 p-0.5 border border-amber-200/80 flex items-center justify-center shadow-xs">
-              <img src="/logo-badge.png?v=6" alt="PUBLIQ" className="w-full h-full object-contain" />
+              <img src="/logo-badge.png?v=7" alt="PUBLIQ" className="w-full h-full object-contain" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
@@ -2214,7 +2214,7 @@ export default function WaiterMobileApp() {
 
               <div className="text-center border-b border-slate-200 pb-2.5">
                 <div className="flex items-center justify-center mb-1">
-                  <img src="/logo.png?v=6" alt="PUBLIQ" className="h-12 w-auto object-contain" />
+                  <img src="/logo.png?v=7" alt="PUBLIQ" className="h-12 w-auto object-contain" />
                 </div>
                 <h3 className="text-sm font-black text-slate-900">{generatedInvoice.outlet_name}</h3>
                 <p className="text-[10px] text-slate-500">{generatedInvoice.legal_name}</p>

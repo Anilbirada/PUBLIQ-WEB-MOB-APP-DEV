@@ -241,7 +241,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/80 p-1 flex items-center justify-center shadow-xs overflow-hidden">
-              <img src="/logo-badge.png?v=6" alt="PUBLIQ Emblem" className="w-full h-full object-contain" />
+              <img src="/logo-badge.png?v=7" alt="PUBLIQ Emblem" className="w-full h-full object-contain" />
             </div>
             <div>
               <h1 className="font-serif text-base font-bold tracking-tight text-slate-900">

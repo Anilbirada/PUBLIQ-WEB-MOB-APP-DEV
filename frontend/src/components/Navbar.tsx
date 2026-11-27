@@ -115,7 +115,7 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center">
               <a href="/" className="flex items-center group py-0.5">
                 <img
-                  src="/logo.png?v=6"
+                  src="/logo.png?v=7"
                   alt="PUBLIQ Bar & Restaurant"
                   className="h-10 sm:h-12 md:h-14 w-auto object-contain hover:scale-105 transition-all duration-300 drop-shadow-xs"
                 />
@@ -179,7 +179,7 @@ export const Navbar: React.FC = () => {
           <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between border-b border-slate-200 bg-white">
             <a href="/" onClick={() => setDrawerOpen(false)} className="flex items-center gap-3">
               <img
-                src="/logo.png?v=6"
+                src="/logo.png?v=7"
                 alt="PUBLIQ Bar & Restaurant"
                 className="h-10 sm:h-12 w-auto object-contain"
               />

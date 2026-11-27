@@ -9,7 +9,7 @@ export default function NotFound() {
     <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex items-center justify-center p-6 selection:bg-blue-600/20 selection:text-blue-900 font-sans">
       <div className="max-w-md w-full text-center space-y-6 bg-white p-8 sm:p-10 rounded-3xl border border-slate-200 shadow-xl">
         <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl bg-slate-50 p-2.5 border border-slate-200 shadow-xs flex items-center justify-center">
-          <img src="/logo.png?v=4" alt="PUBLIQ Emblem" className="w-full h-full object-contain" />
+          <img src="/logo.png?v=7" alt="PUBLIQ Emblem" className="w-full h-full object-contain" />
         </div>
 
         <div className="space-y-2">

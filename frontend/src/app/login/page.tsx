@@ -78,7 +78,7 @@ export default function UniversalLoginPage() {
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center mb-1">
             <img 
-              src="/logo.png?v=6" 
+              src="/logo.png?v=7" 
               alt="PUBLIQ Bar & Restaurant" 
               className="h-16 sm:h-20 md:h-24 w-auto object-contain drop-shadow-sm hover:scale-105 transition-transform duration-300" 
             />

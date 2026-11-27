@@ -192,8 +192,8 @@ def get_bi_overview(
         top_food_list = [
             {"name": "Paneer Butter Masala", "category": "Main Course", "orders": 124, "revenue": 6450, "image": "/images/publiq/food/dal-saag-paneer-duo.webp"},
             {"name": "Chicken Biryani", "category": "Biryani & Rice", "orders": 98, "revenue": 5320, "image": "/images/publiq/food/dum-biryani-hyderabadi.webp"},
-            {"name": "Veg Pizza", "category": "Pizza", "orders": 76, "revenue": 4280, "image": "/images/publiq/food/wood_fired_bbq_chicken_pizza_1795500265301.jpg"},
-            {"name": "Masala Dosa", "category": "South Indian", "orders": 58, "revenue": 3120, "image": "/images/publiq/food/crispy_golden_french_fries_1795500247074.jpg"},
+            {"name": "Veg Pizza", "category": "Pizza", "orders": 76, "revenue": 4280, "image": "/images/publiq/food/tandoori-mixed-grill.webp"},
+            {"name": "Masala Dosa", "category": "South Indian", "orders": 58, "revenue": 3120, "image": "/images/publiq/food/butter-chicken-copper-handi.webp"},
             {"name": "Chocolate Lava Cake", "category": "Desserts", "orders": 38, "revenue": 2280, "image": "/images/publiq/food/chocolate-lava-cake-icecream.webp"}
         ]
     else:
@@ -224,11 +224,11 @@ def get_bi_overview(
     top_drinks_list = sorted(drink_items_map.values(), key=lambda x: x["quantity"], reverse=True)[:5]
     if not top_drinks_list:
         top_drinks_list = [
-            {"rank": 1, "name": "Classic Mojito", "category": "Signature Cocktails", "orders": 86, "revenue": 4300, "image": "/images/publiq/food/classic_mojito_fresh_mint_1795500256957.jpg"},
-            {"rank": 2, "name": "Blue Lagoon", "category": "Cocktails", "orders": 64, "revenue": 3520, "image": "/images/publiq/food/exotic_blue_lagoon_cocktail_1795500276584.jpg"},
-            {"rank": 3, "name": "Watermelon Cooler", "category": "Mocktails", "orders": 52, "revenue": 1820, "image": "/images/publiq/food/fresh_watermelon_lime_cooler_1795500283924.jpg"},
-            {"rank": 4, "name": "LIIT (Long Island Iced Tea)", "category": "Signature Cocktails", "orders": 44, "revenue": 3960, "image": "/images/publiq/food/classic_mojito_fresh_mint_1795500256957.jpg"},
-            {"rank": 5, "name": "Corona Extra Pint", "category": "Beers", "orders": 39, "revenue": 2730, "image": "/images/publiq/food/exotic_blue_lagoon_cocktail_1795500276584.jpg"}
+            {"rank": 1, "name": "Classic Mojito", "category": "Signature Cocktails", "orders": 86, "revenue": 4300, "image": "/images/menu/cocktails.jpg"},
+            {"rank": 2, "name": "Blue Lagoon", "category": "Cocktails", "orders": 64, "revenue": 3520, "image": "/images/menu/cocktails.jpg"},
+            {"rank": 3, "name": "Watermelon Cooler", "category": "Mocktails", "orders": 52, "revenue": 1820, "image": "/images/menu/mocktails.jpg"},
+            {"rank": 4, "name": "LIIT (Long Island Iced Tea)", "category": "Signature Cocktails", "orders": 44, "revenue": 3960, "image": "/images/menu/cocktails.jpg"},
+            {"rank": 5, "name": "Corona Extra Pint", "category": "Beers", "orders": 39, "revenue": 2730, "image": "/images/menu/beer.jpg"}
         ]
     else:
         formatted_drinks = []
@@ -239,7 +239,7 @@ def get_bi_overview(
                 "category": item.get("category", "Signature Cocktails"),
                 "orders": item["quantity"],
                 "revenue": round(item["revenue"], 2),
-                "image": "/images/publiq/food/classic_mojito_fresh_mint_1795500256957.jpg"
+                "image": "/images/menu/cocktails.jpg"
             })
         top_drinks_list = formatted_drinks
 

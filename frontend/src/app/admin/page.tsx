@@ -334,11 +334,11 @@ export default function AdminDashboardPage() {
   ];
 
   const topDrinks = biData?.top_drinks || [
-    { rank: 1, name: "Classic Mojito", category: "Signature Cocktails", orders: 86, revenue: 4300, image: "/images/publiq/food/classic_mojito_fresh_mint_1795500256957.jpg" },
-    { rank: 2, name: "Exotic Blue Lagoon", category: "Cocktails", orders: 64, revenue: 3520, image: "/images/publiq/food/exotic_blue_lagoon_cocktail_1795500276584.jpg" },
-    { rank: 3, name: "Fresh Watermelon Cooler", category: "Mocktails", orders: 52, revenue: 1820, image: "/images/publiq/food/fresh_watermelon_lime_cooler_1795500283924.jpg" },
-    { rank: 4, name: "LIIT Long Island", category: "Cocktails", orders: 44, revenue: 3960, image: "/images/publiq/food/classic_mojito_fresh_mint_1795500256957.jpg" },
-    { rank: 5, name: "Corona Extra Pint", category: "Beers", orders: 39, revenue: 2730, image: "/images/publiq/food/exotic_blue_lagoon_cocktail_1795500276584.jpg" }
+    { rank: 1, name: "Classic Mojito", category: "Signature Cocktails", orders: 86, revenue: 4300, image: "/images/menu/cocktails.jpg" },
+    { rank: 2, name: "Exotic Blue Lagoon", category: "Cocktails", orders: 64, revenue: 3520, image: "/images/menu/cocktails.jpg" },
+    { rank: 3, name: "Fresh Watermelon Cooler", category: "Mocktails", orders: 52, revenue: 1820, image: "/images/menu/mocktails.jpg" },
+    { rank: 4, name: "LIIT Long Island", category: "Cocktails", orders: 44, revenue: 3960, image: "/images/menu/cocktails.jpg" },
+    { rank: 5, name: "Corona Extra Pint", category: "Beers", orders: 39, revenue: 2730, image: "/images/menu/beer.jpg" }
   ];
 
   return (
@@ -397,10 +397,10 @@ export default function AdminDashboardPage() {
       {/* ========================================================
           2. ENTERPRISE NAVIGATION TABS
       ======================================================== */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-slate-200 text-xs font-bold scrollbar-none">
+      <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-slate-200 text-xs font-bold">
         <button
           onClick={() => setActiveTab("overview")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all cursor-pointer shrink-0 ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all cursor-pointer ${
             activeTab === "overview"
               ? "bg-orange-500 text-white shadow-xs"
               : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
@@ -606,13 +606,13 @@ export default function AdminDashboardPage() {
               <div className="p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-100">
                 <span className="text-[10px] text-slate-500 font-bold block uppercase">Food Revenue</span>
                 <span className="text-lg font-black text-slate-900 mt-1 block">₹{Number(kpis.total_food_revenue).toLocaleString("en-IN")}</span>
-                <span className="text-[10px] text-emerald-600 font-semibold">Anil Food Business</span>
+                <span className="text-[10px] text-emerald-600 font-semibold">Ramesh Food Business</span>
               </div>
 
               <div className="p-3.5 rounded-xl bg-blue-50/50 border border-blue-100">
                 <span className="text-[10px] text-slate-500 font-bold block uppercase">Bar Revenue</span>
                 <span className="text-lg font-black text-slate-900 mt-1 block">₹{Number(kpis.total_bar_revenue).toLocaleString("en-IN")}</span>
-                <span className="text-[10px] text-blue-600 font-semibold">Ramesh Drinks Business</span>
+                <span className="text-[10px] text-blue-600 font-semibold">Anil Bar Business</span>
               </div>
 
               <div className="p-3.5 rounded-xl bg-purple-50/50 border border-purple-100">
@@ -899,7 +899,10 @@ export default function AdminDashboardPage() {
                           src={dish.image}
                           alt={dish.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                          onError={(e: any) => { e.target.src = "/images/publiq/food/butter-chicken-copper-handi.webp"; }}
+                          onError={(e: any) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/images/publiq/food/butter-chicken-copper-handi.webp";
+                          }}
                         />
                       </div>
                       <div>
@@ -941,7 +944,10 @@ export default function AdminDashboardPage() {
                           src={drink.image}
                           alt={drink.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                          onError={(e: any) => { e.target.src = "/images/publiq/food/classic_mojito_fresh_mint_1795500256957.jpg"; }}
+                          onError={(e: any) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/images/menu/cocktails.jpg";
+                          }}
                         />
                       </div>
                       <div>

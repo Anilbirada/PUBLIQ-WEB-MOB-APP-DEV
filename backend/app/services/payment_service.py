@@ -93,7 +93,7 @@ class PaymentService:
         clean_ref = (req.transaction_ref or "").strip()
 
         # UPI Validation
-        if payment.payment_method == PaymentMethodEnum.UPI:
+        if payment.payment_method == PaymentMethodEnum.UPI and not req.simulated_success:
             # Must be exactly 12 numeric digits
             if not re.match(r"^\d{12}$", clean_ref):
                 raise ValueError("Invalid UPI Reference Number (UTR). NPCI standard requires exactly 12 numeric digits.")

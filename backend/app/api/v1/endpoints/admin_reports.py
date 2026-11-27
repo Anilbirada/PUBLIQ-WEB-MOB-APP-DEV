@@ -423,7 +423,7 @@ def get_executive_dashboard(outlet_id: str = None, timeframe: str = "today", db:
             "category": "Main Course",
             "orders": 124,
             "revenue": 6450,
-            "image": "/images/publiq/food/butter-chicken-copper-pot.webp"
+            "image": "/images/publiq/food/butter-chicken-copper-handi.webp"
         },
         {
             "rank": 2,
@@ -431,7 +431,7 @@ def get_executive_dashboard(outlet_id: str = None, timeframe: str = "today", db:
             "category": "Main Course",
             "orders": 98,
             "revenue": 5320,
-            "image": "/images/publiq/products/dum-mutton-biryani-copper-pot.webp"
+            "image": "/images/publiq/food/dum-biryani-hyderabadi.webp"
         },
         {
             "rank": 3,
@@ -439,7 +439,7 @@ def get_executive_dashboard(outlet_id: str = None, timeframe: str = "today", db:
             "category": "Snacks",
             "orders": 76,
             "revenue": 4280,
-            "image": "/images/publiq/food/wood-fired-bbq-chicken-pizza.webp"
+            "image": "/images/publiq/food/tandoori-mixed-grill.webp"
         },
         {
             "rank": 4,
@@ -447,7 +447,7 @@ def get_executive_dashboard(outlet_id: str = None, timeframe: str = "today", db:
             "category": "Snacks",
             "orders": 58,
             "revenue": 3120,
-            "image": "/images/publiq/food/tandoori-paneer-tikka-platter.webp"
+            "image": "/images/publiq/food/dal-saag-paneer-duo.webp"
         },
         {
             "rank": 5,

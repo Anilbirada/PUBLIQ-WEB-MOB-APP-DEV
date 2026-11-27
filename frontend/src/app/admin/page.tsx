@@ -40,13 +40,17 @@ export default function AdminDashboardPage() {
     department: "FOOD"
   });
 
+  const [mounted, setMounted] = useState<boolean>(false);
+  const [greeting, setGreeting] = useState<string>("Good Morning");
+
   // Dynamic greeting based on current hour
-  const getGreeting = () => {
+  useEffect(() => {
+    setMounted(true);
     const hour = new Date().getHours();
-    if (hour < 12) return "Good Morning";
-    if (hour < 17) return "Good Afternoon";
-    return "Good Evening";
-  };
+    if (hour < 12) setGreeting("Good Morning");
+    else if (hour < 17) setGreeting("Good Afternoon");
+    else setGreeting("Good Evening");
+  }, []);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -190,28 +194,28 @@ export default function AdminDashboardPage() {
         name: "Paneer Butter Masala",
         orders: 124,
         revenue: 6450,
-        image: "/images/publiq/food/butter-chicken-copper-pot.webp"
+        image: "/images/publiq/food/butter-chicken-copper-handi.webp"
       },
       {
         rank: 2,
         name: "Chicken Biryani",
         orders: 98,
         revenue: 5320,
-        image: "/images/publiq/products/dum-mutton-biryani-copper-pot.webp"
+        image: "/images/publiq/food/dum-biryani-hyderabadi.webp"
       },
       {
         rank: 3,
         name: "Veg Pizza",
         orders: 76,
         revenue: 4280,
-        image: "/images/publiq/food/wood-fired-bbq-chicken-pizza.webp"
+        image: "/images/publiq/food/tandoori-mixed-grill.webp"
       },
       {
         rank: 4,
         name: "Masala Dosa",
         orders: 58,
         revenue: 3120,
-        image: "/images/publiq/food/tandoori-paneer-tikka-platter.webp"
+        image: "/images/publiq/food/dal-saag-paneer-duo.webp"
       },
       {
         rank: 5,
@@ -305,7 +309,7 @@ export default function AdminDashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
-            <span>{getGreeting()}, {user?.fullName || "Chef Rohan"}!</span>
+            <span>{mounted ? greeting : "Good Morning"}, {mounted && user?.fullName ? user.fullName : "Chef Rohan"}!</span>
             <span className="inline-block animate-wiggle">👋</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5 font-medium">
@@ -1040,7 +1044,7 @@ export default function AdminDashboardPage() {
 
         {showWorkflowSection && (
           <div>
-            {!workflowData || workflowData.orders?.length === 0 ? (
+            {!workflowData || !Array.isArray(workflowData.orders) || workflowData.orders.length === 0 ? (
               <div className="py-10 text-center space-y-2">
                 <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto" />
                 <p className="text-sm font-bold text-slate-800">All Live Orders Are Up to Date</p>
@@ -1061,7 +1065,7 @@ export default function AdminDashboardPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {workflowData.orders.slice(0, 6).map((ord: any) => (
+                    {(workflowData.orders || []).slice(0, 8).map((ord: any) => (
                       <tr key={ord.id} className="hover:bg-slate-50/60 transition">
                         <td className="py-3 px-3 font-mono font-bold text-slate-900">
                           {ord.order_number}

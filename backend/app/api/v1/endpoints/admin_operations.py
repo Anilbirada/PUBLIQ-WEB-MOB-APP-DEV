@@ -16,7 +16,7 @@ def get_kot_tickets(outlet_id: str = None, station: str = None, db: Session = De
     Displays both approved tickets and pending-approval guest tickets so Kitchen & Super Admin have full visibility.
     """
     q = db.query(Order).filter(
-        Order.food_status.in_(["PENDING_APPROVAL", "PENDING", "ACCEPTED", "PREPARING", "READY"])
+        Order.food_status.in_(["ACCEPTED", "PREPARING", "READY"])
     )
     if outlet_id:
         q = q.filter(Order.outlet_id == outlet_id)
@@ -110,7 +110,7 @@ def get_bar_tickets(outlet_id: str = None, db: Session = Depends(get_db)):
     Displays both approved tickets and pending-approval guest beverage orders.
     """
     q = db.query(Order).filter(
-        Order.beverage_status.in_(["PENDING_APPROVAL", "PENDING", "ACCEPTED", "PREPARING", "READY"])
+        Order.beverage_status.in_(["ACCEPTED", "PREPARING", "READY"])
     )
     if outlet_id:
         q = q.filter(Order.outlet_id == outlet_id)

@@ -396,6 +396,14 @@ class Order(Base):
     closed_by_waiter = Column(String(100), nullable=True)
     closed_at = Column(DateTime, nullable=True)
     
+    # Department staff fulfillment tracking
+    food_admin_id = Column(String(36), nullable=True)
+    food_admin_name = Column(String(100), nullable=True)
+    food_prepared_at = Column(DateTime, nullable=True)
+    bar_admin_id = Column(String(36), nullable=True)
+    bar_admin_name = Column(String(100), nullable=True)
+    bar_prepared_at = Column(DateTime, nullable=True)
+    
     special_instructions = Column(String(300), nullable=True)
     customer_name = Column(String(100), nullable=True)
     customer_phone = Column(String(20), nullable=True)
@@ -503,12 +511,19 @@ class AuditLog(Base):
     __tablename__ = "audit_logs"
     
     id = Column(String(36), primary_key=True, default=generate_uuid)
-    entity_type = Column(String(50), nullable=False)
-    entity_id = Column(String(50), nullable=False)
-    action = Column(String(50), nullable=False)
-    actor_id = Column(String(50), nullable=True)
+    entity_type = Column(String(50), nullable=False, index=True)
+    entity_id = Column(String(50), nullable=False, index=True)
+    action = Column(String(100), nullable=False, index=True)
+    actor_id = Column(String(50), nullable=True, index=True)
+    user_name = Column(String(120), nullable=True)
+    user_role = Column(String(60), nullable=True, index=True)
+    order_id = Column(String(60), nullable=True, index=True)
+    invoice_id = Column(String(60), nullable=True, index=True)
+    previous_value = Column(Text, nullable=True)
+    updated_value = Column(Text, nullable=True)
+    action_status = Column(String(20), default="SUCCESS") # SUCCESS, FAILED, ERROR
     details = Column(JSON, default=dict)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
 
 # ==============================================================================
 # ENTERPRISE WEB MANAGEMENT PLATFORM MODELS

@@ -19,6 +19,7 @@ from app.models import (
 )
 from app.core.department import determine_item_department
 from app.core.security import create_access_token
+from app.services.audit_service import AuditService
 from app.websockets.connection_manager import manager
 
 router = APIRouter()
@@ -534,6 +535,19 @@ async def department_order_approval(
         "beverage_subtotal": order.beverage_subtotal,
         "waiter": waiter_name
     })
+
+    AuditService.record(
+        db=db,
+        action=f"WAITER_ORDER_{action}_{dept}",
+        entity_type="ORDER",
+        entity_id=order.id,
+        user_name=waiter_name,
+        user_role="WAITER",
+        order_id=order.id,
+        previous_value="WAITING",
+        updated_value=action,
+        details={"department": dept, "action": action, "table": order.table_number, "reason": reason if action == "REJECT" else None}
+    )
     
     return {
         "status": "success",
@@ -927,14 +941,17 @@ async def mark_order_served(order_id: str, payload: Dict[str, Any] = Body(defaul
         
     order.updated_at = now_utc
     
-    audit = AuditLog(
+    AuditService.record(
+        db=db,
+        action=f"ORDER_{dept}_SERVED",
         entity_type="ORDER",
         entity_id=order.id,
-        action=f"ORDER_{dept}_SERVED",
+        user_name=waiter_name,
+        user_role="WAITER",
+        order_id=order.id,
+        updated_value="SERVED",
         details={"waiter": waiter_name, "table": order.table_number, "department": dept}
     )
-    db.add(audit)
-    db.commit()
     
     await manager.broadcast_order_update(order.id, {
         "event": "ORDER_SERVED",

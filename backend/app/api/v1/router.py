@@ -5,7 +5,8 @@ from app.api.v1.endpoints import (
     products, cart, orders, order_tracking, payments,
     auth, customers, reservations, notifications, pos_integration,
     admin_pos, admin_operations, admin_inventory, admin_reports,
-    experience, waiter, admin_owners, reviews, admin_staff_management
+    experience, waiter, admin_owners, reviews, admin_staff_management,
+    admin_bi
 )
 
 api_router = APIRouter()
@@ -32,6 +33,7 @@ api_router.include_router(reviews.router, prefix="/reviews", tags=["Customer Rev
 api_router.include_router(experience.router, prefix="/experience", tags=["Experience Videos, Events & AI"])
 
 # Enterprise Management APIs (Web Application Only)
+api_router.include_router(admin_bi.router, prefix="/admin/bi", tags=["Enterprise BI, Analytics & Audit History"])
 api_router.include_router(admin_pos.router, prefix="/admin/pos", tags=["Enterprise POS & Billing"])
 api_router.include_router(admin_operations.router, prefix="/admin/operations", tags=["Enterprise KOT & Bar KDS"])
 api_router.include_router(admin_inventory.router, prefix="/admin/inventory", tags=["Enterprise Liquor & Kitchen Inventory"])

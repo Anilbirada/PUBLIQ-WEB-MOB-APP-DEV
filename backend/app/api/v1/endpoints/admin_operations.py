@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 
 from app.core.database import get_db
 from app.models import Order, OrderItem, LiquorItem, LiquorTransaction, AuditLog, RestaurantTable, OrderStatusEnum
+from app.services.audit_service import AuditService
 
 router = APIRouter()
 
@@ -89,6 +90,12 @@ def bump_kot_status(payload: dict, db: Session = Depends(get_db)):
         else:
             order.food_status = "PREPARING"
 
+    # Set staff fulfillment tracking
+    admin_name = payload.get("admin_name") or payload.get("chef_name") or "Executive Chef"
+    order.food_admin_name = admin_name
+    if order.food_status in ["READY", "SERVED"] and not order.food_prepared_at:
+        order.food_prepared_at = datetime.now(timezone.utc)
+
     # Check overall
     if order.food_status == "SERVED" and order.beverage_status in ["SERVED", "REJECTED", "NOT_ORDERED"]:
         order.order_status = "SERVED"
@@ -98,6 +105,20 @@ def bump_kot_status(payload: dict, db: Session = Depends(get_db)):
         order.order_status = "PREPARING"
     elif order.food_status == "ACCEPTED":
         order.order_status = "ACCEPTED"
+
+    # Record audit log
+    AuditService.record(
+        db=db,
+        action=f"KOT_FOOD_STATUS_{order.food_status}",
+        entity_type="ORDER",
+        entity_id=order.id,
+        user_name=admin_name,
+        user_role="EXECUTIVE_CHEF",
+        order_id=order.id,
+        previous_value=cur_food,
+        updated_value=order.food_status,
+        details={"table": order.table_number, "order_number": order.order_number}
+    )
 
     db.commit()
     return {"success": True, "order_status": order.order_status if isinstance(order.order_status, str) else order.order_status.value, "food_status": order.food_status}
@@ -179,9 +200,29 @@ def bump_bar_status(payload: dict, db: Session = Depends(get_db)):
         else:
             order.beverage_status = "PREPARING"
 
+    # Set staff fulfillment tracking
+    bartender_name = payload.get("admin_name") or payload.get("bartender_name") or "Lead Mixologist"
+    order.bar_admin_name = bartender_name
+    if order.beverage_status in ["READY", "SERVED"] and not order.bar_prepared_at:
+        order.bar_prepared_at = datetime.now(timezone.utc)
+
     # Check overall
     if order.beverage_status == "SERVED" and order.food_status in ["SERVED", "REJECTED", "NOT_ORDERED"]:
         order.order_status = "SERVED"
+
+    # Record audit log
+    AuditService.record(
+        db=db,
+        action=f"BAR_DRINK_STATUS_{order.beverage_status}",
+        entity_type="ORDER",
+        entity_id=order.id,
+        user_name=bartender_name,
+        user_role="BARTENDER",
+        order_id=order.id,
+        previous_value=cur_bev,
+        updated_value=order.beverage_status,
+        details={"table": order.table_number, "order_number": order.order_number}
+    )
 
     db.commit()
     return {"success": True, "order_status": order.order_status if isinstance(order.order_status, str) else order.order_status.value, "beverage_status": order.beverage_status}

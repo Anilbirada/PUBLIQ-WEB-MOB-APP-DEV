@@ -88,6 +88,13 @@ def on_startup():
     import logging
     startup_logger = logging.getLogger("startup")
 
+    # 0. Database Schema Migrations & Alterations
+    try:
+        from app.core.db_migrations import run_db_migrations
+        run_db_migrations()
+    except Exception as e:
+        startup_logger.warning(f"Schema migration note: {e}")
+
     # 1. Primary Restaurant & Outlet Provisioning
     try:
         from app.core.database import SessionLocal

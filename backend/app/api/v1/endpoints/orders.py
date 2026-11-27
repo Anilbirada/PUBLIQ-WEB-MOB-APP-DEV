@@ -6,6 +6,7 @@ from app.core.database import get_db
 from app.models import Order, OrderStatusEnum
 from app.schemas import OrderCreateRequest, OrderResponse
 from app.services.order_service import OrderService
+from app.services.audit_service import AuditService
 from app.websockets.connection_manager import manager
 
 router = APIRouter()
@@ -22,6 +23,21 @@ async def create_order(req: OrderCreateRequest, db: Session = Depends(get_db)):
             "food_status": order.food_status,
             "beverage_status": order.beverage_status
         })
+
+        # Record immutable audit log
+        AuditService.record(
+            db=db,
+            action="ORDER_PLACED",
+            entity_type="ORDER",
+            entity_id=order.id,
+            actor_id=order.customer_id,
+            user_name=order.customer_name or "Guest Customer",
+            user_role="CUSTOMER",
+            order_id=order.id,
+            updated_value=order.order_status.value,
+            details={"order_number": order.order_number, "final_amount": order.final_amount, "table": order.table_number}
+        )
+
         return order
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

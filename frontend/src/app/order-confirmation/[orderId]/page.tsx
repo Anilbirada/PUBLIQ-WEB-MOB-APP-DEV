@@ -96,25 +96,22 @@ export default function OrderConfirmationPage() {
                 Bill Generated Date &amp; Time:
               </span>
               <span className="font-mono font-bold text-xs text-blue-700 bg-white px-2 py-0.5 rounded border border-blue-200">
-                {order.created_at
-                  ? new Date(order.created_at).toLocaleString("en-US", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                      hour12: true,
-                    })
-                  : new Date().toLocaleString("en-US", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                      hour12: true,
-                    })}
+                {(() => {
+                  const raw = order.created_at;
+                  const dateObj = raw 
+                    ? new Date(raw.endsWith("Z") || raw.includes("+") ? raw : `${raw}Z`)
+                    : new Date();
+                  return `${dateObj.toLocaleString("en-IN", {
+                    timeZone: "Asia/Kolkata",
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: true,
+                  })} (IST)`;
+                })()}
               </span>
             </div>
 

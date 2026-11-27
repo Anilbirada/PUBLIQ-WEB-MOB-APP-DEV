@@ -240,3 +240,59 @@ export function validateUpiVpa(vpa: string): GenericValidationResult {
 
   return { isValid: true };
 }
+
+/**
+ * Validates Real Guest Full Name
+ * Must be at least 3 characters, alphabets and spaces, rejecting dummy/test strings.
+ */
+export function validateGuestName(name: string): GenericValidationResult {
+  const trimmed = name.trim();
+  if (!trimmed) {
+    return { isValid: false, error: "Please enter your Full Name." };
+  }
+  if (trimmed.length < 3) {
+    return { isValid: false, error: "Please enter a valid real name (minimum 3 characters)." };
+  }
+  if (!/^[a-zA-Z\s.'-]+$/.test(trimmed)) {
+    return { isValid: false, error: "Guest name can only contain alphabetic letters and spaces." };
+  }
+  const lower = trimmed.toLowerCase();
+  const dummyNames = ["test", "asdf", "qwerty", "fake", "demo", "admin", "guest diner", "xxx", "user", "abc", "null", "aaaa", "bbbb"];
+  if (dummyNames.includes(lower) || /^([a-zA-Z])\1+$/.test(lower)) {
+    return { isValid: false, error: "Please enter a genuine real name (e.g., 'Rahul Kumar')." };
+  }
+  return { isValid: true };
+}
+
+/**
+ * Validates Real Indian Mobile Phone Number
+ * Must be 10 digits starting with 6, 7, 8, or 9, rejecting dummy patterns.
+ */
+export function validateGuestPhone(phone: string): GenericValidationResult {
+  const clean = phone.replace(/\D/g, "");
+  if (!clean) {
+    return { isValid: false, error: "Please enter your 10-digit Mobile Phone Number." };
+  }
+  if (clean.length !== 10) {
+    return { isValid: false, error: "Mobile number must be exactly 10 digits." };
+  }
+  if (!/^[6-9]/.test(clean)) {
+    return { isValid: false, error: "Invalid mobile number: Real Indian mobile numbers must start with 6, 7, 8, or 9." };
+  }
+  if (/^(\d)\1{9}$/.test(clean) || clean === "1234567890" || clean === "0123456789") {
+    return { isValid: false, error: "Please provide a valid, active mobile number. Live KOT tracking and GST tax invoice will be sent to this number." };
+  }
+  return { isValid: true };
+}
+
+/**
+ * Validates Real 4 or 6 digit PIN (UPI, Card PIN, or Table Dining PIN)
+ */
+export function validateSecurityPin(pin: string, requiredLength: number = 4): GenericValidationResult {
+  const clean = pin.replace(/\D/g, "");
+  if (clean.length !== requiredLength && !(requiredLength === 4 && clean.length === 6)) {
+    return { isValid: false, error: `PIN must be ${requiredLength} digits.` };
+  }
+  return { isValid: true };
+}
+

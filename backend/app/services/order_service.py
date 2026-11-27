@@ -53,6 +53,17 @@ class OrderService:
             if not req.age_verified:
                 raise ValueError(f"Age verification required. You must be at least {outlet.legal_drinking_age} years of age to order alcoholic beverages.")
 
+        # Real Customer Name & Mobile Validation
+        if req.customer_name:
+            c_name = req.customer_name.strip()
+            if len(c_name) < 2 or not any(c.isalpha() for c in c_name):
+                raise ValueError("Please provide a valid real name (letters only).")
+
+        if req.customer_phone:
+            clean_digits = "".join(filter(str.isdigit, req.customer_phone))[-10:]
+            if len(clean_digits) != 10 or clean_digits[0] not in "6789":
+                raise ValueError("Please provide a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.")
+
         # 3. Create Order Header
         order_number = OrderService.generate_order_number(outlet.code)
         
@@ -90,8 +101,8 @@ class OrderService:
             ).first()
             if cust:
                 cust_id = cust.id
-                if req.customer_name and (not cust.full_name or cust.full_name == "Guest Diner"):
-                    cust.full_name = req.customer_name
+                if req.customer_name and req.customer_name.strip():
+                    cust.full_name = req.customer_name.strip()
             else:
                 cust = Customer(
                     phone=clean_phone,

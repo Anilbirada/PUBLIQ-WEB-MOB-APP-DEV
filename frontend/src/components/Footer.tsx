@@ -18,9 +18,9 @@ export const Footer: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <img
-                src="/logo.png?v=4"
+                src="/logo.png?v=6"
                 alt="PUBLIQ Bar & Restaurant"
-                className="h-14 w-auto object-contain drop-shadow-[0_2px_8px_rgba(212,175,55,0.25)]"
+                className="h-14 sm:h-16 w-auto object-contain drop-shadow-[0_2px_8px_rgba(212,175,55,0.25)]"
               />
             </div>
             

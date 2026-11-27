@@ -748,16 +748,16 @@ export default function WaiterMobileApp() {
       <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
         <div className="w-full max-w-sm bg-white border border-slate-200 rounded-3xl p-6 shadow-xl flex flex-col items-center">
           {/* Official PUBLIQ Luxury Crest Logo */}
-          <div className="w-20 h-20 rounded-2xl bg-slate-50 p-2 border border-slate-200 shadow-sm flex items-center justify-center mb-3">
+          <div className="flex items-center justify-center mb-4">
             <img 
-              src="/logo.png?v=4" 
+              src="/logo.png?v=6" 
               alt="PUBLIQ" 
-              className="w-full h-full object-contain" 
+              className="h-16 sm:h-20 w-auto object-contain drop-shadow-sm" 
             />
           </div>
 
           <span className="text-[10px] font-bold tracking-[0.3em] text-[#D4AF37] uppercase">PUBLIQ HARAGADDE</span>
-          <h1 className="text-xl font-bold tracking-[0.2em] text-white uppercase mt-0.5">P U B L I Q   W</h1>
+          <h1 className="text-xl font-bold tracking-[0.2em] text-slate-800 uppercase mt-0.5">PUBLIQ STEWARD</h1>
           <p className="text-[11px] text-slate-400 tracking-wider uppercase mt-1 mb-5 font-semibold">Service Steward Mobile App</p>
 
           <p className="text-xs text-slate-300 font-medium mb-3">Enter 4-Digit Employee PIN</p>
@@ -826,8 +826,8 @@ export default function WaiterMobileApp() {
         {/* Top Operational Bar */}
         <div className="bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-slate-50 p-1 border border-slate-200 flex items-center justify-center shadow-xs">
-              <img src="/logo.png?v=4" alt="PUBLIQ" className="w-full h-full object-contain" />
+            <div className="w-8 h-8 rounded-lg bg-amber-50 p-0.5 border border-amber-200/80 flex items-center justify-center shadow-xs">
+              <img src="/logo-badge.png?v=6" alt="PUBLIQ" className="w-full h-full object-contain" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
@@ -2213,8 +2213,8 @@ export default function WaiterMobileApp() {
               </div>
 
               <div className="text-center border-b border-slate-200 pb-2.5">
-                <div className="w-12 h-12 mx-auto rounded-xl bg-slate-50 p-1 border border-amber-500/50 mb-1 flex items-center justify-center">
-                  <img src="/logo.png?v=4" alt="PUBLIQ" className="w-full h-full object-contain" />
+                <div className="flex items-center justify-center mb-1">
+                  <img src="/logo.png?v=6" alt="PUBLIQ" className="h-12 w-auto object-contain" />
                 </div>
                 <h3 className="text-sm font-black text-slate-900">{generatedInvoice.outlet_name}</h3>
                 <p className="text-[10px] text-slate-500">{generatedInvoice.legal_name}</p>

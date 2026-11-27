@@ -114,8 +114,8 @@ export default function OrderTokenPage() {
     <div className="min-h-[85vh] flex items-center justify-center p-4 bg-[#070B12]">
       <div className="max-w-md w-full bg-[#0A111F] rounded-3xl shadow-2xl border border-[#D4AF37]/30 p-6 sm:p-8 text-center space-y-6 text-slate-100">
         {/* Brand Crest with Official Logo */}
-        <div className="w-20 h-20 mx-auto rounded-2xl bg-[#0F1626] p-2 border-2 border-[#D4AF37]/50 flex items-center justify-center shadow-lg">
-          <img src="/logo.png?v=4" alt="PUBLIQ" className="w-full h-full object-contain" />
+        <div className="flex items-center justify-center mb-2">
+          <img src="/logo.png?v=6" alt="PUBLIQ" className="h-16 sm:h-20 w-auto object-contain drop-shadow-md" />
         </div>
 
         {status === "VALIDATING" && (

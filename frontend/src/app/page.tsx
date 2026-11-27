@@ -314,9 +314,9 @@ export default function HomePage() {
           {/* Official Brand Logo */}
           <div className="mb-4 flex justify-center animate-fadeIn">
             <img 
-              src="/logo.png?v=4" 
+              src="/logo.png?v=6" 
               alt="PUBLIQ Bar & Restaurant" 
-              className="h-28 sm:h-36 md:h-44 w-auto object-contain drop-shadow-[0_4px_24px_rgba(37,99,235,0.18)] hover:scale-105 transition-transform duration-300"
+              className="h-28 sm:h-36 md:h-44 w-auto object-contain drop-shadow-[0_4px_24px_rgba(212,175,55,0.25)] hover:scale-105 transition-transform duration-300"
             />
           </div>
 

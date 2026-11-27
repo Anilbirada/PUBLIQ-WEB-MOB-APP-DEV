@@ -337,7 +337,7 @@ export default function AccountOrdersPage() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="font-serif text-xl sm:text-2xl font-bold">{customerName}</h2>
+                    <h2 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-wide drop-shadow-sm">{customerName}</h2>
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-400/20 text-amber-300 border border-amber-400/30">
                       VIP Diner
                     </span>
@@ -492,10 +492,10 @@ export default function AccountOrdersPage() {
                   #{ord.order_number}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
-                <span>{ord.order_date}</span>
+              <p className="text-xs text-slate-500 flex items-center gap-2 mt-0.5 flex-wrap">
+                <span className="font-medium text-slate-700">{ord.order_date}</span>
                 <span>•</span>
-                <span>{ord.order_time}</span>
+                <span className="font-mono font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 text-[11px]">{ord.order_time} (IST)</span>
                 <span>•</span>
                 <span>{totalItems} items</span>
               </p>

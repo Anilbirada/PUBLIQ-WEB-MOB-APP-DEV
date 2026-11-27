@@ -205,8 +205,8 @@ export default function MenuPage() {
         const target = selectedCategorySlug.toLowerCase();
         const catSlug = (cat.slug || "").toLowerCase();
         const catName = (cat.name || "").toLowerCase();
-        const matchSlug = catSlug === target || catSlug.includes(target) || target.includes(catSlug);
-        const matchName = catName.includes(target) || target.includes(catName);
+        const matchSlug = catSlug === target;
+        const matchName = catName === target || catName === target.replace(/-/g, " ");
         if (!matchSlug && !matchName) return false;
       }
 
